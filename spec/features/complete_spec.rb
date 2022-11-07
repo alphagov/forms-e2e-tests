@@ -16,6 +16,8 @@ feature "Full lifecyle of a form", type: :feature do
     visit '/'
     expect(page).to have_content 'GOV.UK Forms'
 
+    delete_form
+
     create_form_with_name(form_name)
 
     next_form_creation_step 'Add and edit your questions'
@@ -89,13 +91,16 @@ feature "Full lifecyle of a form", type: :feature do
 
   def delete_form
     visit 'https://admin.staging.forms.service.gov.uk/'
-    click_link(form_name, match: :one)
-    click_link "Delete form"
-    expect(page.find("h1")).to have_content "Are you sure you want to delete this form?"
-    choose "Yes", visible: false
-    click_button "Continue"
-    expect(page.find("h1")).to have_content 'GOV.UK Forms'
-    expect(page.find(".govuk-table")).not_to have_content form_name
+
+    if page.has_link?(form_name)
+      click_link(form_name, match: :one)
+      click_link "Delete form"
+      expect(page.find("h1")).to have_content "Are you sure you want to delete this form?"
+      choose "Yes", visible: false
+      click_button "Continue"
+      expect(page.find("h1")).to have_content 'GOV.UK Forms'
+      expect(page.find(".govuk-table")).not_to have_content form_name
+    end
   end
 
   def form_is_filled_in_by_form_filler live_form_link
