@@ -37,7 +37,7 @@ feature "Full lifecyle of a form", type: :feature do
 
     expect(page.find("h1")).to have_content 'What email address should completed forms be sent to?'
     fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
-    click_button "Continue"
+    click_button "Save and continue"
 
     next_form_creation_step 'Provide a link to privacy information for this form'
 
@@ -56,7 +56,7 @@ feature "Full lifecyle of a form", type: :feature do
 
     expect(page.find("h1")).to have_content "Make your form live"
     choose "Yes", visible: false
-    click_button "Continue"
+    click_button "Save and continue"
     expect(page.find("h1")).to have_content "Your form is live"
 
     click_link "Continue to form details"
@@ -79,7 +79,7 @@ feature "Full lifecyle of a form", type: :feature do
     click_link "Create a form"
     expect(page.find("h1")).to have_content 'What is the name of your form?'
     fill_in "What is the name of your form?", :with => form_name
-    click_button "Continue"
+    click_button "Save and continue"
   end
 
   def create_a_single_line_of_text_question
