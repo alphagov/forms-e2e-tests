@@ -1,4 +1,5 @@
 require 'rotp'
+require_relative '../../services/notify_service'
 
 feature "Full lifecyle of a form", type: :feature do
   let(:form_name) { "capybara test form" }
@@ -38,11 +39,7 @@ feature "Full lifecyle of a form", type: :feature do
     fill_in "Enter some information to tell people what will happen next", with: "We'll send you an email to let you know the outcome. You'll usually get a response within 10 working days."
     click_button "Save and continue"
 
-    next_form_creation_step 'Set the email address completed forms will be sent to'
-
-    expect(page.find("h1")).to have_content 'What email address should completed forms be sent to?'
-    fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
-    click_button "Save and continue"
+    add_form_submission_email
 
     next_form_creation_step 'Provide a link to privacy information for this form'
 
@@ -93,7 +90,6 @@ feature "Full lifecyle of a form", type: :feature do
     choose "Single line of text", visible: false
     click_button "Save and add next question"
   end
-
   def mark_pages_task_complete
     expect(page.find("h1")).to have_content 'Add and edit your questions'
     choose "Yes", visible: false
@@ -104,6 +100,45 @@ feature "Full lifecyle of a form", type: :feature do
     expect(page.find("h1")).to have_content 'Add a declaration'
     choose "Yes", visible: false
     click_button "Save and continue"
+  end
+  def add_form_submission_email
+    # If the confirmation loop has been rolled out
+    if page.has_link? "Enter the email address confirmation code"
+      next_form_creation_step 'Set the email address completed forms will be sent to'
+
+      expect(page.find("h1")).to have_content 'Set the email address for completed forms'
+
+      expected_mail_reference = page.find('#notification-id', visible: false).value
+
+      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      click_button "Save and continue"
+
+      expect(page.find("h1")).to have_content 'Confirmation code sent'
+      expect(page.find("main")).to have_content "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+
+      click_link "Enter the email address confirmation code"
+
+      expect(page.find("h1")).to have_content "Enter the confirmation code"
+
+      confirmation_code = get_confirmation_code_from_notify(expected_mail_reference)
+
+      abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless confirmation_code
+
+      fill_in "Enter the confirmation code", with: confirmation_code
+
+      click_button "Save and continue"
+
+      expect(page.find("h1")).to have_content 'Email address confirmed'
+
+      click_link "Continue creating a form"
+
+    else
+      next_form_creation_step 'Set the email address completed forms will be sent to'
+
+      expect(page.find("h1")).to have_content 'What email address should completed forms be sent to?'
+      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      click_button "Save and continue"
+    end
   end
 
   def delete_form
@@ -149,8 +184,36 @@ feature "Full lifecyle of a form", type: :feature do
     click_button "Sign in"
   end
 
+  def get_confirmation_code_from_notify(expected_mail_reference)
+    email_body = NotifyService.new.get_confirmation_code_email(expected_mail_reference)
+
+    start_time = Time.now
+    info "Waiting 3sec for mail delivery to do it's thing."
+    sleep 3
+    try = 0
+    while(Time.now - start_time < 5000) do
+      try += 1
+
+      unless email_body.collection.first.body.nil?
+        code = email_body.collection.first.body.match(/\d+/).to_s
+        puts "Received the following code from Notify #{code}"
+        return code
+      end
+
+      wait_time = try + ((Time.now - start_time) ** 0.5)
+      info 'failed. Sleeping %0.2fs.' % wait_time
+      sleep wait_time
+    end
+    return false
+  end
+
+
   def totp(token)
     totp = ROTP::TOTP.new(token)
     totp.now
+  end
+
+  def info(message)
+    puts message
   end
 end
