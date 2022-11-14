@@ -25,7 +25,12 @@ feature "Full lifecyle of a form", type: :feature do
     create_a_single_line_of_text_question
 
     click_link "Go to your questions"
-    click_link "Back to create a form"
+
+    mark_pages_task_complete
+
+    next_form_creation_step 'Add a declaration for people to agree to'
+
+    mark_declaration_task_complete
 
     next_form_creation_step 'Add information about what happens next'
 
@@ -87,6 +92,18 @@ feature "Full lifecyle of a form", type: :feature do
     fill_in "Question text", :with => "What is your name?"
     choose "Single line of text", visible: false
     click_button "Save and add next question"
+  end
+
+  def mark_pages_task_complete
+    expect(page.find("h1")).to have_content 'Add and edit your questions'
+    choose "Yes", visible: false
+    click_button "Save and continue"
+  end
+
+  def mark_declaration_task_complete
+    expect(page.find("h1")).to have_content 'Add a declaration'
+    choose "Yes", visible: false
+    click_button "Save and continue"
   end
 
   def delete_form
