@@ -107,7 +107,7 @@ feature "Full lifecyle of a form", type: :feature do
   end
 
   def delete_form
-    visit 'https://admin.staging.forms.service.gov.uk/'
+    visit forms_admin_url
 
     if page.has_link?(form_name)
       click_link(form_name, match: :one)
