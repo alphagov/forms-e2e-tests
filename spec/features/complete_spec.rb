@@ -103,7 +103,7 @@ feature "Full lifecyle of a form", type: :feature do
   end
   def add_form_submission_email
     # If the confirmation loop has been rolled out
-    if page.has_link? "Enter the email address confirmation code"
+    if page.has_content? "Enter the email address confirmation code"
       next_form_creation_step 'Set the email address completed forms will be sent to'
 
       expect(page.find("h1")).to have_content 'Set the email address for completed forms'
