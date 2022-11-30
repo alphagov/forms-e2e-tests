@@ -85,11 +85,14 @@ feature "Full lifecyle of a form", type: :feature do
   end
 
   def create_a_single_line_of_text_question
+    expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
+    choose "Single line of text", visible: false
+    click_button "Save and continue"
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => "What is your name?"
-    choose "Single line of text", visible: false
-    click_button "Save and add next question"
+    click_button "Save question"
   end
+
   def mark_pages_task_complete
     expect(page.find("h1")).to have_content 'Add and edit your questions'
     choose "Yes", visible: false
