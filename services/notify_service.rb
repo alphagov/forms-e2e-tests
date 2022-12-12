@@ -5,7 +5,7 @@ class NotifyService
     @notify_api_key = ENV["SETTINGS__GOVUK_NOTIFY__API_KEY"]
   end
 
-  def get_confirmation_code_email(notification_id)
+  def get_email(notification_id)
     if @notify_api_key.nil? || @notify_api_key.empty?
       puts "Warning: no NOTIFY_API_KEY set."
       return nil

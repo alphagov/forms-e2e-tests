@@ -7,6 +7,8 @@ feature "Full lifecyle of a form", type: :feature do
   let(:password) { ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" } }
   let(:token)   { ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon"} }
   let(:forms_admin_url) { ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL"} }
+  let(:question_text) { "What is your name?" }
+  let(:answer_text) { "test name" }
 
   before do
     Capybara.app_host = forms_admin_url
@@ -89,7 +91,7 @@ feature "Full lifecyle of a form", type: :feature do
     choose "Single line of text", visible: false
     click_button "Save and continue"
     expect(page.find("h1")).to have_content 'Edit question'
-    fill_in "Question text", :with => "What is your name?"
+    fill_in "Question text", :with => question_text
     click_button "Save question"
   end
 
@@ -123,7 +125,7 @@ feature "Full lifecyle of a form", type: :feature do
 
       expect(page.find("h1")).to have_content "Enter the confirmation code"
 
-      confirmation_code = get_confirmation_code_from_notify(expected_mail_reference)
+      confirmation_code = get_confirmation_from_notify(expected_mail_reference, confirmation_code: true)
 
       abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless confirmation_code
 
@@ -161,14 +163,25 @@ feature "Full lifecyle of a form", type: :feature do
   def form_is_filled_in_by_form_filler live_form_link
     visit live_form_link
 
-    expect(page).to have_content 'What is your name?'
-    answer_single_line('test name')
+    expect(page).to have_content question_text
+    answer_single_line(answer_text)
 
     expect(page).to have_content 'Check your answers before submitting your form'
-    expect(page).to have_content 'test name'
+    expect(page).to have_content answer_text
+
+    expected_mail_reference = page.find('#notification-id', visible: false).value
+
     click_button 'Submit'
 
     expect(page).to have_content 'Your form has been submitted'
+
+    form_submission_email = get_confirmation_from_notify(expected_mail_reference)
+
+    abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
+
+    expect(form_submission_email.status).to eq 'delivered'
+    expect(form_submission_email.body).to have_content question_text
+    expect(form_submission_email.body).to have_content answer_text
   end
 
   def answer_single_line(text)
@@ -187,8 +200,8 @@ feature "Full lifecyle of a form", type: :feature do
     click_button "Sign in"
   end
 
-  def get_confirmation_code_from_notify(expected_mail_reference)
-    email_body = NotifyService.new.get_confirmation_code_email(expected_mail_reference)
+  def get_confirmation_from_notify(expected_mail_reference, confirmation_code: false)
+    email = NotifyService.new.get_email(expected_mail_reference)
 
     start_time = Time.now
     info "Waiting 3sec for mail delivery to do it's thing."
@@ -197,10 +210,18 @@ feature "Full lifecyle of a form", type: :feature do
     while(Time.now - start_time < 5000) do
       try += 1
 
-      unless email_body.collection.first.body.nil?
-        code = email_body.collection.first.body.match(/\d+/).to_s
-        puts "Received the following code from Notify #{code}"
-        return code
+      if confirmation_code
+        unless email.collection.first.body.nil?
+          code = email.collection.first.body.match(/\d+/).to_s
+          puts "Received the following code from Notify: “#{code}“"
+          return code
+        end
+      else
+        unless email.collection.first.status.nil?
+          status = email.collection.first.status
+          puts "Received the following status from Notify: “#{status}“"
+          return email.collection.first
+        end
       end
 
       wait_time = try + ((Time.now - start_time) ** 0.5)
@@ -209,7 +230,6 @@ feature "Full lifecyle of a form", type: :feature do
     end
     return false
   end
-
 
   def totp(token)
     totp = ROTP::TOTP.new(token)
