@@ -179,7 +179,6 @@ feature "Full lifecyle of a form", type: :feature do
 
     abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
 
-    expect(form_submission_email.status).to eq 'delivered'
     expect(form_submission_email.body).to have_content question_text
     expect(form_submission_email.body).to have_content answer_text
   end
