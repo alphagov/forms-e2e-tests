@@ -2,7 +2,7 @@ require 'rotp'
 require_relative '../../services/notify_service'
 
 feature "Full lifecyle of a form", type: :feature do
-  let(:form_name) { "capybara test form" }
+  let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
   let(:username)  { ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" } }
   let(:password) { ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" } }
   let(:token)   { ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon"} }
@@ -211,7 +211,7 @@ feature "Full lifecyle of a form", type: :feature do
 
       if confirmation_code
         unless email.collection.first.body.nil?
-          code = email.collection.first.body.match(/\d+/).to_s
+          code = email.collection.first.body.match(/\d{6}/).to_s
           puts "Received the following code from Notify: “#{code}“"
           return code
         end
