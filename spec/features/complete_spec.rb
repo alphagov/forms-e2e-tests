@@ -65,7 +65,7 @@ feature "Full lifecyle of a form", type: :feature do
 
     click_link "Continue to form details"
 
-    expect(page.find("h1")).to have_content "Your form"
+    expect(page.find("h1")).to have_content form_name
 
     live_form_link = page.find('[data-copy-target]').text
 
