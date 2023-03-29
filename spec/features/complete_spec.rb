@@ -158,7 +158,7 @@ feature "Full lifecyle of a form", type: :feature do
       delete_path = live_form_url.gsub("live", "delete")
 
       visit delete_path
-      expect(page.find("h1")).to have_content /Are you sure you want to delete this (draft|form)\?/
+      expect(page.find("h1")).to have_content 'Are you sure you want to delete this draft?'
       choose "Yes", visible: false
       click_button "Continue"
       expect(page.find("h1")).to have_content 'GOV.UK Forms'
