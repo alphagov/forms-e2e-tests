@@ -118,7 +118,7 @@ feature "Full lifecyle of a form", type: :feature do
 
       expected_mail_reference = page.find('#notification-id', visible: false).value
 
-      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk", fill_options: { clear: :backspace }
       click_button "Save and continue"
 
       expect(page.find("h1")).to have_content 'Confirmation code sent'
