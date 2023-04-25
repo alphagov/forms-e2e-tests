@@ -162,7 +162,10 @@ feature "Full lifecyle of a form", type: :feature do
       choose "Yes", visible: false
       click_button "Continue"
       expect(page.find("h1")).to have_content 'GOV.UK Forms'
-      expect(page.find(".govuk-table")).not_to have_content form_name
+      expect(page.find("p.govuk-body")).to have_content "Successfully deleted #{form_name}"
+      if page.has_css?('.govuk-table')
+        expect(page.find('.govuk-table')).not_to have_content form_name
+      end
     end
   end
 
