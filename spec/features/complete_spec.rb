@@ -81,8 +81,8 @@ feature "Full lifecyle of a form", type: :feature do
 
   def create_form_with_name(form_name)
     click_link "Create a form"
-    expect(page.find("h1")).to have_content 'What is the name of your form?'
-    fill_in "What is the name of your form?", :with => form_name
+    expect(page.find("h1")).to have_content 'What’s the name of your form?'
+    fill_in "What’s the name of your form?", :with => form_name
     click_button "Save and continue"
   end
 
