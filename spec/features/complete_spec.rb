@@ -15,8 +15,21 @@ feature "Full lifecyle of a form", type: :feature do
   end
 
   scenario "Form is created, made live by form admin user and completed by a member of the public" do
+    unless bypass_all_end_to_end_tests
+      build_a_new_form
+
+      live_form_link = page.find('[data-copy-target]').text
+
+      form_is_filled_in_by_form_filler live_form_link
+
+      delete_form
+    end
+  end
+
+  def build_a_new_form
     sign_on(username, password, token) unless ENV.fetch("SKIP_SIGNON", false)
     visit '/'
+
     expect(page).to have_content 'GOV.UK Forms'
 
     delete_form
@@ -66,12 +79,6 @@ feature "Full lifecyle of a form", type: :feature do
     click_link "Continue to form details"
 
     expect(page.find("h1")).to have_content form_name
-
-    live_form_link = page.find('[data-copy-target]').text
-
-    form_is_filled_in_by_form_filler live_form_link
-
-    delete_form
   end
 
   def next_form_creation_step(task)
@@ -109,6 +116,7 @@ feature "Full lifecyle of a form", type: :feature do
     choose "Yes", visible: false
     click_button "Save and continue"
   end
+  
   def add_form_submission_email
     # If the confirmation loop has been rolled out
     if page.has_content? "Enter the email address confirmation code"
@@ -246,5 +254,19 @@ feature "Full lifecyle of a form", type: :feature do
 
   def info(message)
     puts message
+  end
+
+  def bypass_all_end_to_end_tests
+    visit '/'
+
+    return false unless current_path.end_with?("/maintenance")
+
+    info("-🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨-")
+    info("")
+    info("🏥 - forms-admin is running in maintenance mode...aborting any further e2e tests - 🏥")
+    info("")
+    info("-🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨-")
+    
+    true
   end
 end
