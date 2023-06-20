@@ -212,7 +212,7 @@ feature "Full lifecyle of a form", type: :feature do
     email = NotifyService.new.get_email(expected_mail_reference)
 
     start_time = Time.now
-    info "Waiting 3sec for mail delivery to do it's thing."
+    info "Waiting 3sec for mail delivery to do its thing."
     sleep 3
     try = 0
     while(Time.now - start_time < 5000) do
