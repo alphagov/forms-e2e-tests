@@ -1,7 +1,7 @@
 require 'rotp'
 require_relative '../../services/notify_service'
 
-feature "Full lifecyle of a form", type: :feature do
+feature "Full lifecycle of a form", type: :feature do
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
   let(:username)  { ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" } }
   let(:password) { ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" } }
@@ -15,12 +15,14 @@ feature "Full lifecyle of a form", type: :feature do
   end
 
   scenario "Form is created, made live by form admin user and completed by a member of the public" do
-    unless bypass_all_end_to_end_tests
+    unless bypass_end_to_end_tests('forms-admin', '/')
       build_a_new_form
 
       live_form_link = page.find('[data-copy-target]').text
 
-      form_is_filled_in_by_form_filler live_form_link
+      unless bypass_end_to_end_tests('forms-runner', live_form_link)
+        form_is_filled_in_by_form_filler live_form_link
+      end
 
       delete_form
     end
@@ -256,14 +258,20 @@ feature "Full lifecyle of a form", type: :feature do
     puts message
   end
 
-  def bypass_all_end_to_end_tests
-    visit '/'
+  def bypass_end_to_end_tests(service_name, link)
+    visit link
+
+    alert_message = if service_name == "forms-admin"
+                      "forms-admin is running in maintenance mode...aborting any further e2e tests"
+                    elsif service_name == "forms-runner"
+                      "forms-runner is running in maintenance mode...aborting any further e2e tests forms-runner"
+                    end
 
     return false unless current_path.end_with?("/maintenance")
 
     info("-🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨-")
     info("")
-    info("🏥 - forms-admin is running in maintenance mode...aborting any further e2e tests - 🏥")
+    info("🏥 - #{alert_message} - 🏥")
     info("")
     info("-🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨-")
     
