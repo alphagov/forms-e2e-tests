@@ -214,7 +214,7 @@ feature "Full lifecycle of a form", type: :feature do
     fill_in "Email", :with => username
     fill_in "Password", :with => password
     click_button "Sign in"
-    fill_in "Your verification code", :with => totp(otp_token)
+    fill_in "code", :with => totp(otp_token)
     click_button "Sign in"
   end
 
