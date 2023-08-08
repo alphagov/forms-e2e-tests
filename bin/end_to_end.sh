@@ -49,9 +49,9 @@ if [[ "$(admin_url)" =~ "Unknown" ]]; then
 fi
 
 export FORMS_ADMIN_URL="$(admin_url)"
-export SIGNON_USERNAME="$(get_param /${environment}/smoketests/perm/signon/username)"
-export SIGNON_OTP="$(get_param /${environment}/smoketests/perm/signon/secret)"
-export SIGNON_PASSWORD="$(get_param /${environment}/smoketests/perm/signon/password)"
+export SIGNON_USERNAME="$(get_param /${environment}/smoketests/signon/username)"
+export SIGNON_OTP="$(get_param /${environment}/smoketests/signon/secret)"
+export SIGNON_PASSWORD="$(get_param /${environment}/smoketests/signon/password)"
 export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/smoketests/notify/api-key)"
 
 cd ..
