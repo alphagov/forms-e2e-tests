@@ -42,11 +42,17 @@ Set the environment variable `GUI` to a truthy value to run chrome in visual rat
 GUI=1 bundle exec rspec
 ```
 
-To debug errors, use pry to set breakpoints:
+To debug errors, the [ruby debug gem](https://github.com/ruby/debug) is included.
+
+For example, add the following within the specs at the line you would like the test to pause.
 
 ```ruby
-  require 'pry'; binding.pry
+debugger
 ```
+
+You can then use the command line debugger to check the contents of variables
+and other debugging tasks. To continue the tests, type `continue` and press
+enter.
 
 You can run the tests against localhost using the following command: 
 
