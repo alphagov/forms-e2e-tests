@@ -57,12 +57,10 @@ For example:
 GUI=1 SKIP_SIGNON=1 FORMS_ADMIN_URL='http://localhost:3000/' bundle exec rspec
 ```
 
-To open the debugger while running the tests, the [ruby debug gem](https://github.com/ruby/debug) is included.
-
-Add the following within the specs at the line you would like the test to pause:
+To debug errors, use pry to set breakpoints:
 
 ```ruby
-debugger
+  require 'pry'; binding.pry
 ```
 
-You can then use the command line debugger to check the contents of variables and other debugging tasks. To continue the tests, type `continue` and press enter.
+You can then use the command line debugger to check the contents of variables and other debugging tasks.

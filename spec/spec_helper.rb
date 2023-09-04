@@ -1,6 +1,5 @@
 require 'capybara/rspec'
 require 'selenium/webdriver'
-require 'debug'
 
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_preference(:download, prompt_for_download: false,
