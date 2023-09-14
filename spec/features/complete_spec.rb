@@ -210,7 +210,9 @@ feature "Full lifecycle of a form", type: :feature do
     if is_auth0_login_page?
       info "Logging in using Auth0"
 
+      # Username is the value entered into the Auth0 email input - it might be a google group
       auth0_email_username = ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "You must set AUTH0_EMAIL_USERNAME to use Auth0" }
+      # Gmail address and password are the values used to access the gmail account via POP3
       auth0_gmail_address = ENV.fetch("AUTH0_GMAIL_ADDRESS") { raise "You must set AUTH0_GMAIL_ADDRESS to use Auth0" } 
       auth0_gmail_password  = ENV.fetch("AUTH0_GOOGLE_APP_PASSWORD") { raise "You must set AUTH0_GOOGLE_APP_PASSWORD to use Auth0" }
 
