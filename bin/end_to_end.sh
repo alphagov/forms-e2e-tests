@@ -57,6 +57,9 @@ export SIGNON_USERNAME="$(get_param /${environment}/smoketests/signon/username)"
 export SIGNON_OTP="$(get_param /${environment}/smoketests/signon/secret)"
 export SIGNON_PASSWORD="$(get_param /${environment}/smoketests/signon/password)"
 export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/smoketests/notify/api-key)"
+export AUTH0_EMAIL_USERNAME="$(get_param /${environment}/smoketests/auth0/email-username)"
+export AUTH0_GMAIL_ADDRESS="$(get_param /${environment}/smoketests/auth0/gmail-address)"
+export AUTH0_GOOGLE_APP_PASSWORD="$(get_param /${environment}/smoketests/auth0/gmail-password)"
 
 cd ..
 bundle install

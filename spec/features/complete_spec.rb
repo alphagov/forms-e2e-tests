@@ -1,11 +1,9 @@
 require 'rotp'
 require_relative '../../services/notify_service'
+require_relative '../../services/gmail_service'
 
 feature "Full lifecycle of a form", type: :feature do
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
-  let(:username)  { ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" } }
-  let(:password) { ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" } }
-  let(:token)   { ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon"} }
   let(:forms_admin_url) { ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL"} }
   let(:question_text) { "What is your name?" }
   let(:answer_text) { "test name" }
@@ -29,7 +27,7 @@ feature "Full lifecycle of a form", type: :feature do
   end
 
   def build_a_new_form
-    sign_on(username, password, token) unless ENV.fetch("SKIP_SIGNON", false)
+    sign_in unless ENV.fetch("SKIP_SIGNON", false)
     visit '/'
 
     expect(page).to have_content 'GOV.UK Forms'
@@ -207,8 +205,34 @@ feature "Full lifecycle of a form", type: :feature do
     click_button 'Continue'
   end
 
-  def sign_on(username, email, otp_token)
+  def sign_in
     visit '/'
+    if is_auth0_login_page?
+      info "Logging in using Auth0"
+
+      # Username is the value entered into the Auth0 email input - it might be a google group
+      auth0_email_username = ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "You must set AUTH0_EMAIL_USERNAME to use Auth0" }
+      # Gmail address and password are the values used to access the gmail account via POP3
+      auth0_gmail_address = ENV.fetch("AUTH0_GMAIL_ADDRESS") { raise "You must set AUTH0_GMAIL_ADDRESS to use Auth0" } 
+      auth0_gmail_password  = ENV.fetch("AUTH0_GOOGLE_APP_PASSWORD") { raise "You must set AUTH0_GOOGLE_APP_PASSWORD to use Auth0" }
+
+      fill_in "Email address", :with => auth0_email_username
+      click_button "Continue"
+      code = get_auth0_code(auth0_email_username, auth0_gmail_address, auth0_gmail_password)
+      fill_in "Enter the code", :with => code
+      click_button "Continue"
+    else
+      info "Logging in using Signon"
+
+      username = ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" }
+      password = ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" }
+      otp_token = ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon" }
+
+      sign_in_to_gds_sso(username, password, otp_token)
+    end
+  end
+
+  def sign_in_to_gds_sso(username, password, otp_token)
     expect(page).to have_content 'Sign in to GOV.UK'
 
     fill_in "Email", :with => username
@@ -216,6 +240,18 @@ feature "Full lifecycle of a form", type: :feature do
     click_button "Sign in"
     fill_in "code", :with => totp(otp_token)
     click_button "Sign in"
+  end
+
+  def is_auth0_login_page?
+    page.current_url.match?(/auth0.com/)
+  end
+
+  def get_auth0_code(email_username, gmail_address, google_app_password)
+    info "Checking for email code"
+    sleep 3
+    gmail_account = GmailService.new(gmail_address, google_app_password)
+    verification_mail = gmail_account.check_for_email(email_username, /Welcome to forms-admin-dev/)
+    verification_mail.body.to_s[/(?<=Your verification code is: )\d{6}/]
   end
 
   def get_confirmation_from_notify(expected_mail_reference, confirmation_code: false)
