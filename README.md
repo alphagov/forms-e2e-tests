@@ -33,12 +33,12 @@ SKIP_SIGNON=1 FORMS_ADMIN_URL='http://localhost:3000/' bundle exec rspec
 
 To run the tests against one of the standard environemnts you can use the end_to_end.sh script.
 
-Run it in an authenticated shell with permission to access SSM params in gds-forms-deploy using the gds-cli or aws-vault
+Run it in an authenticated shell with permission to access SSM params in forms-deploy using the gds-cli or aws-vault
 
 For example, to run the tests against the development environment, use:
 
 ```bash
-gds-cli aws gds-forms-deploy-readonly bin/end_to_end.sh dev
+gds-cli aws forms-deploy-readonly bin/end_to_end.sh dev
 ```
 
 Change `dev` to `staging` or `production` to run the tests against those environments.
