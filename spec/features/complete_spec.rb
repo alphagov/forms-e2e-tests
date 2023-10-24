@@ -187,6 +187,10 @@ feature "Full lifecycle of a form", type: :feature do
     expect(page).to have_content answer_text
 
     expected_mail_reference = page.find('#notification-id', visible: false).value
+    
+    if page.has_content? "Do you want to get an email confirming your form has been submitted?"
+      choose "No", visible: false
+    end
 
     click_button 'Submit'
 
