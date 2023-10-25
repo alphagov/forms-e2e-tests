@@ -116,7 +116,7 @@ feature "Full lifecycle of a form", type: :feature do
     choose "Yes", visible: false
     click_button "Save and continue"
   end
-  
+
   def add_form_submission_email
     # If the confirmation loop has been rolled out
     if page.has_content? "Enter the email address confirmation code"
@@ -187,7 +187,7 @@ feature "Full lifecycle of a form", type: :feature do
     expect(page).to have_content answer_text
 
     expected_mail_reference = page.find('#notification-id', visible: false).value
-    
+
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
       choose "No", visible: false
     end
@@ -210,33 +210,30 @@ feature "Full lifecycle of a form", type: :feature do
   end
 
   def sign_in
-    visit '/'
-    if is_auth0_login_page?
-      info "Logging in using Auth0"
-
-      # Username is the value entered into the Auth0 email input - it might be a google group
-      auth0_email_username = ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "You must set AUTH0_EMAIL_USERNAME to use Auth0" }
-      # Gmail address and password are the values used to access the gmail account via POP3
-      auth0_gmail_address = ENV.fetch("AUTH0_GMAIL_ADDRESS") { raise "You must set AUTH0_GMAIL_ADDRESS to use Auth0" } 
-      auth0_gmail_password  = ENV.fetch("AUTH0_GOOGLE_APP_PASSWORD") { raise "You must set AUTH0_GOOGLE_APP_PASSWORD to use Auth0" }
-
-      fill_in "Email address", :with => auth0_email_username
-      click_button "Continue"
-      code = get_auth0_code(auth0_email_username, auth0_gmail_address, auth0_gmail_password)
-      fill_in "Enter the code", :with => code
-      click_button "Continue"
+    index=''
+    using_auth0_passwordless_connection = ENV.fetch("USE_AUTH0_PASSWORDLESS_CONNECTION", false)
+    if using_auth0_passwordless_connection
+      index = '/'
     else
-      info "Logging in using Signon"
-
-      username = ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" }
-      password = ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" }
-      otp_token = ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon" }
-
-      sign_in_to_gds_sso(username, password, otp_token)
+      index = '/?auth=e2e'
     end
+    visit index
+
+    if is_auth0_login_page?
+      sign_in_to_auth0(using_auth0_passwordless_connection)
+    else
+      sign_in_to_gds_sso
+    end
+    info "Sign in successful"
   end
 
-  def sign_in_to_gds_sso(username, password, otp_token)
+  def sign_in_to_gds_sso
+    info "Logging in using Signon"
+
+    username = ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" }
+    password = ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" }
+    otp_token = ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon" }
+
     expect(page).to have_content 'Sign in to GOV.UK'
 
     fill_in "Email", :with => username
@@ -244,6 +241,33 @@ feature "Full lifecycle of a form", type: :feature do
     click_button "Sign in"
     fill_in "code", :with => totp(otp_token)
     click_button "Sign in"
+  end
+
+  def sign_in_to_auth0(using_auth0_passwordless_connection)
+    # Username is the value entered into the Auth0 email input - it might be a google group
+    auth0_email_username = ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "You must set AUTH0_EMAIL_USERNAME to use Auth0" }
+
+    fill_in "Email address", :with => auth0_email_username
+    click_button "Continue"
+
+    if using_auth0_passwordless_connection
+      info "Logging in using Auth0 passwordless connection"
+
+      # Gmail address and password are the values used to access the gmail account via POP3
+      auth0_gmail_address = ENV.fetch("AUTH0_GMAIL_ADDRESS") { raise "You must set AUTH0_GMAIL_ADDRESS to use Auth0" }
+      auth0_gmail_password  = ENV.fetch("AUTH0_GOOGLE_APP_PASSWORD") { raise "You must set AUTH0_GOOGLE_APP_PASSWORD to use Auth0" }
+
+      code = get_auth0_code(auth0_email_username, auth0_gmail_address, auth0_gmail_password)
+      fill_in "Enter the code", :with => code
+      click_button "Continue"
+    else
+      info "Logging in using Auth0 database connection"
+
+      auth0_user_password  = ENV.fetch("AUTH0_USER_PASSWORD") { raise "You must set AUTH0_USER_PASSWORD to use Auth0" }
+
+      fill_in "Password", :with => auth0_user_password
+      click_button "Continue"
+    end
   end
 
   def is_auth0_login_page?
@@ -314,7 +338,7 @@ feature "Full lifecycle of a form", type: :feature do
     info("🏥 - #{alert_message} - 🏥")
     info("")
     info("-🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨-")
-    
+
     true
   end
 end
