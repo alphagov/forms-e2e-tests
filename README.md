@@ -23,7 +23,7 @@ bundle install
 
 ### Running the tests locally
 
-You can run the tests against localhost using the following command: 
+You can run the tests against localhost using the following command:
 
 ```
 SKIP_SIGNON=1 FORMS_ADMIN_URL='http://localhost:3000/' bundle exec rspec
@@ -38,7 +38,7 @@ Run it in an authenticated shell with permission to access SSM params in forms-d
 For example, to run the tests against the development environment, use:
 
 ```bash
-gds-cli aws forms-deploy-readonly bin/end_to_end.sh dev
+gds aws forms-deploy-readonly bin/end_to_end.sh dev
 ```
 
 Change `dev` to `staging` or `production` to run the tests against those environments.
@@ -66,3 +66,13 @@ debugger
 ```
 
 You can then use the command line debugger to check the contents of variables and other debugging tasks. To continue the tests, type `continue` and press enter.
+
+### Changing Auth0 connection
+
+When Auth0 is the enabled auth provider for an environment you can switch between using a database or passwordless connection. The database connection uses a typical username and password flow set up exclusively for use by the end-to-end tests.
+
+The database connection is used by default, but the passwordless flow can be enabled by setting the USE_AUTH0_PASSWORDLESS_CONNECTION variable, e.g.:
+
+```
+gds aws forms-deploy-readonly -- env USE_AUTH0_PASSWORDLESS_CONNECTION=1 bin/end_to_end.sh dev
+```
