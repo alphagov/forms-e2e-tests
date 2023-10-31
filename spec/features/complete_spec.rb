@@ -224,6 +224,11 @@ feature "Full lifecycle of a form", type: :feature do
     else
       sign_in_to_gds_sso
     end
+
+    expect(page.current_host).to eq forms_admin_url
+    expect(page.current_path).to eq "/"
+    expect(page.find("h1")).to have_content "GOV.UK Forms"
+
     info "Sign in successful"
   end
 
