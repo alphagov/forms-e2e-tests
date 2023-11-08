@@ -1,15 +1,15 @@
 #!/bin/bash
 
 function help() {
-  echo "Builds the docker image and runs the tests against the development enviroment.
+  echo "Optionally builds the docker image and runs the tests against the development enviroment.
 
   Run in an authenticated shell with permission to access ssm params in
   forms-deploy using the gds-cli or aws-vault
 
-  Usage: $0
+  Usage: $0 <DOCKER IMAGE TO TEST>
 
   Example:
-  gds-cli aws forms-deploy-readonly -- $0
+  gds-cli aws forms-deploy-readonly -- $0 'existing-docker-image-tag'
   "
 exit 1
 }
@@ -18,23 +18,28 @@ if [[ "$1" == "help" ]]; then
   help
 fi
 
-if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
-  echo "No AWS credentials found"
-  help
+IMAGE_TO_TEST="$1"
+
+if [[ -z "$IMAGE_TO_TEST" ]]; then
+  echo 'Building image'
+  IMAGE_TO_TEST="test_e2e_$(date +%Y-%m-%d_%H-%M)"
+  docker build -t "$IMAGE_TO_TEST" ../
 fi
 
-echo 'Building image'
-image_tag="test_e2e_$(date +%Y-%m-%d_%H-%M)"
-docker build -t "$image_tag" ../
+if [ -z "$FORMS_ADMIN_URL" ] || \
+   [ -z "$AUTH0_EMAIL_USERNAME" ] || \
+   [ -z "$AUTH0_USER_PASSWORD" ] || \
+   [ -z "$SETTINGS__GOVUK_NOTIFY__API_KEY" ]; then
+  echo "Loading env vars from parameter store"
+  source load_env_vars.sh
+  set_env_vars 'dev'
+fi
 
 echo 'Running the tests against dev environment'
-source load_env_vars.sh
-set_env_vars 'dev'
-
 docker run --rm \
   -e FORMS_ADMIN_URL \
   -e AUTH0_EMAIL_USERNAME \
   -e AUTH0_USER_PASSWORD \
   -e SETTINGS__GOVUK_NOTIFY__API_KEY \
-  "$image_tag"
+  "$IMAGE_TO_TEST"
 
