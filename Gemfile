@@ -1,12 +1,16 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-ruby "3.2.2"
+source 'https://rubygems.org'
 
-gem "rotp"
-gem "debug"
-gem "rspec"
-gem "capybara"
-gem "notifications-ruby-client"
-gem "selenium-webdriver"
-gem "webdrivers"
-gem "mail"
+ruby '3.2.2'
+
+gem 'capybara'
+gem 'debug'
+gem 'mail'
+gem 'notifications-ruby-client'
+gem 'rotp'
+gem 'rspec'
+gem 'rubocop-govuk', '~> 4.12'
+gem 'selenium-webdriver'
+gem 'webdrivers'
+gem "bundle-audit", "~> 0.1.0"
