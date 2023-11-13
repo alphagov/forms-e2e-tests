@@ -5,6 +5,7 @@ require_relative '../../services/gmail_service'
 feature "Full lifecycle of a form", type: :feature do
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
   let(:forms_admin_url) { ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL"} }
+  let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
   let(:answer_text) { "test name" }
 
@@ -19,7 +20,8 @@ feature "Full lifecycle of a form", type: :feature do
       live_form_link = page.find('[data-copy-target]').text
 
       unless bypass_end_to_end_tests('forms-runner', live_form_link)
-        form_is_filled_in_by_form_filler live_form_link
+        form_is_filled_in_by_form_filler(live_form_link, skip_question: false)
+        form_is_filled_in_by_form_filler(live_form_link, skip_question: true)
       end
 
       delete_form
@@ -38,9 +40,13 @@ feature "Full lifecycle of a form", type: :feature do
 
     next_form_creation_step 'Add and edit your questions'
 
+    create_a_selection_question
+
     create_a_single_line_of_text_question
 
-    click_link "Go to your questions"
+    click_link 'Go to your questions'
+
+    add_a_route
 
     mark_pages_task_complete
 
@@ -93,6 +99,24 @@ feature "Full lifecycle of a form", type: :feature do
     click_button "Save and continue"
   end
 
+  def create_a_selection_question
+    expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
+    choose "Selection from a list of options", visible: false
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content 'What’s your question?'
+    fill_in "What’s your question?", with: selection_question
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content 'Create a list of options'
+    check "People can only select one option", visible: false
+    fill_in "Option 1", :with => "Yes"
+    fill_in "Option 2", :with => "No"
+    click_button "Continue"
+
+    click_button "Save and add next question"
+  end
+
   def create_a_single_line_of_text_question
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "Text", visible: false
@@ -103,6 +127,21 @@ feature "Full lifecycle of a form", type: :feature do
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => question_text
     click_button "Save question"
+
+  end
+
+  def add_a_route
+    expect(page.find("h1")).to have_content 'Add and edit your questions'
+    click_link "Add a question route"
+
+    expect(page.find("h1")).to have_content 'Add a question route'
+    choose "1. #{selection_question}", visible: false
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content 'Add a question route'
+    select "Yes", from: "is answered as"
+    select "Check your answers before submitting", from: "take the person to"
+    click_button "Save and continue"
   end
 
   def mark_pages_task_complete
@@ -177,14 +216,29 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 
-  def form_is_filled_in_by_form_filler live_form_link
+  def form_is_filled_in_by_form_filler(live_form_link, skip_question: false)
     visit live_form_link
 
-    expect(page).to have_content question_text
-    answer_single_line(answer_text)
+    if skip_question
+      answer_selection_question("Yes")
+    else
+      answer_selection_question("No")
+
+      expect(page).to have_content question_text
+      answer_single_line(answer_text)
+    end
 
     expect(page).to have_content 'Check your answers before submitting your form'
-    expect(page).to have_content answer_text
+
+    if skip_question
+      expect(page).to have_content selection_question
+      expect(page).to have_content "Yes"
+    else
+      expect(page).to have_content selection_question
+      expect(page).to have_content "No"
+
+      expect(page).to have_content answer_text
+    end
 
     expected_mail_reference = page.find('#notification-id', visible: false).value
 
@@ -200,13 +254,26 @@ feature "Full lifecycle of a form", type: :feature do
 
     abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
 
-    expect(form_submission_email.body).to have_content question_text
-    expect(form_submission_email.body).to have_content answer_text
+    if skip_question
+      expect(form_submission_email.body).to have_content selection_question
+      expect(form_submission_email.body).to have_content "Yes"
+    else
+      expect(form_submission_email.body).to have_content selection_question
+      expect(form_submission_email.body).to have_content "No"
+
+      expect(form_submission_email.body).to have_content question_text
+      expect(form_submission_email.body).to have_content answer_text
+    end
   end
 
   def answer_single_line(text)
     fill_in 'question[text]', with: text
     click_button 'Continue'
+  end
+
+  def answer_selection_question(text)
+    choose text, visible: false
+    click_button "Continue"
   end
 
   def sign_in
