@@ -51,7 +51,7 @@ module FeatureHelpers
 
     expect(page.find("h1")).to have_content "Provide contact details for support"
     check "Email", visible: false
-    fill_in "Enter the email address", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+    fill_in "Enter the email address", with: test_email_address
     click_button "Save and continue"
 
     next_form_creation_step 'Make your form live'
@@ -144,11 +144,11 @@ module FeatureHelpers
 
       expected_mail_reference = page.find('#notification-id', visible: false).value
 
-      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk", fill_options: { clear: :backspace }
+      fill_in "What email address should completed forms be sent to?", with: test_email_address, fill_options: { clear: :backspace }
       click_button "Save and continue"
 
       expect(page.find("h1")).to have_content 'Confirmation code sent'
-      expect(page.find("main")).to have_content "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      expect(page.find("main")).to have_content test_email_address
 
       click_link "Enter the email address confirmation code"
 
@@ -170,7 +170,7 @@ module FeatureHelpers
       next_form_creation_step 'Set the email address completed forms will be sent to'
 
       expect(page.find("h1")).to have_content 'What email address should completed forms be sent to?'
-      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      fill_in "What email address should completed forms be sent to?", with: test_email_address
       click_button "Save and continue"
     end
   end

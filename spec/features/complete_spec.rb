@@ -1,4 +1,6 @@
 feature "Full lifecycle of a form", type: :feature do
+  let(:test_email_address) { "govuk-forms-automation-tests@digital.cabinet-office.gov.uk" }
+
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
   let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
