@@ -195,7 +195,7 @@ module FeatureHelpers
     end
   end
 
-  def form_is_filled_in_by_form_filler(live_form_link, skip_question: false)
+  def form_is_filled_in_by_form_filler(live_form_link, skip_question: false, confirmation_email: nil)
     visit live_form_link
 
     if skip_question
@@ -220,9 +220,16 @@ module FeatureHelpers
     end
 
     expected_mail_reference = page.find('#notification-id', visible: false).value
+    expected_confirmation_mail_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
-      choose "No", visible: false
+      if confirmation_email
+        choose "Yes", visible: false
+        fill_in "email_confirmation_form[confirmation_email_address]", with: confirmation_email
+        expected_confirmation_mail_reference = page.find("#confirmation-email-reference", visible: false).value
+      else
+        choose "No", visible: false
+      end
     end
 
     click_button 'Submit'
@@ -232,6 +239,12 @@ module FeatureHelpers
     form_submission_email = get_confirmation_from_notify(expected_mail_reference)
 
     abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
+
+    if expected_confirmation_mail_reference
+      confirmation_email_notification = get_confirmation_from_notify(expected_confirmation_mail_reference)
+
+      abort("ABORT!!! #{expected_confirmation_mail_reference} could not be found in Notify!!!") unless confirmation_email_notification
+    end
 
     if skip_question
       expect(form_submission_email.body).to have_content selection_question
