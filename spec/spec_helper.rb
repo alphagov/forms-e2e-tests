@@ -3,6 +3,7 @@ require 'selenium/webdriver'
 require 'debug'
 
 require_relative "support/feature_helpers"
+require_relative "support/logging"
 
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_preference(:download, prompt_for_download: false,
