@@ -2,6 +2,8 @@ require 'capybara/rspec'
 require 'selenium/webdriver'
 require 'debug'
 
+require_relative "support/feature_helpers"
+
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_preference(:download, prompt_for_download: false,
                                   default_directory: '/tmp/downloads')
