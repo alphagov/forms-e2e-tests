@@ -280,7 +280,7 @@ module FeatureHelpers
     expect(page.current_path).to eq "/"
     expect(page.find("h1")).to have_content "GOV.UK Forms"
 
-    info "Sign in successful"
+    logger.debug "Sign in successful"
   end
 
   def sign_in_to_auth0
@@ -290,7 +290,7 @@ module FeatureHelpers
     fill_in "Email address", :with => auth0_email_username
     click_button "Continue"
 
-    info "Logging in using Auth0 database connection"
+    logger.debug "Logging in using Auth0 database connection"
 
     auth0_user_password  = ENV.fetch("AUTH0_USER_PASSWORD") { raise "You must set AUTH0_USER_PASSWORD to use Auth0" }
 
@@ -302,7 +302,7 @@ module FeatureHelpers
     email = NotifyService.new.get_email(expected_mail_reference)
 
     start_time = Time.now
-    info "Waiting 3sec for mail delivery to do its thing."
+    logger.debug "Waiting 3sec for mail delivery to do its thing."
     sleep 3
     try = 0
     while(Time.now - start_time < 5000) do
@@ -311,26 +311,22 @@ module FeatureHelpers
       if confirmation_code
         unless email.collection.first.body.nil?
           code = email.collection.first.body.match(/\d{6}/).to_s
-          puts "Received the following code from Notify: “#{code}“"
+          logger.debug "Received the following code from Notify: “#{code}“"
           return code
         end
       else
         unless email.collection.first.status.nil?
           status = email.collection.first.status
-          puts "Received the following status from Notify: “#{status}“"
+          logger.debug "Received the following status from Notify: “#{status}“"
           return email.collection.first
         end
       end
 
       wait_time = try + ((Time.now - start_time) ** 0.5)
-      info 'failed. Sleeping %0.2fs.' % wait_time
+      logger.debug 'failed. Sleeping %0.2fs.' % wait_time
       sleep wait_time
     end
     return false
-  end
-
-  def info(message)
-    puts message
   end
 
   def bypass_end_to_end_tests(service_name, link)
@@ -344,7 +340,7 @@ module FeatureHelpers
 
     return false unless current_path.end_with?("/maintenance")
 
-    info <<~MSG
+    logger.error <<~MSG
       -🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨---🚨-
 
       🏥 - #{alert_message} - 🏥
