@@ -1,6 +1,4 @@
-require 'rotp'
 require_relative '../../services/notify_service'
-require_relative '../../services/gmail_service'
 
 module FeatureHelpers
   def forms_admin_url
@@ -8,7 +6,7 @@ module FeatureHelpers
   end
 
   def build_a_new_form
-    sign_in unless ENV.fetch("SKIP_SIGNON", false)
+    sign_in unless ENV.fetch("SKIP_AUTH", false)
     visit '/'
 
     expect(page).to have_content 'GOV.UK Forms'
@@ -269,20 +267,9 @@ module FeatureHelpers
   end
 
   def sign_in
-    index=''
-    using_auth0_passwordless_connection = ENV.fetch("USE_AUTH0_PASSWORDLESS_CONNECTION", false)
-    if using_auth0_passwordless_connection
-      index = '/'
-    else
-      index = '/?auth=e2e'
-    end
-    visit index
+    visit '/?auth=e2e'
 
-    if is_auth0_login_page?
-      sign_in_to_auth0(using_auth0_passwordless_connection)
-    else
-      sign_in_to_gds_sso
-    end
+    sign_in_to_auth0
 
     expect(page.current_host).to eq forms_admin_url
     expect(page.current_path).to eq "/"
@@ -291,59 +278,19 @@ module FeatureHelpers
     info "Sign in successful"
   end
 
-  def sign_in_to_gds_sso
-    info "Logging in using Signon"
-
-    username = ENV.fetch("SIGNON_USERNAME") { raise "You must set SIGNON_USERNAME" }
-    password = ENV.fetch("SIGNON_PASSWORD") { raise "You must set SIGNON_PASSWORD" }
-    otp_token = ENV.fetch("SIGNON_OTP") { raise "You must set $SIGNON_OTP with the TOTP code for signon" }
-
-    expect(page).to have_content 'Sign in to GOV.UK'
-
-    fill_in "Email", :with => username
-    fill_in "Password", :with => password
-    click_button "Sign in"
-    fill_in "code", :with => totp(otp_token)
-    click_button "Sign in"
-  end
-
-  def sign_in_to_auth0(using_auth0_passwordless_connection)
+  def sign_in_to_auth0
     # Username is the value entered into the Auth0 email input - it might be a google group
     auth0_email_username = ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "You must set AUTH0_EMAIL_USERNAME to use Auth0" }
 
     fill_in "Email address", :with => auth0_email_username
     click_button "Continue"
 
-    if using_auth0_passwordless_connection
-      info "Logging in using Auth0 passwordless connection"
+    info "Logging in using Auth0 database connection"
 
-      # Gmail address and password are the values used to access the gmail account via POP3
-      auth0_gmail_address = ENV.fetch("AUTH0_GMAIL_ADDRESS") { raise "You must set AUTH0_GMAIL_ADDRESS to use Auth0" }
-      auth0_gmail_password  = ENV.fetch("AUTH0_GOOGLE_APP_PASSWORD") { raise "You must set AUTH0_GOOGLE_APP_PASSWORD to use Auth0" }
+    auth0_user_password  = ENV.fetch("AUTH0_USER_PASSWORD") { raise "You must set AUTH0_USER_PASSWORD to use Auth0" }
 
-      code = get_auth0_code(auth0_email_username, auth0_gmail_address, auth0_gmail_password)
-      fill_in "Enter the code", :with => code
-      click_button "Continue"
-    else
-      info "Logging in using Auth0 database connection"
-
-      auth0_user_password  = ENV.fetch("AUTH0_USER_PASSWORD") { raise "You must set AUTH0_USER_PASSWORD to use Auth0" }
-
-      fill_in "Password", :with => auth0_user_password
-      click_button "Continue"
-    end
-  end
-
-  def is_auth0_login_page?
-    page.current_url.match?(/auth0.com/)
-  end
-
-  def get_auth0_code(email_username, gmail_address, google_app_password)
-    info "Checking for email code"
-    sleep 3
-    gmail_account = GmailService.new(gmail_address, google_app_password)
-    verification_mail = gmail_account.check_for_email(email_username, /Welcome to forms-admin-dev/)
-    verification_mail.body.to_s[/(?<=Your verification code is: )\d{6}/]
+    fill_in "Password", :with => auth0_user_password
+    click_button "Continue"
   end
 
   def get_confirmation_from_notify(expected_mail_reference, confirmation_code: false)
@@ -375,11 +322,6 @@ module FeatureHelpers
       sleep wait_time
     end
     return false
-  end
-
-  def totp(token)
-    totp = ROTP::TOTP.new(token)
-    totp.now
   end
 
   def info(message)
