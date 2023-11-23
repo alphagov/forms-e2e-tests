@@ -35,7 +35,7 @@ module FeatureHelpers
 
     next_form_creation_step 'Add information about what happens next'
 
-    expect(page.find("h1")).to have_content 'Form submitted page'
+    expect(page.find("h1")).to have_content 'Add information about what happens next'
     fill_in "Enter some information to tell people what will happen next", with: "We'll send you an email to let you know the outcome. You'll usually get a response within 10 working days."
     click_button "Save and continue"
 
