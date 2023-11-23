@@ -1,4 +1,3 @@
-require 'rotp'
 require_relative '../../services/notify_service'
 
 module FeatureHelpers
