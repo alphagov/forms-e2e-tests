@@ -51,7 +51,7 @@ module FeatureHelpers
 
     expect(page.find("h1")).to have_content "Provide contact details for support"
     check "Email", visible: false
-    fill_in "Enter the email address", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+    fill_in "Enter the email address", with: test_email_address
     click_button "Save and continue"
 
     next_form_creation_step 'Make your form live'
@@ -144,11 +144,11 @@ module FeatureHelpers
 
       expected_mail_reference = page.find('#notification-id', visible: false).value
 
-      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk", fill_options: { clear: :backspace }
+      fill_in "What email address should completed forms be sent to?", with: test_email_address, fill_options: { clear: :backspace }
       click_button "Save and continue"
 
       expect(page.find("h1")).to have_content 'Confirmation code sent'
-      expect(page.find("main")).to have_content "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      expect(page.find("main")).to have_content test_email_address
 
       click_link "Enter the email address confirmation code"
 
@@ -170,7 +170,7 @@ module FeatureHelpers
       next_form_creation_step 'Set the email address completed forms will be sent to'
 
       expect(page.find("h1")).to have_content 'What email address should completed forms be sent to?'
-      fill_in "What email address should completed forms be sent to?", with: "govuk-forms-automation-tests@digital.cabinet-office.gov.uk"
+      fill_in "What email address should completed forms be sent to?", with: test_email_address
       click_button "Save and continue"
     end
   end
@@ -195,7 +195,7 @@ module FeatureHelpers
     end
   end
 
-  def form_is_filled_in_by_form_filler(live_form_link, skip_question: false)
+  def form_is_filled_in_by_form_filler(live_form_link, skip_question: false, confirmation_email: nil)
     visit live_form_link
 
     if skip_question
@@ -220,9 +220,16 @@ module FeatureHelpers
     end
 
     expected_mail_reference = page.find('#notification-id', visible: false).value
+    expected_confirmation_mail_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
-      choose "No", visible: false
+      if confirmation_email
+        choose "Yes", visible: false
+        fill_in "email_confirmation_form[confirmation_email_address]", with: confirmation_email
+        expected_confirmation_mail_reference = page.find("#confirmation-email-reference", visible: false).value
+      else
+        choose "No", visible: false
+      end
     end
 
     click_button 'Submit'
@@ -232,6 +239,12 @@ module FeatureHelpers
     form_submission_email = get_confirmation_from_notify(expected_mail_reference)
 
     abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
+
+    if expected_confirmation_mail_reference
+      confirmation_email_notification = get_confirmation_from_notify(expected_confirmation_mail_reference)
+
+      abort("ABORT!!! #{expected_confirmation_mail_reference} could not be found in Notify!!!") unless confirmation_email_notification
+    end
 
     if skip_question
       expect(form_submission_email.body).to have_content selection_question
