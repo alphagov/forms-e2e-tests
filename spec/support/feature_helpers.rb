@@ -21,7 +21,7 @@ module FeatureHelpers
 
     create_a_single_line_of_text_question
 
-    click_link 'Go to your questions'
+    first(:link, "your questions").click
 
     add_a_route
 
