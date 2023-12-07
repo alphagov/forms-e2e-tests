@@ -21,6 +21,16 @@ Install the ruby dependencies:
 bundle install
 ```
 
+#### GOV.UK Notify API keys
+
+Set in your environment:
+
+```shell
+export SETTINGS__GOVUK_NOTIFY__API_KEY=<your api key>
+```
+
+Ensure both the forms-admin and forms-runner services are also configured to use the Notify API - see their respective READMEs for details.
+
 ### Running the tests locally
 
 You can run the tests against localhost using the following command:
