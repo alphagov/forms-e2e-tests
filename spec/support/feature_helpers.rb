@@ -92,10 +92,14 @@ module FeatureHelpers
     click_button "Continue"
 
     expect(page.find("h1")).to have_content 'Edit question'
-    click_button "Save and add next question"
+    click_button "Save question"
   end
 
   def create_a_single_line_of_text_question
+    within(page.find(".govuk-notification-banner__content")) do
+      click_on "Add a question"
+    end
+
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "Text", visible: false
     click_button "Continue"
