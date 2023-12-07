@@ -91,6 +91,7 @@ module FeatureHelpers
     fill_in "Option 2", :with => "No"
     click_button "Continue"
 
+    expect(page.find("h1")).to have_content 'Edit question'
     click_button "Save and add next question"
   end
 
