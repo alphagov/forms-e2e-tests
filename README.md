@@ -77,6 +77,31 @@ debugger
 
 You can then use the command line debugger to check the contents of variables and other debugging tasks. To continue the tests, type `continue` and press enter.
 
+#### Logging
+
+If the tests are running in an environment where you can't see the browser (for
+instance in our continuous deployment pipeline), you can configure the quantity
+of log messages the end to end tests output.
+
+You can choose what level messages to print when running the tests by setting
+the `LOG_LEVEL` environment variable. The allowed levels are `debug`, `info`, `warn`,
+`error`, and `fatal`. The default level is warn.
+
+As an example, to run the end to end tests with the info level:
+
+```bash
+LOG_LEVEL=info bundle exec rspec
+```
+
+For additional detail in the logging you can enable tracing, which prints every
+line in the source code of the tests as it is reached.
+
+To enable tracing, set the `TRACE` environment variable:
+
+```bash
+TRACE=1 bundle exec rspec
+```
+
 ### Changing Auth0 connection
 
 When Auth0 is the enabled auth provider for an environment you can switch between using a database or passwordless connection. The database connection uses a typical username and password flow set up exclusively for use by the end-to-end tests.
