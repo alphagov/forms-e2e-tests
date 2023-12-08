@@ -15,6 +15,8 @@ feature "Full lifecycle of a form", type: :feature do
     logger.info "Scenario: Form is created, made live by form admin user"
 
     unless bypass_end_to_end_tests('forms-admin', '/')
+      start_tracing
+
       build_a_new_form
 
       logger.info("Then I can share the live form")
