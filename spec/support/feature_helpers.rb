@@ -6,6 +6,8 @@ module FeatureHelpers
   end
 
   def build_a_new_form
+    logger.info
+    logger.info "As an editor user"
     sign_in unless ENV.fetch("SKIP_AUTH", false)
     visit '/'
 
@@ -13,6 +15,7 @@ module FeatureHelpers
 
     delete_form
 
+    logger.info "When I create a new form"
     create_form_with_name(form_name)
 
     next_form_creation_step 'Add and edit your questions'
@@ -52,6 +55,7 @@ module FeatureHelpers
     fill_in "Enter the email address", with: test_email_address
     click_button "Save and continue"
 
+    logger.info "And make it live"
     next_form_creation_step 'Make your form live'
 
     expect(page.find("h1")).to have_content "Make your form live"
@@ -199,17 +203,24 @@ module FeatureHelpers
   end
 
   def form_is_filled_in_by_form_filler(live_form_link, skip_question: false, confirmation_email: nil)
+    logger.info
+    logger.info "As a form filler"
+
+    logger.info "When I fill out the new form"
     visit live_form_link
 
     if skip_question
+      logger.info "And I answer all of the questions"
       answer_selection_question("Yes")
     else
+      logger.info "And I choose the answer that skips questions"
       answer_selection_question("No")
 
       expect(page).to have_content question_text
       answer_single_line(answer_text)
     end
 
+    logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content 'Check your answers before submitting your form'
 
     if skip_question
@@ -227,6 +238,7 @@ module FeatureHelpers
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
       if confirmation_email
+        logger.info "And I can request a confirmation email"
         choose "Yes", visible: false
         fill_in "email_confirmation_form[confirmation_email_address]", with: confirmation_email
         expected_confirmation_mail_reference = page.find("#confirmation-email-reference", visible: false).value
@@ -239,16 +251,15 @@ module FeatureHelpers
 
     expect(page).to have_content 'Your form has been submitted'
 
+    logger.info
+    logger.info "As a form processor"
+    logger.info "When a form filler has submitted their answers"
+    logger.info "Then I can see their submission in my email inbox"
     form_submission_email = get_confirmation_from_notify(expected_mail_reference)
 
     abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
 
-    if expected_confirmation_mail_reference
-      confirmation_email_notification = get_confirmation_from_notify(expected_confirmation_mail_reference)
-
-      abort("ABORT!!! #{expected_confirmation_mail_reference} could not be found in Notify!!!") unless confirmation_email_notification
-    end
-
+    logger.info "And I can see their answers"
     if skip_question
       expect(form_submission_email.body).to have_content selection_question
       expect(form_submission_email.body).to have_content "Yes"
@@ -258,6 +269,17 @@ module FeatureHelpers
 
       expect(form_submission_email.body).to have_content question_text
       expect(form_submission_email.body).to have_content answer_text
+    end
+
+    if expected_confirmation_mail_reference
+      logger.info
+      logger.info "As a form filler"
+      logger.info "When I have filled out a form and requested a confirmation email"
+      logger.info "Then I can see the confirmation in my email inbox"
+
+      confirmation_email_notification = get_confirmation_from_notify(expected_confirmation_mail_reference)
+
+      abort("ABORT!!! #{expected_confirmation_mail_reference} could not be found in Notify!!!") unless confirmation_email_notification
     end
   end
 
