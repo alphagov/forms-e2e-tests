@@ -7,7 +7,7 @@ feature "Full lifecycle of a form", type: :feature do
   let(:answer_text) { "test name" }
 
   before do
-    Capybara.app_host = forms_admin_url
+    Capybara.app_host = product_pages_url
   end
 
   scenario "Form is created, made live by form admin user and completed by a member of the public" do
