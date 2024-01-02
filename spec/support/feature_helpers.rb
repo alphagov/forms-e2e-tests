@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../services/notify_service'
 
 module FeatureHelpers
@@ -5,11 +7,17 @@ module FeatureHelpers
     ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL"}
   end
 
+  def product_pages_url
+    ENV.fetch('PRODUCT_PAGES_URL') { raise 'You must set $PRODUCT_PAGES_URL' }
+  end
+
   def build_a_new_form
     logger.info
-    logger.info "As an editor user"
-    sign_in unless ENV.fetch("SKIP_AUTH", false)
-    visit '/'
+    logger.info 'As an editor user'
+
+    visit_admin
+
+    sign_in unless ENV.fetch('SKIP_AUTH', false)
 
     expect(page).to have_content 'GOV.UK Forms'
 
@@ -183,7 +191,7 @@ module FeatureHelpers
   end
 
   def delete_form
-    visit forms_admin_url
+    visit_admin
 
     if page.has_link?(form_name)
       click_link(form_name, match: :one)
@@ -294,13 +302,10 @@ module FeatureHelpers
   end
 
   def sign_in
-    visit '/?auth=e2e'
-
     sign_in_to_auth0
 
-    expect(page.current_host).to eq forms_admin_url
     expect(page.current_path).to eq "/"
-    expect(page.find("h1")).to have_content "GOV.UK Forms"
+    expect(page.find('h1')).to have_content "GOV.UK Forms"
 
     logger.debug "Sign in successful"
   end
@@ -371,6 +376,40 @@ module FeatureHelpers
     MSG
 
     true
+  end
+
+  def skip_product_pages?
+    ENV.fetch('SKIP_PRODUCT_PAGES', false)
+  end
+
+  def visit_product_page
+    logger.info "Visiting product pages at #{product_pages_url}"
+    visit product_pages_url
+  end
+
+  def admin_url_with_e2e_auth(admin_url)
+    URI.parse(admin_url).tap { |uri| uri.query = 'auth=e2e' }.to_s
+  end
+
+
+  def visit_link_to_forms_admin
+    admin_link_href = page.find('nav a', text: 'Sign in')['href']
+    admin_url = admin_url_with_e2e_auth(admin_link_href)
+    logger.info "Visiting admin at #{admin_url}"
+    visit admin_url
+  end
+
+  def visit_admin
+    if skip_product_pages?
+      logger.info "Visiting admin at #{forms_admin_url}"
+      visit admin_url_with_e2e_auth(forms_admin_url)
+    else
+      logger.info "Visiting product pages at #{product_pages_url}"
+      visit_product_page
+      expect(page.find('h1')).to have_content 'Create online forms for GOV.UK'
+
+      visit_link_to_forms_admin
+    end
   end
 end
 

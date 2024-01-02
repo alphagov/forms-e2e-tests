@@ -39,6 +39,11 @@ You can run the tests against localhost using the following command:
 SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' bundle exec rspec
 ```
 
+### Skipping the product pages
+
+The end to end tests can be run without visiting the product pages by setting
+the `SKIP_PRODUCT_PAGES` environment variable to `1`.
+
 ### Running the tests against remote environments
 
 To run the tests against one of the standard environemnts you can use the end_to_end.sh script.
