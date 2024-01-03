@@ -11,7 +11,6 @@ USER ruby
 
 COPY --chown=ruby:ruby . ./
 
-RUN gem install bundler -v 2.4.21
 RUN bundle install
 
 CMD ["bundle", "exec", "rspec"]
