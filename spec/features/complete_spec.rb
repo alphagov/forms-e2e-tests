@@ -5,9 +5,16 @@ feature "Full lifecycle of a form", type: :feature do
   let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
   let(:answer_text) { "test name" }
+  let(:start_url) do
+    if skip_product_pages?
+      forms_admin_url
+    else
+      product_pages_url
+    end
+  end
 
   before do
-    Capybara.app_host = forms_admin_url
+    Capybara.app_host = start_url
   end
 
   scenario "Form is created, made live by form admin user and completed by a member of the public" do
