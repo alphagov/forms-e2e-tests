@@ -49,5 +49,7 @@ function set_env_vars() {
   export PRODUCT_PAGES_URL="$(product_pages_url $environment)"
   export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/smoketests/notify/api-key)"
   export AUTH0_EMAIL_USERNAME="$(get_param /${environment}/smoketests/auth0/email-username)"
+  export AUTH0_GMAIL_ADDRESS="$(get_param /${environment}/smoketests/auth0/gmail-address)"
+  export AUTH0_GOOGLE_APP_PASSWORD="$(get_param /${environment}/smoketests/auth0/gmail-password)"
   export AUTH0_USER_PASSWORD="$(get_param /${environment}/smoketests/auth0/auth0-user-password)"
 }
