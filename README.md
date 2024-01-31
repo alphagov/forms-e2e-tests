@@ -36,7 +36,7 @@ Ensure both the forms-admin and forms-runner services are also configured to use
 You can run the tests against localhost using the following command:
 
 ```
-SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' bundle exec rspec
+SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec
 ```
 
 ### Skipping the product pages
@@ -69,7 +69,7 @@ chrome in visual rather than headless mode.
 For example:
 
 ```
-GUI=1 SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' bundle exec rspec
+GUI=1 SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec
 ```
 
 To open the debugger while running the tests, the [ruby debug gem](https://github.com/ruby/debug) is included.
