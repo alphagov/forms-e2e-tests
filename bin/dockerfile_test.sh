@@ -9,7 +9,7 @@ function help() {
   Usage: $0 <DOCKER IMAGE TO TEST>
 
   Example:
-  gds-cli aws forms-deploy-readonly -- $0 'existing-docker-image-tag'
+  gds aws forms-deploy-readonly -- $0 'existing-docker-image-tag'
   "
 exit 1
 }
@@ -27,6 +27,7 @@ if [[ -z "$IMAGE_TO_TEST" ]]; then
 fi
 
 if [ -z "$FORMS_ADMIN_URL" ] || \
+   [ -z "$PRODUCT_PAGES_URL" ] || \
    [ -z "$AUTH0_EMAIL_USERNAME" ] || \
    [ -z "$AUTH0_USER_PASSWORD" ] || \
    [ -z "$SETTINGS__GOVUK_NOTIFY__API_KEY" ]; then
@@ -38,6 +39,7 @@ fi
 echo 'Running the tests against dev environment'
 docker run --rm \
   -e FORMS_ADMIN_URL \
+  -e PRODUCT_PAGES_URL \
   -e AUTH0_EMAIL_USERNAME \
   -e AUTH0_USER_PASSWORD \
   -e SETTINGS__GOVUK_NOTIFY__API_KEY \

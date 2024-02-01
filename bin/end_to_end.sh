@@ -21,7 +21,7 @@ forms-deploy using the gds-cli or aws-vault
 Usage: $0 dev|staging|production
 
 Example:
-gds-cli aws forms-deploy-readonly -- $0 dev
+gds aws forms-deploy-readonly -- $0 dev
 "
   exit 0
 fi
