@@ -9,7 +9,7 @@ function help() {
   Usage: $0 <DOCKER IMAGE TO TEST>
 
   Example:
-  gds-cli aws forms-deploy-readonly -- $0 'existing-docker-image-tag'
+  gds aws forms-deploy-readonly -- $0 'existing-docker-image-tag'
   "
 exit 1
 }
