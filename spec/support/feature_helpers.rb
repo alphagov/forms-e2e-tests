@@ -159,7 +159,7 @@ module FeatureHelpers
 
       expect(page.find("h1")).to have_content 'Set the email address for completed forms'
 
-      expected_mail_reference = page.find('#notification-id', visible: false).value
+      expected_mail_reference = find_notification_reference("notification-id")
 
       fill_in "What email address should completed forms be sent to?", with: test_email_address, fill_options: { clear: :backspace }
       click_button "Save and continue"
@@ -241,15 +241,15 @@ module FeatureHelpers
       expect(page).to have_content answer_text
     end
 
-    expected_mail_reference = page.find('#notification-id', visible: false).value
-    expected_confirmation_mail_reference = nil
+    submission_email_reference = find_notification_reference("notification-id")
+    confirmation_email_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
       if confirmation_email
         logger.info "And I can request a confirmation email"
         choose "Yes", visible: false
         fill_in "email_confirmation_form[confirmation_email_address]", with: confirmation_email
-        expected_confirmation_mail_reference = page.find("#confirmation-email-reference", visible: false).value
+        confirmation_email_reference = find_notification_reference("confirmation-email-reference")
       else
         choose "No", visible: false
       end
@@ -263,7 +263,8 @@ module FeatureHelpers
     logger.info "As a form processor"
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
-    form_submission_email = wait_for_notification(expected_mail_reference)
+
+    form_submission_email = wait_for_notification(submission_email_reference)
 
     logger.info "And I can see their answers"
     if skip_question
@@ -277,13 +278,13 @@ module FeatureHelpers
       expect(form_submission_email.body).to have_content answer_text
     end
 
-    if expected_confirmation_mail_reference
+    if confirmation_email_reference
       logger.info
       logger.info "As a form filler"
       logger.info "When I have filled out a form and requested a confirmation email"
       logger.info "Then I can see the confirmation in my email inbox"
 
-      confirmation_email_notification = wait_for_notification(expected_confirmation_mail_reference)
+      confirmation_email_notification = wait_for_notification(confirmation_email_reference)
     end
   end
 

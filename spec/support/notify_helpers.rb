@@ -3,6 +3,10 @@
 require_relative '../../services/notify_service'
 
 module NotifyHelpers
+  def find_notification_reference(id)
+    page.find("##{id}", visible: false).value
+  end
+
   def wait_for_notification(notification_reference)
     email = NotifyService.new.get_email(notification_reference)
 
