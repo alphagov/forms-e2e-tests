@@ -241,7 +241,7 @@ module FeatureHelpers
       expect(page).to have_content answer_text
     end
 
-    submission_email_reference = find_notification_reference("notification-id")
+    submission_email_reference = find_notification_reference("submission-email-reference")
     confirmation_email_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
