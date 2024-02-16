@@ -171,9 +171,7 @@ module FeatureHelpers
 
       expect(page.find("h1")).to have_content "Enter the confirmation code"
 
-      confirmation_code = get_confirmation_from_notify(expected_mail_reference, confirmation_code: true)
-
-      abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless confirmation_code
+      confirmation_code = wait_for_confirmation_code(expected_mail_reference)
 
       fill_in "Enter the confirmation code", with: confirmation_code
 
@@ -265,9 +263,7 @@ module FeatureHelpers
     logger.info "As a form processor"
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
-    form_submission_email = get_confirmation_from_notify(expected_mail_reference)
-
-    abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
+    form_submission_email = wait_for_notification(expected_mail_reference)
 
     logger.info "And I can see their answers"
     if skip_question
@@ -287,9 +283,7 @@ module FeatureHelpers
       logger.info "When I have filled out a form and requested a confirmation email"
       logger.info "Then I can see the confirmation in my email inbox"
 
-      confirmation_email_notification = get_confirmation_from_notify(expected_confirmation_mail_reference)
-
-      abort("ABORT!!! #{expected_confirmation_mail_reference} could not be found in Notify!!!") unless confirmation_email_notification
+      confirmation_email_notification = wait_for_notification(expected_confirmation_mail_reference)
     end
   end
 
