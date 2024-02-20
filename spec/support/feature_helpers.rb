@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../../services/notify_service'
+require_relative "./notify_helpers"
 
 module FeatureHelpers
+  include NotifyHelpers
+
   def forms_admin_url
     ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL"}
   end
@@ -157,7 +159,7 @@ module FeatureHelpers
 
       expect(page.find("h1")).to have_content 'Set the email address for completed forms'
 
-      expected_mail_reference = page.find('#notification-id', visible: false).value
+      expected_mail_reference = find_notification_reference("notification-id")
 
       fill_in "What email address should completed forms be sent to?", with: test_email_address, fill_options: { clear: :backspace }
       click_button "Save and continue"
@@ -169,9 +171,7 @@ module FeatureHelpers
 
       expect(page.find("h1")).to have_content "Enter the confirmation code"
 
-      confirmation_code = get_confirmation_from_notify(expected_mail_reference, confirmation_code: true)
-
-      abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless confirmation_code
+      confirmation_code = wait_for_confirmation_code(expected_mail_reference)
 
       fill_in "Enter the confirmation code", with: confirmation_code
 
@@ -241,15 +241,15 @@ module FeatureHelpers
       expect(page).to have_content answer_text
     end
 
-    expected_mail_reference = page.find('#notification-id', visible: false).value
-    expected_confirmation_mail_reference = nil
+    submission_email_reference = find_notification_reference("submission-email-reference")
+    confirmation_email_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
       if confirmation_email
         logger.info "And I can request a confirmation email"
         choose "Yes", visible: false
         fill_in "email_confirmation_form[confirmation_email_address]", with: confirmation_email
-        expected_confirmation_mail_reference = page.find("#confirmation-email-reference", visible: false).value
+        confirmation_email_reference = find_notification_reference("confirmation-email-reference")
       else
         choose "No", visible: false
       end
@@ -263,9 +263,8 @@ module FeatureHelpers
     logger.info "As a form processor"
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
-    form_submission_email = get_confirmation_from_notify(expected_mail_reference)
 
-    abort("ABORT!!! #{expected_mail_reference} could not be found in Notify!!!") unless form_submission_email
+    form_submission_email = wait_for_notification(submission_email_reference)
 
     logger.info "And I can see their answers"
     if skip_question
@@ -279,15 +278,13 @@ module FeatureHelpers
       expect(form_submission_email.body).to have_content answer_text
     end
 
-    if expected_confirmation_mail_reference
+    if confirmation_email_reference
       logger.info
       logger.info "As a form filler"
       logger.info "When I have filled out a form and requested a confirmation email"
       logger.info "Then I can see the confirmation in my email inbox"
 
-      confirmation_email_notification = get_confirmation_from_notify(expected_confirmation_mail_reference)
-
-      abort("ABORT!!! #{expected_confirmation_mail_reference} could not be found in Notify!!!") unless confirmation_email_notification
+      confirmation_email_notification = wait_for_notification(confirmation_email_reference)
     end
   end
 
@@ -323,37 +320,6 @@ module FeatureHelpers
 
     fill_in "Password", :with => auth0_user_password
     click_button "Continue"
-  end
-
-  def get_confirmation_from_notify(expected_mail_reference, confirmation_code: false)
-    email = NotifyService.new.get_email(expected_mail_reference)
-
-    start_time = Time.now
-    logger.debug "Waiting 3sec for mail delivery to do its thing."
-    sleep 3
-    try = 0
-    while(Time.now - start_time < 5000) do
-      try += 1
-
-      if confirmation_code
-        unless email.collection.first.body.nil?
-          code = email.collection.first.body.match(/\d{6}/).to_s
-          logger.debug "Received the following code from Notify: “#{code}“"
-          return code
-        end
-      else
-        unless email.collection.first.status.nil?
-          status = email.collection.first.status
-          logger.debug "Received the following status from Notify: “#{status}“"
-          return email.collection.first
-        end
-      end
-
-      wait_time = try + ((Time.now - start_time) ** 0.5)
-      logger.debug 'failed. Sleeping %0.2fs.' % wait_time
-      sleep wait_time
-    end
-    return false
   end
 
   def bypass_end_to_end_tests(service_name, link)
