@@ -7,8 +7,7 @@ class NotifyService
 
   def get_email(notification_id)
     if @notify_api_key.nil? || @notify_api_key.empty?
-      puts "Warning: no SETTINGS__GOVUK_NOTIFY__API_KEY set."
-      return nil
+      raise "You must set SETTINGS__GOVUK_NOTIFY__API_KEY"
     end
 
     client = Notifications::Client.new(@notify_api_key)
