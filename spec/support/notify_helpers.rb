@@ -14,7 +14,7 @@ module NotifyHelpers
 
     if email.collection && email.collection.first && email.collection.first.status
       status = email.collection.first.status
-      logger.debug "Received the following status from Notify: “#{status}“"
+      logger.debug "Received the following status from Notify: #{status}"
       return email.collection.first
     end
 
