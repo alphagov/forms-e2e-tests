@@ -10,22 +10,12 @@ module NotifyHelpers
   def wait_for_notification(notification_reference)
     email = NotifyService.new.get_email(notification_reference)
 
-    start_time = Time.now
     logger.debug "Waiting 3sec for mail delivery to do its thing."
-    sleep 3
-    try = 0
-    while(Time.now - start_time < 5000) do
-      try += 1
 
-      if email.collection && email.collection.first && email.collection.first.status
-        status = email.collection.first.status
-        logger.debug "Received the following status from Notify: “#{status}“"
-        return email.collection.first
-      end
-
-      wait_time = try + ((Time.now - start_time) ** 0.5)
-      logger.debug 'failed. Sleeping %0.2fs.' % wait_time
-      sleep wait_time
+    if email.collection && email.collection.first && email.collection.first.status
+      status = email.collection.first.status
+      logger.debug "Received the following status from Notify: “#{status}“"
+      return email.collection.first
     end
 
     abort("ABORT!!! #{notification_reference} could not be found in Notify!!!")
