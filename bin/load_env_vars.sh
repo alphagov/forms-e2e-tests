@@ -47,7 +47,7 @@ function set_env_vars() {
 
   export FORMS_ADMIN_URL="$(admin_url $environment)"
   export PRODUCT_PAGES_URL="$(product_pages_url $environment)"
-  export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/smoketests/notify/api-key)"
-  export AUTH0_EMAIL_USERNAME="$(get_param /${environment}/smoketests/auth0/email-username)"
-  export AUTH0_USER_PASSWORD="$(get_param /${environment}/smoketests/auth0/auth0-user-password)"
+  export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/automated-tests/e2e/notify/api-key)"
+  export AUTH0_EMAIL_USERNAME="$(get_param /${environment}/automated-tests/e2e/auth0/email-username)"
+  export AUTH0_USER_PASSWORD="$(get_param /${environment}/automated-tests/e2e/auth0/auth0-user-password)"
 }
