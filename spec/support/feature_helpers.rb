@@ -5,6 +5,27 @@ require_relative "./notify_helpers"
 module FeatureHelpers
   include NotifyHelpers
 
+  def question_to_be_answered?
+    page.has_css?('button', text: 'Continue')
+  end
+
+  def answer_for(question_type)
+    case question_type
+    when 'question[number]'
+      '123'
+    when 'question[email]'
+      'smoke_test@example.com'
+    when 'question[full_name]'
+      'smoke_test'
+    when 'question[text]'
+      'smoke_test'
+    else
+      raise "Unsupported question type: #{question_type}. Only number, email,
+      full_name and text are supported. Restrict the test form to these
+      question types or extend the end-to-end tests to support it."
+    end
+  end
+
   def forms_admin_url
     ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL"}
   end
