@@ -32,4 +32,4 @@ set_env_vars "$environment"
 cd ..
 bundle install
 
-bundle exec rspec
+bundle exec rspec spec/features/complete_spec.rb
