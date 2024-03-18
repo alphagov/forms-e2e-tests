@@ -30,4 +30,4 @@ set_env_vars "production"
 cd ..
 bundle install
 
-bundle exec rspec spec/features/smoke_test*_spec.rb
+bundle exec rspec spec/smoke_tests
