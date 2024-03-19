@@ -1,0 +1,1 @@
+../smoke_tests/smoke_test_runner_spec.rb
