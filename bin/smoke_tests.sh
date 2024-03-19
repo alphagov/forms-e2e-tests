@@ -10,22 +10,16 @@ if ! command -v chromedriver &> /dev/null; then
   exit 1
 fi
 
-if [[ "$1" == "help" ]] || [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
-  echo "Runs the Capybara smoke tests against the production environment.
+if [[ "$1" == "help" ]]; then
+  echo "Runs the Capybara smoke tests against an environment.
 
-Run in an authenticated shell with permission to access ssm params in
-forms-deploy using the gds-cli or aws-vault
-
-Usage: $0
-
-Example:
-gds aws forms-production-readonly -- $0
+Usage: $0 <dev|staging|production>
 "
   exit 0
 fi
 
 source ./load_env_vars.sh
-set_env_vars "production"
+set_smoke_test_env_vars "$1"
 
 cd ..
 bundle install
