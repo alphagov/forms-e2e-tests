@@ -33,7 +33,8 @@ if [ -z "$FORMS_ADMIN_URL" ] || \
    [ -z "$SETTINGS__GOVUK_NOTIFY__API_KEY" ]; then
   echo "Loading env vars from parameter store"
   source load_env_vars.sh
-  set_env_vars 'dev'
+  set_e2e_env_vars 'dev'
+  set_smoke_test_env_vars 'dev'
 fi
 
 echo 'Running the tests against dev environment'

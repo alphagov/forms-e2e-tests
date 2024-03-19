@@ -27,9 +27,9 @@ gds aws forms-deploy-readonly -- $0 dev
 fi
 
 source ./load_env_vars.sh
-set_env_vars "$environment"
+set_e2e_env_vars "$environment"
 
 cd ..
 bundle install
 
-bundle exec rspec
+bundle exec rspec spec/end_to_end

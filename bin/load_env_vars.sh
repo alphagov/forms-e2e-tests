@@ -28,6 +28,20 @@ function product_pages_url() {
   esac
 }
 
+function form_url() {
+  local environment="$1"
+
+  case $environment in
+    "dev") echo "https://submit.dev.forms.service.gov.uk/form/11120/scheduled-smoke-test" ;;
+    "staging") echo "https://submit.staging.forms.service.gov.uk/form/12148/scheduled-smoke-test" ;;
+    "production") echo "https://submit.forms.service.gov.uk/form/2570/scheduled-smoke-test" ;;
+    *)
+      echo "Unknown environment: ${environment}"
+      exit 1
+      ;;
+  esac
+}
+
 function get_param() {
   path="$1"
 
@@ -38,7 +52,7 @@ function get_param() {
     --query 'Parameter.Value'
 }
 
-function set_env_vars() {
+function set_e2e_env_vars() {
   local environment="$1"
   if [ -z "$environment" ]; then
     echo "usage 'set_env_vars dev|staging|production'"
@@ -50,5 +64,9 @@ function set_env_vars() {
   export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/automated-tests/e2e/notify/api-key)"
   export AUTH0_EMAIL_USERNAME="$(get_param /${environment}/automated-tests/e2e/auth0/email-username)"
   export AUTH0_USER_PASSWORD="$(get_param /${environment}/automated-tests/e2e/auth0/auth0-user-password)"
-  export SMOKE_TEST_FORM_URL="https://submit.forms.service.gov.uk/form/2570/scheduled-smoke-test"
+}
+
+function set_smoke_test_env_vars() {
+  local environment="$1"
+  export SMOKE_TEST_FORM_URL="$(form_url "$environment")"
 }
