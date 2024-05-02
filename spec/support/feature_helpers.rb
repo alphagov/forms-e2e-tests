@@ -269,7 +269,7 @@ module FeatureHelpers
       if confirmation_email
         logger.info "And I can request a confirmation email"
         choose "Yes", visible: false
-        fill_in "email_confirmation_form[confirmation_email_address]", with: confirmation_email
+        fill_in "What email address do you want us to send your confirmation to?", with: confirmation_email
         confirmation_email_reference = find_notification_reference("confirmation-email-reference")
       else
         choose "No", visible: false
