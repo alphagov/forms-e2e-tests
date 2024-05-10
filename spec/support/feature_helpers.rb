@@ -143,6 +143,7 @@ module FeatureHelpers
     click_button "Continue"
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => question_text
+    choose "Mandatory", visible: false
     click_button "Save question"
 
   end
