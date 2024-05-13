@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby file: ".ruby-version"
+ruby "3.3.1"
 
 gem "debug"
 gem "rspec"
