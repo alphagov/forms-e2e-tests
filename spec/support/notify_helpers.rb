@@ -18,7 +18,7 @@ module NotifyHelpers
       return email.collection.first
     end
 
-    abort("ABORT!!! #{notification_reference} could not be found in Notify!!!")
+    raise "ABORT!!! #{notification_reference} could not be found in Notify!!!"
   end
 
   def wait_for_confirmation_code(notification_reference)
