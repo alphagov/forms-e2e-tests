@@ -33,6 +33,8 @@ Ensure both the forms-admin and forms-runner services are also configured to use
 
 ### Running the tests locally
 
+The tests expect an active group to exist called "End to end tests", which the test user belongs as a group admin. This name can be overridden by setting the environment variable `GROUP_NAME`.
+
 You can run the tests against localhost using the following command:
 
 ```
@@ -106,6 +108,14 @@ To enable tracing, set the `TRACE` environment variable:
 ```bash
 TRACE=1 bundle exec rspec
 ```
+
+### Setup in new environments
+
+The tests expect an editor user exist with an Auth0 database connection configured and a username and password set.
+
+The user should belong to an active group, called "End to end tests", as a group admin to allow publishing a form.
+
+The login details should be stored in AWS parameter store. See bin/load_env_vars.sh for configuring the enviroment varibles required.
 
 ### Changing Auth0 connection
 

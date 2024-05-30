@@ -42,7 +42,7 @@ module FeatureHelpers
 
     sign_in unless ENV.fetch('SKIP_AUTH', false)
 
-    expect(page).to have_content 'GOV.UK Forms'
+    visit_group_if_groups_feature_enabled
 
     delete_form
 
@@ -213,8 +213,6 @@ module FeatureHelpers
   end
 
   def delete_form
-    visit_admin
-
     if page.has_link?(form_name)
       click_link(form_name, match: :one)
       live_form_url = page.current_url
@@ -224,7 +222,7 @@ module FeatureHelpers
       expect(page.find("h1")).to have_content 'Are you sure you want to delete this draft?'
       choose "Yes", visible: false
       click_button "Continue"
-      expect(page.find("h1")).to have_content 'GOV.UK Forms'
+
       expect(page.find(".govuk-notification-banner")).to have_content "Successfully deleted ‘#{form_name}’"
       if page.has_css?('.govuk-table')
         expect(page.find('.govuk-table')).not_to have_content form_name
@@ -322,10 +320,6 @@ module FeatureHelpers
 
   def sign_in
     sign_in_to_auth0
-
-    expect(page.current_path).to eq "/"
-    expect(page.find('h1')).to have_content "GOV.UK Forms"
-
     logger.debug "Sign in successful"
   end
 
@@ -397,6 +391,20 @@ module FeatureHelpers
       expect(page.find('h1')).to have_content 'Create online forms for GOV.UK'
 
       visit_link_to_forms_admin
+    end
+  end
+
+  def visit_group_if_groups_feature_enabled
+    # TODO: The condition in this method can be removed when the Group feature flag is removed.
+    group_name = ENV.fetch('GROUP_NAME', 'End to end tests')
+    if page.has_content? 'Your groups'
+      logger.info "Groups feature enabled, visiting group: #{group_name}"
+      click_link group_name
+      expect(page.find('h1')).to have_content group_name
+      expect(page).to have_content 'Active group'
+    else
+      logger.info "Groups feature not enabled"
+      expect(page).to have_content 'GOV.UK Forms'
     end
   end
 end
