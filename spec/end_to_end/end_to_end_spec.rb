@@ -44,6 +44,8 @@ feature "Full lifecycle of a form", type: :feature do
         form_is_filled_in_by_form_filler(live_form_link, confirmation_email: test_email_address)
       end
 
+      visit_admin
+      visit_group_if_groups_feature_enabled
       delete_form
     end
   end
