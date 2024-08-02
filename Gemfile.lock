@@ -21,7 +21,7 @@ GEM
     irb (1.12.0)
       rdoc
       reline (>= 0.4.2)
-    jwt (2.8.1)
+    jwt (2.8.2)
       base64
     logger (1.6.0)
     matrix (0.4.2)
@@ -32,7 +32,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
-    notifications-ruby-client (6.1.0)
+    notifications-ruby-client (6.2.0)
       jwt (>= 1.5, < 3)
     psych (5.1.2)
       stringio
