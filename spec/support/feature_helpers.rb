@@ -127,6 +127,11 @@ module FeatureHelpers
     click_button "Continue"
 
     expect(page.find("h1")).to have_content 'Edit question'
+
+    if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
+      choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
+    end
+
     click_button "Save question"
   end
 
@@ -144,6 +149,9 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => question_text
     choose "Mandatory", visible: false
+    if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
+      choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
+    end
     click_button "Save question"
 
   end
