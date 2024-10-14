@@ -86,6 +86,16 @@ module FeatureHelpers
     fill_in "Enter the email address", with: test_email_address
     click_button "Save and continue"
 
+    # mark share preview task as completed if it is present
+    # TODO: remove this conditional once the feature has been deployed through the environments
+    if page.has_content? 'Share a preview of your draft form'
+      next_form_creation_step 'Share a preview of your draft form'
+
+      expect(page.find("h1")).to have_content "Share a preview of your draft form"
+      choose "Yes", visible: false
+      click_button "Save and continue"
+    end
+
     logger.info "And make it live"
     next_form_creation_step 'Make your form live'
 
