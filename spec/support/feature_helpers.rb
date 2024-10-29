@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 require_relative "./notify_helpers"
+require_relative "./aws_helpers"
+
+require 'aws-sdk-s3'
 
 module FeatureHelpers
   include NotifyHelpers
+  include AwsHelpers
 
   def question_to_be_answered?
     page.has_css?('button', text: 'Continue')
@@ -320,6 +324,40 @@ module FeatureHelpers
 
       confirmation_email_notification = wait_for_notification(confirmation_email_reference)
     end
+  end
+
+  def s3_form_is_filled_in_by_form_filler()
+    s3_form_live_link =  ENV.fetch('S3_FORM_URL') { raise 'You must set $S3_FORM_URL' }
+    form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_URL' }
+
+    logger.info
+    logger.info "As a form filler"
+
+    logger.info "When I fill out the new form"
+    visit s3_form_live_link
+
+    logger.info "And I answer all of the questions"
+    answer_single_line(answer_text)
+
+    logger.info "Then I can check my answers before I submit them"
+    expect(page).to have_content 'Check your answers before submitting your form'
+    expect(page).to have_content answer_text
+
+    choose "No", visible: false
+    click_button 'Submit'
+
+    expect(page).to have_content 'Your form has been submitted'
+    reference_number = page.find("h1").sibling('div').text[-8..-1] # is there a better way to do this?
+    
+    logger.info    
+    logger.info "As a form processor"
+    logger.info "When a form filler has submitted their answers"
+    logger.info "Then I can see their submission in my s3 bucket"
+
+    file_in_s3 = get_file_from_s3(reference_number, form_id)
+
+    expect(file_in_s3).to have_content reference_number
+    expect(file_in_s3).to have_content "test name"
   end
 
   def answer_single_line(text)
