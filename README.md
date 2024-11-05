@@ -46,6 +46,48 @@ SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://l
 The end to end tests can be run without visiting the product pages by setting
 the `SKIP_PRODUCT_PAGES` environment variable to `1`.
 
+### Skipping the s3 submission test
+
+The end to end tests can be run without testing a form with the `submission_type` of `s3` by setting the `SKIP_S3` environment variable to `1`.
+
+### Running the s3 submission test
+
+You will need:
+- an aws iam role. 
+    - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
+- an s3 bucket. 
+    - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
+
+To run the tests:
+
+- in `forms-runner`: 
+    - add your govuk_notify.api_key and aws_s3_submissions.iam_role_arn to settings.local.yml
+    - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
+- in `forms-admin` 
+    - add your govuk_notify.api_key to settings.local.yml
+    - start the server (without aws)
+- in `forms-api`: 
+    - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
+        - `rake "forms:set_submission_type_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
+    - start the server (without aws)
+- in `forms-e2e-tests`
+    - start an aws shell:
+        - `gds aws forms-dev-readonly --shell`
+    - run the end to end tests tests:
+``` 
+SKIP_AUTH=1 \
+FORMS_ADMIN_URL='http://localhost:3000/' \
+PRODUCT_PAGES_URL='http://localhost:3002/' \
+SKIP_PRODUCT_PAGES=1 \
+LOG_LEVEL=info \
+SETTINGS__GOVUK_NOTIFY__API_KEY= ${ your notify api key here } \
+FORMS_RUNNER_URL='http://localhost:3001/' \
+SETTINGS__AWS_S3_SUBMISSIONS__IAM_ROLE_ARN= ${ the iam role arn } \
+AWS_S3_BUCKET=${ the name of the s3 bucket } \
+S3_FORM_ID='2' \
+bundle exec rspec spec/end_to_end
+```
+
 ### Running the tests against remote environments
 
 To run the tests against one of the standard environemnts you can use the end_to_end.sh script.
@@ -71,7 +113,7 @@ chrome in visual rather than headless mode.
 For example:
 
 ```
-GUI=1 SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec spec/end_to_end
+GUI=1 SKIP_AUTH=1 SKIP_S3=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec spec/end_to_end
 ```
 
 To open the debugger while running the tests, the [ruby debug gem](https://github.com/ruby/debug) is included.
