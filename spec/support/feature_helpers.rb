@@ -174,6 +174,10 @@ module FeatureHelpers
     select "Yes", from: "is answered as"
     select "Check your answers before submitting", from: "take the person to"
     click_button "Save and continue"
+
+    if page.find("h1").has_content? /Question \d+’s routes/
+      click_link("Back to your questions", match: :first)
+    end
   end
 
   def mark_pages_task_complete
