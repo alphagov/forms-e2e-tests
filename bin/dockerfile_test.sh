@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 function help() {
   echo "Optionally builds the docker image and runs the tests against the development enviroment.
@@ -38,12 +39,21 @@ if [ -z "$FORMS_ADMIN_URL" ] || \
 fi
 
 echo 'Running the tests against dev environment'
-docker run --rm \
+
+env | grep AWS_ > ./env.list
+
+docker run --env-file ./env.list --rm \
   -e FORMS_ADMIN_URL \
   -e PRODUCT_PAGES_URL \
   -e AUTH0_EMAIL_USERNAME \
   -e AUTH0_USER_PASSWORD \
   -e SETTINGS__GOVUK_NOTIFY__API_KEY \
   -e SMOKE_TEST_FORM_URL \
+  -e FORMS_RUNNER_URL \
+  -e S3_FORM_ID \
+  -e AWS_S3_BUCKET \
+  -e SETTINGS__AWS_S3_SUBMISSIONS__IAM_ROLE_ARN \
+  -e AWS_REGION \
   "$IMAGE_TO_TEST"
 
+rm -f ./env.list
