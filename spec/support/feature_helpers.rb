@@ -168,7 +168,7 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content 'Add and edit your questions'
     click_link "Add a question route"
 
-    expect(page.find("h1")).to have_content /(Add a question route)|(Add a route from a question)/ # TODO: remove second alternative after forms-admin#1617 has deployed to all environments
+    expect(page.find("h1")).to have_content "Add a route from a question"
     choose "1. #{selection_question}", visible: false
     click_button "Continue"
 
