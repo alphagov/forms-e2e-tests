@@ -128,28 +128,19 @@ module FeatureHelpers
     fill_in "What’s your question?", with: selection_question
     click_button "Continue"
 
-    if page.has_content? 'How many options should people be able to select?'
-      expect(page.find("h1")).to have_content 'How many options should people be able to select?'
-      choose "One option only", visible: false
-      click_button "Continue"
+    expect(page.find("h1")).to have_content 'How many options should people be able to select?'
+    choose "One option only", visible: false
+    click_button "Continue"
 
-      expect(page.find("h1")).to have_content 'Create a list of options'
-      fill_in "Option 1", :with => "Yes"
-      fill_in "Option 2", :with => "No"
+    expect(page.find("h1")).to have_content 'Create a list of options'
+    fill_in "Option 1", :with => "Yes"
+    fill_in "Option 2", :with => "No"
 
-      within(page.find('fieldset', text: 'Should the list include an option for ‘None of the above’?')) do
-        choose "No", visible: false
-      end
-
-      click_button "Continue"
-    else
-      expect(page.find("h1")).to have_content 'Create a list of options'
-      check "People can only select one option", visible: false
-      fill_in "Option 1", :with => "Yes"
-      fill_in "Option 2", :with => "No"
-      click_button "Continue"
+    within(page.find('fieldset', text: 'Should the list include an option for ‘None of the above’?')) do
+      choose "No", visible: false
     end
 
+    click_button "Continue"
 
     expect(page.find("h1")).to have_content 'Edit question'
 
