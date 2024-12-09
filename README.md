@@ -61,7 +61,7 @@ You will need:
 To run the tests:
 
 - in `forms-runner`: 
-    - add your govuk_notify.api_key and aws_s3_submissions.iam_role_arn to settings.local.yml
+    - add your govuk_notify.api_key and aws.s3_submission_iam_role to settings.local.yml
     - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
 - in `forms-admin` 
     - add your govuk_notify.api_key to settings.local.yml
@@ -82,7 +82,7 @@ SKIP_PRODUCT_PAGES=1 \
 LOG_LEVEL=info \
 SETTINGS__GOVUK_NOTIFY__API_KEY= ${ your notify api key here } \
 FORMS_RUNNER_URL='http://localhost:3001/' \
-SETTINGS__AWS_S3_SUBMISSIONS__IAM_ROLE_ARN= ${ the iam role arn } \
+SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN= ${ the iam role arn } \
 AWS_S3_BUCKET=${ the name of the s3 bucket } \
 S3_FORM_ID='2' \
 bundle exec rspec spec/end_to_end
