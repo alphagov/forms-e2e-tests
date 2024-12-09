@@ -51,9 +51,6 @@ docker run --env-file ./env.list --rm \
   -e SMOKE_TEST_FORM_URL \
   -e FORMS_RUNNER_URL \
   -e S3_FORM_ID \
-  -e AWS_S3_BUCKET \
-  -e SETTINGS__AWS_S3_SUBMISSIONS__IAM_ROLE_ARN \
-  -e AWS_REGION \
   "$IMAGE_TO_TEST"
 
 rm -f ./env.list
