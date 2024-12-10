@@ -19,9 +19,9 @@ module AwsHelpers
   end
 
   def assume_role
-    @role_arn = ENV['SETTINGS__AWS_S3_SUBMISSIONS__IAM_ROLE_ARN']
+    @role_arn = ENV['SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN']
 
-    raise 'You must set SETTINGS__AWS_S3_SUBMISSIONS__IAM_ROLE_ARN' if @role_arn.nil? || @role_arn.empty?
+    raise 'You must set SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN' if @role_arn.nil? || @role_arn.empty?
 
     role_session_name = 'forms-e2e'
     Aws::AssumeRoleCredentials.new(
