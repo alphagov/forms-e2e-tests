@@ -38,7 +38,7 @@ The tests expect an active group to exist called "End to end tests", which the t
 You can run the tests against localhost using the following command:
 
 ```
-SKIP_AUTH=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec spec/end_to_end
+SKIP_AUTH=1 SKIP_S3=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec spec/end_to_end
 ```
 
 ### Skipping the product pages
