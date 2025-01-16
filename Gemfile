@@ -9,3 +9,7 @@ gem "notifications-ruby-client"
 gem "selenium-webdriver"
 gem "webdrivers"
 gem "aws-sdk-s3", "~> 1.178"
+
+group :development, :test do
+  gem "rake"
+end
