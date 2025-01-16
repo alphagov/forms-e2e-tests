@@ -74,7 +74,7 @@ module FeatureHelpers
 
     sign_in
 
-    visit_group
+    visit_end_to_end_tests_group
 
     delete_form
 
@@ -524,11 +524,19 @@ module FeatureHelpers
     sign_in if page.find('h1').has_content? 'Sign in'
   end
 
-  def visit_group
-    group_name = ENV.fetch('GROUP_NAME', 'End to end tests')
+  def visit_end_to_end_tests_group
+    visit_group ENV.fetch('GROUP_NAME', 'End to end tests')
+    expect(page).to have_content 'Active group'
+  end
+
+  def visit_group(group_name)
+    logger.info "Visiting group #{group_name}"
+    click_group group_name
+  end
+
+  def click_group(group_name)
     click_link group_name
     expect(page.find('h1')).to have_content group_name
-    expect(page).to have_content 'Active group'
   end
 end
 
