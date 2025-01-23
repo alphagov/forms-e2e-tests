@@ -38,7 +38,7 @@ The tests expect an active group to exist called "End to end tests", which the t
 You can run the tests against localhost using the following command:
 
 ```
-SKIP_AUTH=1 SKIP_S3=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec spec/end_to_end
+bundle exec rake
 ```
 
 ### Skipping the product pages
@@ -113,7 +113,7 @@ chrome in visual rather than headless mode.
 For example:
 
 ```
-GUI=1 SKIP_AUTH=1 SKIP_S3=1 FORMS_ADMIN_URL='http://localhost:3000/' PRODUCT_PAGES_URL='http://localhost:3002/' bundle exec rspec spec/end_to_end
+GUI=1 bundle exec rake
 ```
 
 To open the debugger while running the tests, the [ruby debug gem](https://github.com/ruby/debug) is included.
@@ -139,7 +139,7 @@ the `LOG_LEVEL` environment variable. The allowed levels are `debug`, `info`, `w
 As an example, to run the end to end tests with the info level:
 
 ```bash
-LOG_LEVEL=info bundle exec rspec
+LOG_LEVEL=info bundle exec rake
 ```
 
 For additional detail in the logging you can enable tracing, which prints every
@@ -148,7 +148,7 @@ line in the source code of the tests as it is reached.
 To enable tracing, set the `TRACE` environment variable:
 
 ```bash
-TRACE=1 bundle exec rspec
+TRACE=1 bundle exec rake
 ```
 
 ### Setup in new environments
