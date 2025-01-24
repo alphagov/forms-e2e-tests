@@ -44,7 +44,13 @@ GEM
     logger (1.6.1)
     matrix (0.4.2)
     mini_mime (1.1.5)
+    nokogiri (1.16.0-aarch64-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.0-arm-linux)
+      racc (~> 1.4)
     nokogiri (1.16.0-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.0-x86-linux)
       racc (~> 1.4)
     nokogiri (1.16.0-x86_64-darwin)
       racc (~> 1.4)
@@ -97,13 +103,11 @@ GEM
       nokogiri (~> 1.8)
 
 PLATFORMS
-  arm64-darwin-21
-  arm64-darwin-22
-  arm64-darwin-23
-  x86_64-darwin-20
-  x86_64-darwin-21
-  x86_64-darwin-22
-  x86_64-darwin-23
+  aarch64-linux
+  arm-linux
+  arm64-darwin
+  x86-linux
+  x86_64-darwin
   x86_64-linux
 
 DEPENDENCIES
