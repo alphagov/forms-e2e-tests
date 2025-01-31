@@ -44,17 +44,19 @@ GEM
     logger (1.6.5)
     matrix (0.4.2)
     mini_mime (1.1.5)
-    nokogiri (1.16.0-aarch64-linux)
+    mini_portile2 (2.8.8)
+    nokogiri (1.18.2)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.16.0-arm-linux)
+    nokogiri (1.18.2-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.16.0-arm64-darwin)
+    nokogiri (1.18.2-arm-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.16.0-x86-linux)
+    nokogiri (1.18.2-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.0-x86_64-darwin)
+    nokogiri (1.18.2-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.0-x86_64-linux)
+    nokogiri (1.18.2-x86_64-linux-gnu)
       racc (~> 1.4)
     notifications-ruby-client (6.2.0)
       jwt (>= 1.5, < 3)
@@ -121,7 +123,7 @@ DEPENDENCIES
   webdrivers
 
 RUBY VERSION
-   ruby 3.3.4p94
+   ruby 3.4.1p0
 
 BUNDLED WITH
    2.6.3
