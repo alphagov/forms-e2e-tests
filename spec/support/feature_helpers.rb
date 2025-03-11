@@ -57,6 +57,8 @@ module FeatureHelpers
 
     create_a_single_line_of_text_question
 
+    create_a_file_upload_question
+
     first(:link, "your questions").click
 
     add_a_route
@@ -165,11 +167,27 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => question_text
     choose "Mandatory", visible: false
+
     if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
       choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
     end
-    click_button "Save question"
 
+    click_button "Save question"
+  end
+
+  def create_a_file_upload_question
+    within(page.find(".govuk-notification-banner__content")) do
+      click_on "Add a question"
+    end
+
+    expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
+    choose "File upload", visible: false
+    click_button "Continue"
+    expect(page.find("h1")).to have_content 'Edit question'
+    fill_in "Ask for a file", :with => "Upload a file"
+    choose "Mandatory", visible: false
+
+    click_button "Save question"
   end
 
   def add_a_route
@@ -275,6 +293,13 @@ module FeatureHelpers
       expect(page).to have_content question_text
       answer_single_line(answer_text)
     end
+
+    logger.info "And I can upload a file"
+    expect(page).to have_content "Upload a file"
+
+    attach_file "question[file]", Rails.root.join("spec", "fixtures", "test_file.txt")
+
+    click_button "Continue"
 
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content 'Check your answers before submitting your form'
