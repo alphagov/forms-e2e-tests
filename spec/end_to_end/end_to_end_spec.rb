@@ -64,15 +64,16 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 
-  # scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
-  #   start_tracing
-  #
-  #   build_a_new_form_with_file_upload
-  #
-  #   form_is_filled_in_by_form_filler(live_form_link, skip_question: false)
-  #
-  #   visit_admin
-  #   visit_group_if_groups_feature_enabled
-  #   delete_form
-  # end
+  scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
+    start_tracing
+
+    build_a_new_form_with_file_upload
+
+    live_form_link = page.find('[data-copy-target]').text
+    upload_file_and_submit(live_form_link)
+
+    visit_admin
+    visit_group_if_groups_feature_enabled
+    delete_form
+  end
 end

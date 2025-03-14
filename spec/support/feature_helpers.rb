@@ -58,9 +58,6 @@ module FeatureHelpers
   end
 
   def build_a_new_form_with_file_upload
-    logger.info
-    logger.info 'As an editor user'
-
     log_into_admin_and_create_form
 
     next_form_creation_step 'Add and edit your questions'
@@ -316,12 +313,6 @@ module FeatureHelpers
       answer_single_line(answer_text)
     end
 
-    # logger.info "And I can upload a file"
-    # expect(page).to have_content "Upload a file"
-    # logger.info "When I upload a file"
-    # when_i_upload_a_file
-    # click_button "Continue"
-
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content 'Check your answers before submitting your form'
 
@@ -380,6 +371,25 @@ module FeatureHelpers
 
       confirmation_email_notification = wait_for_notification(confirmation_email_reference)
     end
+  end
+
+  def upload_file_and_submit(live_form_link)
+    visit live_form_link
+
+    logger.info "And I can upload a file"
+    expect(page).to have_content "Upload a file"
+    logger.info "When I upload a file"
+    when_i_upload_a_file
+    click_button "Continue"
+    expect(page).to have_content "Check your uploaded file"
+    click_button "Continue"
+
+    expect(page).to have_content "Check your answers before submitting your form"
+
+    choose "No", visible: false if page.has_content?
+    click_button "Submit"
+
+    expect(page).to have_content "Your form has been submitted"
   end
 
   def s3_form_is_filled_in_by_form_filler()
