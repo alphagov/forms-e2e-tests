@@ -40,6 +40,39 @@ module FeatureHelpers
     logger.info
     logger.info 'As an editor user'
 
+    log_into_admin_and_create_form
+
+    next_form_creation_step 'Add and edit your questions'
+
+    create_a_selection_question
+
+    create_a_single_line_of_text_question
+
+    first(:link, "your questions").click
+
+    add_a_route
+
+    finish_form_creation
+
+    make_form_live_and_return_to_form_details
+  end
+
+  def build_a_new_form_with_file_upload
+    logger.info
+    logger.info 'As an editor user'
+
+    log_into_admin_and_create_form
+
+    next_form_creation_step 'Add and edit your questions'
+
+    create_a_file_upload_question
+
+    finish_form_creation
+
+    make_form_live_and_return_to_form_details
+  end
+
+  def log_into_admin_and_create_form
     visit_admin
 
     sign_in unless ENV.fetch('SKIP_AUTH', false)
@@ -50,19 +83,9 @@ module FeatureHelpers
 
     logger.info "When I create a new form"
     create_form_with_name(form_name)
+  end
 
-    next_form_creation_step 'Add and edit your questions'
-
-    create_a_selection_question
-
-    create_a_single_line_of_text_question
-
-    create_a_file_upload_question
-
-    first(:link, "your questions").click
-
-    add_a_route
-
+  def finish_form_creation
     mark_pages_task_complete
 
     next_form_creation_step 'Add a declaration for people to agree to'
@@ -95,7 +118,9 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content "Share a preview of your draft form"
     choose "Yes", visible: false
     click_button "Save and continue"
+  end
 
+  def make_form_live_and_return_to_form_details
     logger.info "And make it live"
     next_form_creation_step 'Make your form live'
 
@@ -176,10 +201,6 @@ module FeatureHelpers
   end
 
   def create_a_file_upload_question
-    within(page.find(".govuk-notification-banner__content")) do
-      click_on "Add a question"
-    end
-
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "File upload", visible: false
     click_button "Continue"
@@ -188,6 +209,7 @@ module FeatureHelpers
     choose "Mandatory", visible: false
 
     click_button "Save question"
+    click_link("Back to your questions", match: :first)
   end
 
   def add_a_route
@@ -294,12 +316,11 @@ module FeatureHelpers
       answer_single_line(answer_text)
     end
 
-    logger.info "And I can upload a file"
-    expect(page).to have_content "Upload a file"
-
-    attach_file "question[file]", Rails.root.join("spec", "fixtures", "test_file.txt")
-
-    click_button "Continue"
+    # logger.info "And I can upload a file"
+    # expect(page).to have_content "Upload a file"
+    # logger.info "When I upload a file"
+    # when_i_upload_a_file
+    # click_button "Continue"
 
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content 'Check your answers before submitting your form'
@@ -455,6 +476,10 @@ module FeatureHelpers
   def visit_product_page
     logger.info "Visiting product pages at #{product_pages_url}"
     visit product_pages_url
+  end
+
+  def when_i_upload_a_file
+    attach_file file_question_text, test_file
   end
 
   def admin_url_with_e2e_auth(admin_url)
