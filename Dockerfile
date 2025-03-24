@@ -1,7 +1,8 @@
-ARG ALPINE_VERSION=3.21
+# TODO: restore to latest version of Alpine once we can use the latest Chromium again (see https://github.com/teamcapybara/capybara/issues/2800)
+ARG ALPINE_VERSION=3.20
 ARG RUBY_VERSION=3.4.1
 
-ARG DOCKER_IMAGE_DIGEST=sha256:e5c30595c6a322bc3fbaacd5e35d698a6b9e6d1079ab0af09ffe52f5816aec3b
+ARG DOCKER_IMAGE_DIGEST=sha256:d799fbab7da903c8e709be7df0734b8593ef884242cd34b7a7369b527f06aec3
 
 FROM ruby:${RUBY_VERSION}-alpine${ALPINE_VERSION}@${DOCKER_IMAGE_DIGEST}
 
