@@ -4,6 +4,7 @@ feature "Full lifecycle of a form", type: :feature do
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
   let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
+
   let(:answer_text) { "test name" }
   let(:start_url) do
     if skip_product_pages?
@@ -48,11 +49,37 @@ feature "Full lifecycle of a form", type: :feature do
           logger.info
           logger.info "Scenario: Form is completed by a member of the public, and answers are sent to s3"
           s3_form_is_filled_in_by_form_filler()
-        end 
+        end
       end
 
       visit_admin
-      visit_group_if_groups_feature_enabled
+      visit_group
+      delete_form
+    end
+  end
+
+  context "when the form has a file upload" do
+    let(:file_question_text) { "Upload a file" }
+    let(:test_file) { "/tmp/temp-file.txt" }
+
+    before do
+      File.write(test_file, "Hello file")
+    end
+
+    after do
+      File.delete(test_file) if File.exist?(test_file)
+    end
+
+    scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
+      start_tracing
+
+      build_a_new_form_with_file_upload
+
+      live_form_link = page.find('[data-copy-target]').text
+      upload_file_and_submit(live_form_link)
+
+      visit_admin
+      visit_group
       delete_form
     end
   end
