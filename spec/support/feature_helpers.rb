@@ -40,16 +40,7 @@ module FeatureHelpers
     logger.info
     logger.info 'As an editor user'
 
-    visit_admin
-
-    sign_in unless ENV.fetch('SKIP_AUTH', false)
-
-    visit_group_if_groups_feature_enabled
-
-    delete_form
-
-    logger.info "When I create a new form"
-    create_form_with_name(form_name)
+    log_into_admin_and_create_form
 
     next_form_creation_step 'Add and edit your questions'
 
@@ -61,6 +52,24 @@ module FeatureHelpers
 
     add_a_route
 
+    finish_form_creation
+
+    make_form_live_and_return_to_form_details
+  end
+  def log_into_admin_and_create_form
+    visit_admin
+
+    sign_in unless ENV.fetch('SKIP_AUTH', false)
+
+    visit_group_if_groups_feature_enabled
+
+    delete_form
+
+    logger.info "When I create a new form"
+    create_form_with_name(form_name)
+  end
+
+  def finish_form_creation
     mark_pages_task_complete
 
     next_form_creation_step 'Add a declaration for people to agree to'
@@ -93,7 +102,9 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content "Share a preview of your draft form"
     choose "Yes", visible: false
     click_button "Save and continue"
+  end
 
+  def make_form_live_and_return_to_form_details
     logger.info "And make it live"
     next_form_creation_step 'Make your form live'
 
@@ -165,10 +176,13 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => question_text
     choose "Mandatory", visible: false
+
     if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
       choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
     end
+
     click_button "Save question"
+  end
 
   end
 
