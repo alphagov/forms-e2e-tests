@@ -56,6 +56,19 @@ module FeatureHelpers
 
     make_form_live_and_return_to_form_details
   end
+
+  def build_a_new_form_with_file_upload
+    log_into_admin_and_create_form
+
+    next_form_creation_step 'Add and edit your questions'
+
+    create_a_file_upload_question
+
+    finish_form_creation
+
+    make_form_live_and_return_to_form_details
+  end
+
   def log_into_admin_and_create_form
     visit_admin
 
@@ -184,6 +197,16 @@ module FeatureHelpers
     click_button "Save question"
   end
 
+  def create_a_file_upload_question
+    expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
+    choose "File upload", visible: false
+    click_button "Continue"
+    expect(page.find("h1")).to have_content 'Edit question'
+    fill_in "Ask for a file", :with => "Upload a file"
+    choose "Mandatory", visible: false
+
+    click_button "Save question"
+    click_link("Back to your questions", match: :first)
   end
 
   def add_a_route
@@ -356,6 +379,24 @@ module FeatureHelpers
     end
   end
 
+  def upload_file_and_submit(live_form_link)
+    visit live_form_link
+
+    logger.info "And I can upload a file"
+    expect(page).to have_content "Upload a file"
+    logger.info "When I upload a file"
+    when_i_upload_a_file
+    click_button "Continue"
+    expect(page).to have_content "Your file has been uploaded"
+    click_button "Continue"
+
+    expect(page).to have_content "Check your answers before submitting your form"
+    choose "No"
+    click_button "Submit"
+
+    expect(page).to have_content "Your form has been submitted"
+  end
+
   def s3_form_is_filled_in_by_form_filler()
     runner_url =  ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
     form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_ID' }
@@ -450,6 +491,10 @@ module FeatureHelpers
   def visit_product_page
     logger.info "Visiting product pages at #{product_pages_url}"
     visit product_pages_url
+  end
+
+  def when_i_upload_a_file
+    attach_file file_question_text, test_file
   end
 
   def admin_url_with_e2e_auth(admin_url)
