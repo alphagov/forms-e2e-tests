@@ -50,6 +50,10 @@ the `SKIP_PRODUCT_PAGES` environment variable to `1`.
 
 The end to end tests can be run without testing a form with the `submission_type` of `s3` by setting the `SKIP_S3` environment variable to `1`.
 
+### Skipping the file upload
+
+It's a separate test scenario so you can run that in the usual rspec way by line number, i.e. `bundle exec rspec spec/end_to_end/end_to_end_spec.rb:123`. So you can run the main scenario to skip, and conversely you can run the file upload scenario in isolation.
+
 ### Running the s3 submission test
 
 You will need:
@@ -62,7 +66,7 @@ To run the tests:
 
 - in `forms-runner`: 
     - add your govuk_notify.api_key and aws.s3_submission_iam_role to settings.local.yml
-    - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
+    - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- ASSUME_DEV_IAM_ROLE=true bundle exec rails s` - see the [README for forms-runner](/alphagov/forms-runner/) for more details)
 - in `forms-admin` 
     - add your govuk_notify.api_key to settings.local.yml
     - start the server (without aws)
