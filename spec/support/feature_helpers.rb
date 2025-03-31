@@ -74,7 +74,7 @@ module FeatureHelpers
 
     sign_in unless ENV.fetch('SKIP_AUTH', false)
 
-    visit_group_if_groups_feature_enabled
+    visit_group
 
     delete_form
 
@@ -522,18 +522,11 @@ module FeatureHelpers
     end
   end
 
-  def visit_group_if_groups_feature_enabled
-    # TODO: The condition in this method can be removed when the Group feature flag is removed.
+  def visit_group
     group_name = ENV.fetch('GROUP_NAME', 'End to end tests')
-    if page.has_content? 'Your groups'
-      logger.info "Groups feature enabled, visiting group: #{group_name}"
-      click_link group_name
-      expect(page.find('h1')).to have_content group_name
-      expect(page).to have_content 'Active group'
-    else
-      logger.info "Groups feature not enabled"
-      expect(page).to have_content 'GOV.UK Forms'
-    end
+    click_link group_name
+    expect(page.find('h1')).to have_content group_name
+    expect(page).to have_content 'Active group'
   end
 end
 
