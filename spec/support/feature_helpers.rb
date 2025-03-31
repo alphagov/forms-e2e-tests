@@ -40,16 +40,7 @@ module FeatureHelpers
     logger.info
     logger.info 'As an editor user'
 
-    visit_admin
-
-    sign_in unless ENV.fetch('SKIP_AUTH', false)
-
-    visit_group_if_groups_feature_enabled
-
-    delete_form
-
-    logger.info "When I create a new form"
-    create_form_with_name(form_name)
+    log_into_admin_and_create_form
 
     next_form_creation_step 'Add and edit your questions'
 
@@ -61,6 +52,37 @@ module FeatureHelpers
 
     add_a_route
 
+    finish_form_creation
+
+    make_form_live_and_return_to_form_details
+  end
+
+  def build_a_new_form_with_file_upload
+    log_into_admin_and_create_form
+
+    next_form_creation_step 'Add and edit your questions'
+
+    create_a_file_upload_question
+
+    finish_form_creation
+
+    make_form_live_and_return_to_form_details
+  end
+
+  def log_into_admin_and_create_form
+    visit_admin
+
+    sign_in unless ENV.fetch('SKIP_AUTH', false)
+
+    visit_group
+
+    delete_form
+
+    logger.info "When I create a new form"
+    create_form_with_name(form_name)
+  end
+
+  def finish_form_creation
     mark_pages_task_complete
 
     next_form_creation_step 'Add a declaration for people to agree to'
@@ -93,7 +115,9 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content "Share a preview of your draft form"
     choose "Yes", visible: false
     click_button "Save and continue"
+  end
 
+  def make_form_live_and_return_to_form_details
     logger.info "And make it live"
     next_form_creation_step 'Make your form live'
 
@@ -165,11 +189,24 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content 'Edit question'
     fill_in "Question text", :with => question_text
     choose "Mandatory", visible: false
+
     if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
       choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
     end
-    click_button "Save question"
 
+    click_button "Save question"
+  end
+
+  def create_a_file_upload_question
+    expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
+    choose "File upload", visible: false
+    click_button "Continue"
+    expect(page.find("h1")).to have_content 'Edit question'
+    fill_in "Ask for a file", :with => "Upload a file"
+    choose "Mandatory", visible: false
+
+    click_button "Save question"
+    click_link("Back to your questions", match: :first)
   end
 
   def add_a_route
@@ -342,6 +379,24 @@ module FeatureHelpers
     end
   end
 
+  def upload_file_and_submit(live_form_link)
+    visit live_form_link
+
+    logger.info "And I can upload a file"
+    expect(page).to have_content "Upload a file"
+    logger.info "When I upload a file"
+    when_i_upload_a_file
+    click_button "Continue"
+    expect(page).to have_content "Your file has been uploaded"
+    click_button "Continue"
+
+    expect(page).to have_content "Check your answers before submitting your form"
+    choose "No"
+    click_button "Submit"
+
+    expect(page).to have_content "Your form has been submitted"
+  end
+
   def s3_form_is_filled_in_by_form_filler()
     runner_url =  ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
     form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_ID' }
@@ -438,6 +493,10 @@ module FeatureHelpers
     visit product_pages_url
   end
 
+  def when_i_upload_a_file
+    attach_file file_question_text, test_file
+  end
+
   def admin_url_with_e2e_auth(admin_url)
     URI.parse(admin_url).tap { |uri| uri.query = 'auth=e2e' }.to_s
   end
@@ -463,18 +522,11 @@ module FeatureHelpers
     end
   end
 
-  def visit_group_if_groups_feature_enabled
-    # TODO: The condition in this method can be removed when the Group feature flag is removed.
+  def visit_group
     group_name = ENV.fetch('GROUP_NAME', 'End to end tests')
-    if page.has_content? 'Your groups'
-      logger.info "Groups feature enabled, visiting group: #{group_name}"
-      click_link group_name
-      expect(page.find('h1')).to have_content group_name
-      expect(page).to have_content 'Active group'
-    else
-      logger.info "Groups feature not enabled"
-      expect(page).to have_content 'GOV.UK Forms'
-    end
+    click_link group_name
+    expect(page.find('h1')).to have_content group_name
+    expect(page).to have_content 'Active group'
   end
 end
 
