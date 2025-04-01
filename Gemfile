@@ -6,6 +6,7 @@ gem "debug"
 gem "rspec"
 gem "capybara"
 gem "cuprite"
+gem "httparty"
 gem "notifications-ruby-client"
 gem "aws-sdk-s3", "~> 1.182"
 
