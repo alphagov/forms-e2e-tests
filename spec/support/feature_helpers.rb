@@ -395,6 +395,10 @@ module FeatureHelpers
     expect(page).to have_content "Your form has been submitted"
   end
 
+  def check_file_upload_submission
+
+  end
+
   def s3_form_is_filled_in_by_form_filler()
     runner_url =  ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
     form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_ID' }

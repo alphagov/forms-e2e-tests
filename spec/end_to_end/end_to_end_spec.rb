@@ -84,5 +84,38 @@ feature "Full lifecycle of a form", type: :feature do
         delete_form
       end
     end
+
+    context "when the form has a file upload and we want to check the status of the submission" do
+      let(:file_question_text) { "Upload a file" }
+      let(:test_file) { "/tmp/temp-file.txt" }
+      let (:status_api_url) { "#{ENV['FORMS_RUNNER_URL']}/submission" }
+      let (:status_api_response) {}
+      let (:submission_reference) {}
+
+      before do
+        File.write(test_file, "Hello file")
+      end
+
+      after do
+        File.delete(test_file) if File.exist?(test_file)
+      end
+
+      it "returns a 200 response" do
+        start_tracing
+        build_a_new_form_with_file_upload
+        live_form_link = page.find('[data-copy-target]').text
+        upload_file_and_submit(live_form_link)
+        submission_reference = page.find('#submission-reference').text
+
+        sleep 1 # Give the submission a chance to finish sending...
+
+        status_api_response = HTTParty.get(status_api_url, query: { reference: submission_reference }, headers: { "Authorization" => "Bearer #{ENV['FORMS_RUNNER_API_KEY']}" })
+        expect(status_api_response.code).to eq(204)
+
+        visit_admin
+        visit_end_to_end_tests_group
+        delete_form
+      end
+    end
   end
 end

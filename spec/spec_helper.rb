@@ -1,6 +1,7 @@
 require 'capybara/cuprite'
 require 'capybara/rspec'
 require 'debug'
+require 'httparty'
 
 require_relative "support/feature_helpers"
 require_relative "support/logging"
