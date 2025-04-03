@@ -53,7 +53,7 @@ feature "Full lifecycle of a form", type: :feature do
       end
 
       visit_admin
-      visit_end_to_end_tests_group
+      visit_group
       delete_form
     end
   end

@@ -72,9 +72,9 @@ module FeatureHelpers
   def log_into_admin_and_create_form
     visit_admin
 
-    sign_in
+    sign_in unless ENV.fetch('SKIP_AUTH', false)
 
-    visit_end_to_end_tests_group
+    visit_group
 
     delete_form
 
@@ -442,12 +442,7 @@ module FeatureHelpers
     click_button "Continue"
   end
 
-  def when_i_upload_a_file
-    attach_file file_question_text, test_file
-  end
-
   def sign_in
-    return if ENV.fetch('SKIP_AUTH', false)
     sign_in_to_auth0
     logger.debug "Sign in successful"
   end
@@ -498,9 +493,14 @@ module FeatureHelpers
     visit product_pages_url
   end
 
+  def when_i_upload_a_file
+    attach_file file_question_text, test_file
+  end
+
   def admin_url_with_e2e_auth(admin_url)
     URI.parse(admin_url).tap { |uri| uri.query = 'auth=e2e' }.to_s
   end
+
 
   def visit_link_to_forms_admin
     admin_link_href = page.find('nav a', text: 'Sign in')['href']
@@ -520,23 +520,13 @@ module FeatureHelpers
 
       visit_link_to_forms_admin
     end
-
-    sign_in if page.find('h1').has_content? 'Sign in'
   end
 
-  def visit_end_to_end_tests_group
-    visit_group ENV.fetch('GROUP_NAME', 'End to end tests')
-    expect(page).to have_content 'Active group'
-  end
-
-  def visit_group(group_name)
-    logger.info "Visiting group #{group_name}"
-    click_group group_name
-  end
-
-  def click_group(group_name)
+  def visit_group
+    group_name = ENV.fetch('GROUP_NAME', 'End to end tests')
     click_link group_name
     expect(page.find('h1')).to have_content group_name
+    expect(page).to have_content 'Active group'
   end
 end
 
