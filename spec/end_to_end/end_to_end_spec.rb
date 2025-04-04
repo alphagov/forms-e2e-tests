@@ -59,7 +59,7 @@ feature "Full lifecycle of a form", type: :feature do
   end
 
   unless ENV.fetch('SKIP_FILE_UPLOAD', false)
-    context "when the form has a file upload" do
+    context "when the form has a file upload question" do
       let(:file_question_text) { "Upload a file" }
       let(:test_file) { "/tmp/temp-file.txt" }
 
