@@ -40,7 +40,7 @@ module FeatureHelpers
     logger.info
     logger.info 'As an editor user'
 
-    log_into_admin_and_create_form
+    sign_in_to_admin_and_create_form
 
     next_form_creation_step 'Add and edit your questions'
 
@@ -58,7 +58,7 @@ module FeatureHelpers
   end
 
   def build_a_new_form_with_file_upload
-    log_into_admin_and_create_form
+    sign_in_to_admin_and_create_form
 
     next_form_creation_step 'Add and edit your questions'
 
@@ -69,12 +69,10 @@ module FeatureHelpers
     make_form_live_and_return_to_form_details
   end
 
-  def log_into_admin_and_create_form
-    visit_admin
+  def sign_in_to_admin_and_create_form
+    sign_in_to_admin
 
-    sign_in unless ENV.fetch('SKIP_AUTH', false)
-
-    visit_group
+    visit_end_to_end_tests_group
 
     delete_form
 
@@ -442,7 +440,28 @@ module FeatureHelpers
     click_button "Continue"
   end
 
+  def when_i_upload_a_file
+    attach_file file_question_text, test_file
+  end
+
+  def sign_in_to_admin
+    if skip_product_pages?
+      logger.info "Visiting admin at #{forms_admin_url}"
+      visit admin_url_with_e2e_auth(forms_admin_url)
+    else
+      logger.info "Visiting product pages at #{product_pages_url}"
+      visit_product_page
+      expect(page.find('h1')).to have_content 'Create online forms for GOV.UK'
+
+      visit_link_to_forms_admin
+    end
+
+    sign_in if page.find('h1').has_content? 'Sign in'
+  end
+
   def sign_in
+    return if ENV.fetch('SKIP_AUTH', false)
+
     sign_in_to_auth0
     logger.debug "Sign in successful"
   end
@@ -493,14 +512,9 @@ module FeatureHelpers
     visit product_pages_url
   end
 
-  def when_i_upload_a_file
-    attach_file file_question_text, test_file
-  end
-
   def admin_url_with_e2e_auth(admin_url)
     URI.parse(admin_url).tap { |uri| uri.query = 'auth=e2e' }.to_s
   end
-
 
   def visit_link_to_forms_admin
     admin_link_href = page.find('nav a', text: 'Sign in')['href']
@@ -510,23 +524,22 @@ module FeatureHelpers
   end
 
   def visit_admin
-    if skip_product_pages?
-      logger.info "Visiting admin at #{forms_admin_url}"
-      visit admin_url_with_e2e_auth(forms_admin_url)
-    else
-      logger.info "Visiting product pages at #{product_pages_url}"
-      visit_product_page
-      expect(page.find('h1')).to have_content 'Create online forms for GOV.UK'
-
-      visit_link_to_forms_admin
-    end
+    visit forms_admin_url
   end
 
-  def visit_group
-    group_name = ENV.fetch('GROUP_NAME', 'End to end tests')
+  def visit_end_to_end_tests_group
+    visit_group ENV.fetch('GROUP_NAME', 'End to end tests')
+    expect(page).to have_content 'Active group'
+  end
+
+  def visit_group(group_name)
+    logger.info "Visiting group #{group_name}"
+    click_group group_name
+  end
+
+  def click_group(group_name)
     click_link group_name
     expect(page.find('h1')).to have_content group_name
-    expect(page).to have_content 'Active group'
   end
 end
 
