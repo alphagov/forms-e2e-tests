@@ -256,7 +256,7 @@ module FeatureHelpers
 
       expected_mail_reference = find_notification_reference("notification-id")
 
-      fill_in "What email address should completed forms be sent to?", with: test_email_address, fill_options: { clear: :backspace }
+      fill_in "What email address should completed forms be sent to?", with: test_email_address
       click_button "Save and continue"
 
       expect(page.find("h1")).to have_content 'Confirmation code sent'
