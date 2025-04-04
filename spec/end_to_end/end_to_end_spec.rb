@@ -58,29 +58,31 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 
-  context "when the form has a file upload" do
-    let(:file_question_text) { "Upload a file" }
-    let(:test_file) { "/tmp/temp-file.txt" }
+  unless ENV.fetch('SKIP_FILE_UPLOAD', false)
+    context "when the form has a file upload question" do
+      let(:file_question_text) { "Upload a file" }
+      let(:test_file) { "/tmp/temp-file.txt" }
 
-    before do
-      File.write(test_file, "Hello file")
-    end
+      before do
+        File.write(test_file, "Hello file")
+      end
 
-    after do
-      File.delete(test_file) if File.exist?(test_file)
-    end
+      after do
+        File.delete(test_file) if File.exist?(test_file)
+      end
 
-    scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
-      start_tracing
+      scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
+        start_tracing
 
-      build_a_new_form_with_file_upload
+        build_a_new_form_with_file_upload
 
-      live_form_link = page.find('[data-copy-target]').text
-      upload_file_and_submit(live_form_link)
+        live_form_link = page.find('[data-copy-target]').text
+        upload_file_and_submit(live_form_link)
 
-      visit_admin
-      visit_group
-      delete_form
+        visit_admin
+        visit_group
+        delete_form
+      end
     end
   end
 end

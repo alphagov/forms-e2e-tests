@@ -52,7 +52,7 @@ The end to end tests can be run without testing a form with the `submission_type
 
 ### Skipping the file upload
 
-It's a separate test scenario so you can run that in the usual rspec way by line number, i.e. `bundle exec rspec spec/end_to_end/end_to_end_spec.rb:123`. So you can run the main scenario to skip, and conversely you can run the file upload scenario in isolation.
+The end to end tests can be run without testing a form with a file upload question by setting the `SKIP_FILE_UPLOAD` environment variable to `1`.
 
 ### Running the file upload test
 Forms-runner needs to be started with the AWS credentials for the dev account for the file upload test to pass, as follows:
