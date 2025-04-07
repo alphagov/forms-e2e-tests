@@ -53,7 +53,7 @@ feature "Full lifecycle of a form", type: :feature do
       end
 
       visit_admin
-      visit_group
+      visit_end_to_end_tests_group
       delete_form
     end
   end
@@ -80,7 +80,7 @@ feature "Full lifecycle of a form", type: :feature do
         upload_file_and_submit(live_form_link)
 
         visit_admin
-        visit_group
+        visit_end_to_end_tests_group
         delete_form
       end
     end
