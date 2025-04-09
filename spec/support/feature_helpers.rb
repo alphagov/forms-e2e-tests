@@ -396,7 +396,12 @@ module FeatureHelpers
   end
 
   def check_file_upload_submission
+    submission_reference = page.find('#submission-reference').text
 
+    sleep 1 # Give the submission a chance to finish sending...
+
+    status_api_response = HTTParty.get(status_api_url, query: { reference: submission_reference }, headers: { "Authorization" => "Bearer #{ENV['FORMS_RUNNER_API_KEY']}" })
+    expect(status_api_response.code).to eq(204)
   end
 
   def s3_form_is_filled_in_by_form_filler()
