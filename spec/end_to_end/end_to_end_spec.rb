@@ -105,12 +105,8 @@ feature "Full lifecycle of a form", type: :feature do
         build_a_new_form_with_file_upload
         live_form_link = page.find('[data-copy-target]').text
         upload_file_and_submit(live_form_link)
-        submission_reference = page.find('#submission-reference').text
 
-        sleep 1 # Give the submission a chance to finish sending...
-
-        status_api_response = HTTParty.get(status_api_url, query: { reference: submission_reference }, headers: { "Authorization" => "Bearer #{ENV['FORMS_RUNNER_API_KEY']}" })
-        expect(status_api_response.code).to eq(204)
+        check_file_upload_submission
 
         visit_admin
         visit_end_to_end_tests_group
