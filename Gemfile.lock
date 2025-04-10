@@ -21,7 +21,6 @@ GEM
     aws-sigv4 (1.11.0)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.2.0)
-    bigdecimal (3.1.9)
     capybara (3.40.0)
       addressable
       matrix
@@ -55,8 +54,6 @@ GEM
     matrix (0.4.2)
     mini_mime (1.1.5)
     mini_portile2 (2.8.8)
-    multi_xml (0.7.1)
-      bigdecimal (~> 3.1)
     nokogiri (1.18.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -121,7 +118,6 @@ DEPENDENCIES
   capybara
   cuprite
   debug
-  httparty
   notifications-ruby-client
   rake
   rspec
