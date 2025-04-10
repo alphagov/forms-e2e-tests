@@ -252,7 +252,7 @@ module FeatureHelpers
 
       expected_mail_reference = find_notification_reference("notification-id")
 
-      fill_in "What email address should completed forms be sent to?", with: test_email_address, fill_options: { clear: :backspace }
+      fill_in "What email address should completed forms be sent to?", with: test_email_address
       click_button "Save and continue"
 
       expect(page.find("h1")).to have_content 'Confirmation code sent'
@@ -393,6 +393,24 @@ module FeatureHelpers
     click_button "Submit"
 
     expect(page).to have_content "Your form has been submitted"
+  end
+
+  def check_file_upload_submission
+    submission_reference = page.find('#submission-reference').text
+
+    sleep 1 # Give the submission a chance to finish sending...
+
+    uri = URI(status_api_url)
+    uri.query = URI.encode_www_form(reference: submission_reference)
+
+    request = Net::HTTP::Get.new(uri)
+    request['Authorization'] = "Bearer #{ENV['FORMS_RUNNER_API_KEY']}"
+
+    status_api_response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+      http.request(request)
+    end
+
+    expect(status_api_response.code).to eq("204")
   end
 
   def s3_form_is_filled_in_by_form_filler()
