@@ -41,6 +41,12 @@ You can run the tests against localhost using the following command:
 bundle exec rake
 ```
 
+### Using AWS SES for submission emails
+
+If forms-runner is using AWS SES for submission emails, the end-to-end test will need to know. This is so that the tests can check that a submission email has been sent via forms-runner, rather than retrieving submission emails via the Notify API.
+
+The end to end tests can be run when submission emails are sent via SES by settings the `SES_SUBMISSIONS` environment variable to `1`.
+
 ### Skipping the product pages
 
 The end to end tests can be run without visiting the product pages by setting
@@ -65,20 +71,20 @@ Forms-runner needs to be started with the AWS credentials for the dev account fo
 ### Running the s3 submission test
 
 You will need:
-- an aws iam role. 
+- an aws iam role.
     - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
-- an s3 bucket. 
+- an s3 bucket.
     - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
 
 To run the tests:
 
-- in `forms-runner`: 
+- in `forms-runner`:
     - add your govuk_notify.api_key and aws.s3_submission_iam_role to settings.local.yml
     - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
-- in `forms-admin` 
+- in `forms-admin`
     - add your govuk_notify.api_key to settings.local.yml
     - start the server (without aws)
-- in `forms-api`: 
+- in `forms-api`:
     - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
         - `rake "forms:set_submission_type_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
     - start the server (without aws)
@@ -86,7 +92,7 @@ To run the tests:
     - start an aws shell:
         - `gds aws forms-dev-readonly --shell`
     - run the end to end tests tests:
-``` 
+```
 SKIP_AUTH=1 \
 FORMS_ADMIN_URL='http://localhost:3000/' \
 PRODUCT_PAGES_URL='http://localhost:3002/' \
