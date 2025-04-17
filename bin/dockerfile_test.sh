@@ -48,6 +48,7 @@ docker run --env-file ./env.list --rm \
   -e AUTH0_EMAIL_USERNAME \
   -e AUTH0_USER_PASSWORD \
   -e SETTINGS__GOVUK_NOTIFY__API_KEY \
+  -e SETTINGS__SUBMISSION_STATUS_API__SECRET \
   -e SMOKE_TEST_FORM_URL \
   -e FORMS_RUNNER_URL \
   -e S3_FORM_ID \

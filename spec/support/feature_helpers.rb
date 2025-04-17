@@ -395,6 +395,24 @@ module FeatureHelpers
     expect(page).to have_content "Your form has been submitted"
   end
 
+  def check_file_upload_submission
+    submission_reference = page.find('#submission-reference').text
+
+    sleep 1 # Give the submission a chance to finish sending...
+
+    uri = URI(status_api_url)
+    uri.query = URI.encode_www_form(reference: submission_reference)
+   
+    request = Net::HTTP::Get.new(uri)
+    request['Authorization'] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
+
+    status_api_response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+      http.request(request)
+    end
+
+    expect(status_api_response.code).to eq("204")
+  end
+
   def s3_form_is_filled_in_by_form_filler()
     runner_url =  ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
     form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_ID' }
