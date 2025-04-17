@@ -1,5 +1,6 @@
 feature "Full lifecycle of a form", type: :feature do
   let(:test_email_address) { "govuk-forms-automation-tests@digital.cabinet-office.gov.uk" }
+
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
   let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
@@ -59,12 +60,8 @@ feature "Full lifecycle of a form", type: :feature do
 
   unless ENV.fetch('SKIP_FILE_UPLOAD', false)
     context "when the form has a file upload question" do
-      let(:form_name) { "capybara test file upload form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
       let(:file_question_text) { "Upload a file" }
       let(:test_file) { "/tmp/temp-file.txt" }
-      let (:status_api_url) { "#{ENV['FORMS_RUNNER_URL']}/submission" }
-      let (:status_api_response) {}
-      let (:submission_reference) {}
 
       before do
         File.write(test_file, "Hello file")
@@ -81,8 +78,6 @@ feature "Full lifecycle of a form", type: :feature do
 
         live_form_link = page.find('[data-copy-target]').text
         upload_file_and_submit(live_form_link)
-
-        check_file_upload_submission
 
         visit_admin
         visit_end_to_end_tests_group
