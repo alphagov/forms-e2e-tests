@@ -330,7 +330,10 @@ module FeatureHelpers
       expect(page).to have_content answer_text
     end
 
-    submission_email_reference = find_notification_reference("submission-email-reference")
+    submission_email_reference = nil
+    if ENV.fetch('SES_SUBMISSIONS', false)
+      submission_email_reference = find_notification_reference("submission-email-reference")
+    end
     confirmation_email_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
@@ -353,18 +356,22 @@ module FeatureHelpers
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
 
-    form_submission_email = wait_for_notification(submission_email_reference)
-
-    logger.info "And I can see their answers"
-    if skip_question
-      expect(form_submission_email.body).to have_content selection_question
-      expect(form_submission_email.body).to have_content "Yes"
+    if ENV.fetch('SES_SUBMISSIONS', true)
+      check_file_upload_submission
     else
-      expect(form_submission_email.body).to have_content selection_question
-      expect(form_submission_email.body).to have_content "No"
+      form_submission_email = wait_for_notification(submission_email_reference)
 
-      expect(form_submission_email.body).to have_content question_text
-      expect(form_submission_email.body).to have_content answer_text
+      logger.info "And I can see their answers"
+      if skip_question
+        expect(form_submission_email.body).to have_content selection_question
+        expect(form_submission_email.body).to have_content "Yes"
+      else
+        expect(form_submission_email.body).to have_content selection_question
+        expect(form_submission_email.body).to have_content "No"
+
+        expect(form_submission_email.body).to have_content question_text
+        expect(form_submission_email.body).to have_content answer_text
+      end
     end
 
     if confirmation_email_reference
@@ -419,7 +426,7 @@ module FeatureHelpers
     expect(page).to have_content 'Your form has been submitted'
     reference_number = page.find('#submission-reference').text
 
-    logger.info    
+    logger.info
     logger.info "As a form processor"
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my s3 bucket"

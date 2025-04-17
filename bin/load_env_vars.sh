@@ -99,6 +99,20 @@ function s3_form_id() {
   esac
 }
 
+function ses_submissions_enabled() {
+  local environment="$1"
+
+  case $environment in
+    "dev") echo "0" ;;
+    "staging") echo "0" ;;
+    "production") echo "0" ;;
+    *)
+      echo "Unknown environment: ${environment}"
+      exit 1
+      ;;
+  esac
+}
+
 function get_param() {
   path="$1"
 
@@ -125,6 +139,7 @@ function set_e2e_env_vars() {
   export S3_FORM_ID="$(s3_form_id $environment)"
   export AWS_S3_BUCKET="$(aws_s3_bucket $environment)"
   export SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN="$(aws_s3_role_arn $environment)"
+  export SES_SUBMISSIONS="$(ses_submissions_enabled $environment)"
 }
 
 function set_smoke_test_env_vars() {
