@@ -11,7 +11,9 @@ runner and then deletes the form.
 
 ### Install
 
-Make sure you have `chrome`  installed and in your path.
+Make sure you have `chrome` and a matching version of `chromedriver` installed and in your path.
+
+You can follow [these instructions](https://chromedriver.chromium.org/getting-started) or download it directly from https://googlechromelabs.github.io/chrome-for-testing/
 
 Install the ruby dependencies:
 
