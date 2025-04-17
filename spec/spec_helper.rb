@@ -6,11 +6,11 @@ require_relative "support/feature_helpers"
 require_relative "support/logging"
 
 Capybara.register_driver(:cuprite) do |app|
-  Capybara::Cuprite::Driver.new(app, headless: false, browser_options: { "no-sandbox": nil })
+  Capybara::Cuprite::Driver.new(app, headless: false, browser_options: { "no-sandbox": nil }, options: { timeout: 20 })
 end
 
 Capybara.register_driver(:cuprite_headless) do |app|
-  Capybara::Cuprite::Driver.new(app, headless: true, browser_options: { "no-sandbox": nil })
+  Capybara::Cuprite::Driver.new(app, headless: true, browser_options: { "no-sandbox": nil }, options: { timeout: 20 })
 end
 
 Capybara.default_driver = ENV['GUI'] ? :cuprite : :cuprite_headless
