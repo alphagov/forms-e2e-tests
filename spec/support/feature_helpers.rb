@@ -400,8 +400,17 @@ module FeatureHelpers
 
     sleep 1 # Give the submission a chance to finish sending...
 
-    status_api_response = HTTParty.get(status_api_url, query: { reference: submission_reference }, headers: { "Authorization" => "Bearer #{ENV['FORMS_RUNNER_API_KEY']}" })
-    expect(status_api_response.code).to eq(204)
+    uri = URI(status_api_url)
+    uri.query = URI.encode_www_form(reference: submission_reference)
+   
+    request = Net::HTTP::Get.new(uri)
+    request['Authorization'] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
+
+    status_api_response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+      http.request(request)
+    end
+
+    expect(status_api_response.code).to eq("204")
   end
 
   def s3_form_is_filled_in_by_form_filler()
