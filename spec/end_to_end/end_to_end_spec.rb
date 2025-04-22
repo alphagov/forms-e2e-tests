@@ -82,7 +82,7 @@ feature "Full lifecycle of a form", type: :feature do
         live_form_link = page.find('[data-copy-target]').text
         upload_file_and_submit(live_form_link)
 
-        check_file_upload_submission
+        check_submission
 
         visit_admin
         visit_end_to_end_tests_group

@@ -399,7 +399,7 @@ module FeatureHelpers
     expect(page).to have_content "Your form has been submitted"
   end
 
-  def check_file_upload_submission
+  def check_submission
     submission_reference = page.find('#submission-reference').text
 
     uri = URI(status_api_url)
