@@ -353,18 +353,22 @@ module FeatureHelpers
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
 
-    form_submission_email = wait_for_notification(submission_email_reference)
+    begin
+      form_submission_email = wait_for_notification(submission_email_reference)
 
-    logger.info "And I can see their answers"
-    if skip_question
-      expect(form_submission_email.body).to have_content selection_question
-      expect(form_submission_email.body).to have_content "Yes"
-    else
-      expect(form_submission_email.body).to have_content selection_question
-      expect(form_submission_email.body).to have_content "No"
+      logger.info "And I can see their answers"
+      if skip_question
+        expect(form_submission_email.body).to have_content selection_question
+        expect(form_submission_email.body).to have_content "Yes"
+      else
+        expect(form_submission_email.body).to have_content selection_question
+        expect(form_submission_email.body).to have_content "No"
 
-      expect(form_submission_email.body).to have_content question_text
-      expect(form_submission_email.body).to have_content answer_text
+        expect(form_submission_email.body).to have_content question_text
+        expect(form_submission_email.body).to have_content answer_text
+      end
+    rescue NotifyException # Check if the submission email was delivered via SES if the notification reference wasn't found in Notify
+      check_submission
     end
 
     if confirmation_email_reference
@@ -400,7 +404,7 @@ module FeatureHelpers
 
     uri = URI(status_api_url)
     uri.query = URI.encode_www_form(reference: submission_reference)
-   
+
     request = Net::HTTP::Get.new(uri)
     request['Authorization'] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
 
@@ -449,7 +453,7 @@ module FeatureHelpers
     expect(page).to have_content 'Your form has been submitted'
     reference_number = page.find('#submission-reference').text
 
-    logger.info    
+    logger.info
     logger.info "As a form processor"
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my s3 bucket"
