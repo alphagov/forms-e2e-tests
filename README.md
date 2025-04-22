@@ -13,11 +13,11 @@ runner and then deletes the form.
 
 Make sure you have `chrome` and a matching version of `chromedriver` installed and in your path.
 
-You can follow [these instructions](https://chromedriver.chromium.org/getting-started) or download it directly from https://googlechromelabs.github.io/chrome-for-testing/
+You can follow [these instructions](https://chromedriver.chromium.org/getting-started) or download it directly from [chrome for testing](https://googlechromelabs.github.io/chrome-for-testing/).
 
 Install the ruby dependencies:
 
-```
+```shell
 bundle install
 ```
 
@@ -37,7 +37,7 @@ The tests expect an active group to exist called "End to end tests", which the t
 
 You can run the tests against localhost using the following command:
 
-```
+```shell
 bundle exec rake
 ```
 
@@ -55,38 +55,40 @@ The end to end tests can be run without testing a form with the `submission_type
 The end to end tests can be run without testing a form with a file upload question by setting the `SKIP_FILE_UPLOAD` environment variable to `1`.
 
 ### Running the file upload test
+
 Forms-runner needs to be started with the AWS credentials for the dev account for the file upload test to pass, as follows:
 
 - `gds aws forms-dev-readonly --shell`
-- `ASSUME_DEV_IAM_ROLE=true SETTINGS__GOVUK_NOTIFY__API_KEY='<notify-api-key>' \
-  ./bin/rails server`
--  see the [README for forms-runner](https://github.com/alphagov/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
+- `ASSUME_DEV_IAM_ROLE=true SETTINGS__GOVUK_NOTIFY__API_KEY='<notify-api-key>' ./bin/rails server`
+- see the [README for forms-runner](https://github.com/alphagov/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
 
 ### Running the s3 submission test
 
 You will need:
-- an aws iam role. 
-    - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
-- an s3 bucket. 
-    - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
+
+- an aws iam role.
+  - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
+- an s3 bucket.
+  - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
 
 To run the tests:
 
-- in `forms-runner`: 
-    - add your govuk_notify.api_key and aws.s3_submission_iam_role to settings.local.yml
-    - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
-- in `forms-admin` 
-    - add your govuk_notify.api_key to settings.local.yml
-    - start the server (without aws)
-- in `forms-api`: 
-    - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
-        - `rake "forms:set_submission_type_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
-    - start the server (without aws)
+- in `forms-runner`:
+  - add your govuk_notify.api_key and aws.s3_submission_iam_role to settings.local.yml
+  - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
+- in `forms-admin`
+  - add your govuk_notify.api_key to settings.local.yml
+  - start the server (without aws)
+- in `forms-api`:
+  - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
+    - `rake "forms:set_submission_type_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
+  - start the server (without aws)
 - in `forms-e2e-tests`
-    - start an aws shell:
-        - `gds aws forms-dev-readonly --shell`
-    - run the end to end tests tests:
-``` 
+  - start an aws shell:
+    - `gds aws forms-dev-readonly --shell`
+  - run the end to end tests tests:
+
+```shell
 SKIP_AUTH=1 \
 FORMS_ADMIN_URL='http://localhost:3000/' \
 PRODUCT_PAGES_URL='http://localhost:3002/' \
@@ -124,7 +126,7 @@ chrome in visual rather than headless mode.
 
 For example:
 
-```
+```shell
 GUI=1 bundle exec rake
 ```
 
@@ -177,6 +179,6 @@ When Auth0 is the enabled auth provider for an environment you can switch betwee
 
 The database connection is used by default, but the passwordless flow can be enabled by setting the USE_AUTH0_PASSWORDLESS_CONNECTION variable, e.g.:
 
-```
+```shell
 gds aws forms-deploy-readonly -- env USE_AUTH0_PASSWORDLESS_CONNECTION=1 bin/end_to_end.sh dev
 ```
