@@ -398,19 +398,31 @@ module FeatureHelpers
   def check_file_upload_submission
     submission_reference = page.find('#submission-reference').text
 
-    sleep 1 # Give the submission a chance to finish sending...
-
     uri = URI(status_api_url)
     uri.query = URI.encode_www_form(reference: submission_reference)
    
     request = Net::HTTP::Get.new(uri)
     request['Authorization'] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
 
-    status_api_response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
-      http.request(request)
+    start_time = Time.now
+    try = 0
+    while(Time.now - start_time < 60) do
+      try += 1
+
+      status_api_response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+        http.request(request)
+      end
+
+      raise "Could not query submission status API: #{status_api_response}" unless ["204", "404"].include?(status_api_response.code)
+
+      return true if status_api_response.code == "204"
+
+      wait_time = try + ((Time.now - start_time) ** 0.5)
+      logger.debug 'failed. Sleeping %0.2fs.' % wait_time
+      sleep wait_time
     end
 
-    expect(status_api_response.code).to eq("204")
+    raise "Could not find submission after retrying #{try} times"
   end
 
   def s3_form_is_filled_in_by_form_filler()
