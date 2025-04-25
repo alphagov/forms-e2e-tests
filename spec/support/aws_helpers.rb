@@ -21,7 +21,7 @@ module AwsHelpers
   def assume_role
     @role_arn = ENV["SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN"]
 
-    raise "You must set SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN" if @role_arn.nil? || @role_arn.empty?
+    raise "You must set SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN" if @role_arn.blank?
 
     role_session_name = "forms-e2e"
     Aws::AssumeRoleCredentials.new(
@@ -34,7 +34,7 @@ module AwsHelpers
   def get_bucket
     bucket = ENV["AWS_S3_BUCKET"]
 
-    raise "You must set AWS_S3_BUCKET" if bucket.nil? || bucket.empty?
+    raise "You must set AWS_S3_BUCKET" if bucket.blank?
 
     bucket
   end

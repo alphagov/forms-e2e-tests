@@ -1,7 +1,7 @@
 require "forwardable"
 require "logger"
 
-SPEC_DIR = "#{File.dirname(__dir__)}#{File::SEPARATOR}"
+SPEC_DIR = "#{File.dirname(__dir__)}#{File::SEPARATOR}".freeze
 
 module Logging
   def logger
@@ -48,11 +48,11 @@ private
   end
 
   def source(file, line)
-    @@source_locations ||= Hash.new do |_hash, key|
-      File.readlines(key).map { _1.strip }
+    @source_locations ||= Hash.new do |_hash, key|
+      File.readlines(key).map(&:strip)
     end
 
-    @@source_locations[file][line - 1]
+    @source_locations[file][line - 1]
   end
 end
 

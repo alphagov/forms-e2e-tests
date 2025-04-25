@@ -253,9 +253,8 @@ module FeatureHelpers
 
   def add_form_submission_email
     # If the confirmation loop has been rolled out
+    next_form_creation_step "Set the email address completed forms will be sent to"
     if page.has_content? "Enter the email address confirmation code"
-      next_form_creation_step "Set the email address completed forms will be sent to"
-
       expect(page.find("h1")).to have_content "Set the email address for completed forms"
 
       expected_mail_reference = find_notification_reference("notification-id")
@@ -279,10 +278,7 @@ module FeatureHelpers
       expect(page.find("h1")).to have_content "Email address confirmed"
 
       click_link "Continue creating a form"
-
     else
-      next_form_creation_step "Set the email address completed forms will be sent to"
-
       expect(page.find("h1")).to have_content "What email address should completed forms be sent to?"
       fill_in "What email address should completed forms be sent to?", with: test_email_address
       click_button "Save and continue"
@@ -328,11 +324,10 @@ module FeatureHelpers
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content "Check your answers before submitting your form"
 
+    expect(page).to have_content selection_question
     if skip_question
-      expect(page).to have_content selection_question
       expect(page).to have_content "Yes"
     else
-      expect(page).to have_content selection_question
       expect(page).to have_content "No"
 
       expect(page).to have_content answer_text
@@ -365,11 +360,10 @@ module FeatureHelpers
       form_submission_email = wait_for_notification(submission_email_reference)
 
       logger.info "And I can see their answers"
+      expect(form_submission_email.body).to have_content selection_question
       if skip_question
-        expect(form_submission_email.body).to have_content selection_question
         expect(form_submission_email.body).to have_content "Yes"
       else
-        expect(form_submission_email.body).to have_content selection_question
         expect(form_submission_email.body).to have_content "No"
 
         expect(form_submission_email.body).to have_content question_text
@@ -387,6 +381,8 @@ module FeatureHelpers
 
       wait_for_notification(confirmation_email_reference)
     end
+
+    true
   end
 
   def upload_file_and_submit(live_form_link)
@@ -416,9 +412,9 @@ module FeatureHelpers
     request = Net::HTTP::Get.new(uri)
     request["Authorization"] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
 
-    start_time = Time.now
+    start_time = Time.zone.now
     try = 0
-    while Time.now - start_time < 60
+    while Time.zone.now - start_time < 60
       try += 1
 
       status_api_response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
@@ -429,8 +425,8 @@ module FeatureHelpers
 
       return true if status_api_response.code == "204"
 
-      wait_time = try + ((Time.now - start_time)**0.5)
-      logger.debug "failed. Sleeping %0.2fs." % wait_time
+      wait_time = try + ((Time.zone.now - start_time)**0.5)
+      logger.debug "Failed. Sleeping #{wait_time}s."
       sleep wait_time
     end
 
@@ -439,7 +435,7 @@ module FeatureHelpers
 
   def s3_form_is_filled_in_by_form_filler
     form_id = ENV.fetch("S3_FORM_ID") { raise "You must set $S3_FORM_ID" }
-    s3_form_live_link = forms_runner_url + "/form/" + form_id
+    s3_form_live_link = "#{forms_runner_url}/form/#{form_id}"
 
     logger.info
     logger.info "As a form filler"
@@ -469,6 +465,8 @@ module FeatureHelpers
 
     expect(file_in_s3).to have_content reference_number
     expect(file_in_s3).to have_content "test name"
+
+    true
   end
 
   def answer_single_line(text)
