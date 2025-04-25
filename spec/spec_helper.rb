@@ -1,6 +1,7 @@
 require "capybara/rspec"
 require "selenium/webdriver"
 require "debug"
+require "active_support/time"
 
 require_relative "support/feature_helpers"
 require_relative "support/logging"
