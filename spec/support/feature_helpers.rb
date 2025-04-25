@@ -36,6 +36,14 @@ module FeatureHelpers
     ENV.fetch('PRODUCT_PAGES_URL') { raise 'You must set $PRODUCT_PAGES_URL' }
   end
 
+  def forms_runner_url
+    ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
+  end
+
+  def submission_status_url
+    "#{forms_runner_url}/submission"
+  end
+
   def build_a_new_form
     logger.info
     logger.info 'As an editor user'
@@ -402,7 +410,7 @@ module FeatureHelpers
   def check_submission
     submission_reference = page.find('#submission-reference').text
 
-    uri = URI(status_api_url)
+    uri = URI(submission_status_url)
     uri.query = URI.encode_www_form(reference: submission_reference)
 
     request = Net::HTTP::Get.new(uri)
@@ -430,9 +438,8 @@ module FeatureHelpers
   end
 
   def s3_form_is_filled_in_by_form_filler()
-    runner_url =  ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
     form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_ID' }
-    s3_form_live_link = runner_url + '/form/' + form_id
+    s3_form_live_link = forms_runner_url + '/form/' + form_id
 
     logger.info
     logger.info "As a form filler"
