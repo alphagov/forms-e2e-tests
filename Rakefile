@@ -13,7 +13,7 @@ RSpec::Core::RakeTask.new(:end_to_end) do |task|
   ENV["FORMS_ADMIN_URL"] ||= "http://localhost:3000/"
   ENV["PRODUCT_PAGES_URL"] ||= "http://localhost:3002/"
 
-  task.pattern = %[spec/end_to_end]
+  task.pattern = %(spec/end_to_end)
   task.verbose = false
 end
 

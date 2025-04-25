@@ -1,7 +1,7 @@
 require "forwardable"
 require "logger"
 
-SPEC_DIR = "#{File.dirname(__dir__)}#{File::SEPARATOR}"
+SPEC_DIR = "#{File.dirname(__dir__)}#{File::SEPARATOR}".freeze
 
 module Logging
   def logger
@@ -21,7 +21,7 @@ module Logging
   def start_tracing
     return unless ENV.fetch("TRACE", false)
 
-    set_trace_func proc { |event, file, line, id, binding, classname|
+    set_trace_func proc { |event, file, line, _id, _binding, _classname|
       if trace_event?(event, file, line)
         printf(
           "TRACE: %30s: %s\n",
@@ -48,16 +48,14 @@ private
   end
 
   def source(file, line)
-    @@source_locations ||= Hash.new do |hash, key|
-      File.readlines(key).map { _1.strip }
+    @source_locations ||= Hash.new do |_hash, key|
+      File.readlines(key).map(&:strip)
     end
 
-
-    @@source_locations[file][line - 1]
+    @source_locations[file][line - 1]
   end
 end
 
 RSpec.configure do |config|
   config.include Logging
 end
-
