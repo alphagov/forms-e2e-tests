@@ -36,6 +36,14 @@ module FeatureHelpers
     ENV.fetch('PRODUCT_PAGES_URL') { raise 'You must set $PRODUCT_PAGES_URL' }
   end
 
+  def forms_runner_url
+    ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
+  end
+
+  def submission_status_url
+    "#{forms_runner_url}/submission"
+  end
+
   def build_a_new_form
     logger.info
     logger.info 'As an editor user'
@@ -353,18 +361,22 @@ module FeatureHelpers
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
 
-    form_submission_email = wait_for_notification(submission_email_reference)
+    begin
+      form_submission_email = wait_for_notification(submission_email_reference)
 
-    logger.info "And I can see their answers"
-    if skip_question
-      expect(form_submission_email.body).to have_content selection_question
-      expect(form_submission_email.body).to have_content "Yes"
-    else
-      expect(form_submission_email.body).to have_content selection_question
-      expect(form_submission_email.body).to have_content "No"
+      logger.info "And I can see their answers"
+      if skip_question
+        expect(form_submission_email.body).to have_content selection_question
+        expect(form_submission_email.body).to have_content "Yes"
+      else
+        expect(form_submission_email.body).to have_content selection_question
+        expect(form_submission_email.body).to have_content "No"
 
-      expect(form_submission_email.body).to have_content question_text
-      expect(form_submission_email.body).to have_content answer_text
+        expect(form_submission_email.body).to have_content question_text
+        expect(form_submission_email.body).to have_content answer_text
+      end
+    rescue NotifyException # Check if the submission email was delivered via SES if the notification reference wasn't found in Notify
+      check_submission
     end
 
     if confirmation_email_reference
@@ -395,12 +407,12 @@ module FeatureHelpers
     expect(page).to have_content "Your form has been submitted"
   end
 
-  def check_file_upload_submission
+  def check_submission
     submission_reference = page.find('#submission-reference').text
 
-    uri = URI(status_api_url)
+    uri = URI(submission_status_url)
     uri.query = URI.encode_www_form(reference: submission_reference)
-   
+
     request = Net::HTTP::Get.new(uri)
     request['Authorization'] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
 
@@ -426,9 +438,8 @@ module FeatureHelpers
   end
 
   def s3_form_is_filled_in_by_form_filler()
-    runner_url =  ENV.fetch('FORMS_RUNNER_URL') { raise 'You must set $FORMS_RUNNER_URL' }
     form_id =  ENV.fetch('S3_FORM_ID') { raise 'You must set $S3_FORM_ID' }
-    s3_form_live_link = runner_url + '/form/' + form_id
+    s3_form_live_link = forms_runner_url + '/form/' + form_id
 
     logger.info
     logger.info "As a form filler"
@@ -449,7 +460,7 @@ module FeatureHelpers
     expect(page).to have_content 'Your form has been submitted'
     reference_number = page.find('#submission-reference').text
 
-    logger.info    
+    logger.info
     logger.info "As a form processor"
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my s3 bucket"
