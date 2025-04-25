@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../../services/notify_service'
+require_relative "../../services/notify_service"
 
 module NotifyHelpers
-
   class NotifyException < RuntimeError; end
 
   def find_notification_reference(id)
@@ -26,6 +25,6 @@ module NotifyHelpers
     confirmation_email = wait_for_notification(notification_reference)
     code = confirmation_email.body.match(/\d{6}/).to_s
     logger.debug "Received the following code from Notify: “#{code}“"
-    return code
+    code
   end
 end

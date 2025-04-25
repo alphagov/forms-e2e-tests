@@ -1,4 +1,4 @@
-require 'notifications/client'
+require "notifications/client"
 
 class NotifyService
   def initialize
@@ -11,6 +11,6 @@ class NotifyService
     end
 
     client = Notifications::Client.new(@notify_api_key)
-    client.get_notifications({reference: notification_id })
+    client.get_notifications({ reference: notification_id })
   end
 end
