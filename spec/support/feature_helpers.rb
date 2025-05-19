@@ -338,7 +338,6 @@ module FeatureHelpers
       expect(page).to have_content answer_text
     end
 
-    submission_email_reference = find_notification_reference("submission-email-reference")
     confirmation_email_reference = nil
 
     if page.has_content? "Do you want to get an email confirming your form has been submitted?"
@@ -361,23 +360,7 @@ module FeatureHelpers
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
 
-    begin
-      form_submission_email = wait_for_notification(submission_email_reference)
-
-      logger.info "And I can see their answers"
-      if skip_question
-        expect(form_submission_email.body).to have_content selection_question
-        expect(form_submission_email.body).to have_content "Yes"
-      else
-        expect(form_submission_email.body).to have_content selection_question
-        expect(form_submission_email.body).to have_content "No"
-
-        expect(form_submission_email.body).to have_content question_text
-        expect(form_submission_email.body).to have_content answer_text
-      end
-    rescue NotifyException # Check if the submission email was delivered via SES if the notification reference wasn't found in Notify
-      check_submission
-    end
+    check_submission
 
     if confirmation_email_reference
       logger.info
