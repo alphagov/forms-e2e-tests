@@ -223,13 +223,9 @@ module FeatureHelpers
     choose "1. #{selection_question}", visible: false
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content /(Add a question route|Add route)/
-
-    if page.has_content? /is answered as/
-      select "Yes", from: "is answered as"
-    else
-      select "Yes", from: "If the answer selected is"
-    end
+    expect(page.find("h1")).to have_content "Add route"
+    
+    select "Yes", from: "If the answer selected is"
 
     select "Check your answers before submitting", from: "to"
     click_button "Save and continue"
