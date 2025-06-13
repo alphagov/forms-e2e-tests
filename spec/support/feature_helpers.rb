@@ -54,11 +54,15 @@ module FeatureHelpers
 
     create_a_selection_question
 
-    create_a_single_line_of_text_question
+    create_a_single_line_of_text_question(question_text: question_text)
+
+    create_a_single_line_of_text_question(question_text: alternate_question_text) # Adding a second question to test branching
 
     first(:link, "your questions").click
 
     add_a_route
+
+    add_a_secondary_skip
 
     finish_form_creation
 
@@ -181,7 +185,7 @@ module FeatureHelpers
     click_button "Save question"
   end
 
-  def create_a_single_line_of_text_question
+  def create_a_single_line_of_text_question(question)
     within(page.find(".govuk-notification-banner__content")) do
       click_on "Add a question"
     end
@@ -193,7 +197,7 @@ module FeatureHelpers
     choose "Single line of text", visible: false
     click_button "Continue"
     expect(page.find("h1")).to have_content 'Edit question'
-    fill_in "Question text", :with => question_text
+    fill_in "Question text", :with => question
     choose "Mandatory", visible: false
 
     if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
@@ -227,7 +231,18 @@ module FeatureHelpers
     
     select "Yes", from: "If the answer selected is"
 
-    select "Check your answers before submitting", from: "to"
+    select "3. #{alternate_question_text}", from: "to"
+    click_button "Save and continue"
+  end
+
+  def add_a_secondary_skip
+    click_on "Set questions to skip"
+
+    expect(page.find("h1")).to have_content 'Route for any other answer: set questions to skip'
+
+    select "2. #{question_text}", from: "Select the last question you want them to answer before they skip"
+    select "Check your answers before submitting", from: "Select the question to skip them to"
+
     click_button "Save and continue"
 
     if page.find("h1").has_content? /Question \d+’s routes/
@@ -303,18 +318,21 @@ module FeatureHelpers
     end
   end
 
-  def form_is_filled_in_by_form_filler(live_form_link, skip_question: false, confirmation_email: nil)
+  def form_is_filled_in_by_form_filler(live_form_link, yes_branch: false, confirmation_email: nil)
     logger.info
     logger.info "As a form filler"
 
     logger.info "When I fill out the new form"
     visit live_form_link
 
-    if skip_question
-      logger.info "And I answer all of the questions"
+    if yes_branch
+      logger.info "And I choose the 'yes' branch"
       answer_selection_question("Yes")
+
+      expect(page).to have_content alternate_question_text
+      answer_single_line(answer_text)
     else
-      logger.info "And I choose the answer that skips questions"
+      logger.info "And I choose the 'no' branch"
       answer_selection_question("No")
 
       expect(page).to have_content question_text
@@ -324,12 +342,14 @@ module FeatureHelpers
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content 'Check your answers before submitting your form'
 
-    if skip_question
+    if yes_branch
       expect(page).to have_content selection_question
       expect(page).to have_content "Yes"
+      expect(page).to have_content alternate_question_text
     else
       expect(page).to have_content selection_question
       expect(page).to have_content "No"
+      expect(page).to have_content question_text
 
       expect(page).to have_content answer_text
     end
