@@ -54,9 +54,9 @@ module FeatureHelpers
 
     create_a_selection_question
 
-    create_a_single_line_of_text_question(question_text: question_text)
+    create_a_single_line_of_text_question(question_text)
 
-    create_a_single_line_of_text_question(question_text: alternate_question_text) # Adding a second question to test branching
+    create_a_single_line_of_text_question(alternate_question_text) # Adding a second question to test branching
 
     first(:link, "your questions").click
 
@@ -228,7 +228,7 @@ module FeatureHelpers
     click_button "Continue"
 
     expect(page.find("h1")).to have_content "Add route"
-    
+
     select "Yes", from: "If the answer selected is"
 
     select "3. #{alternate_question_text}", from: "to"
