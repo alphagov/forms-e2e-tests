@@ -8,7 +8,7 @@ gem "capybara"
 gem "notifications-ruby-client"
 gem "selenium-webdriver"
 gem "webdrivers"
-gem "aws-sdk-s3", "~> 1.189"
+gem "aws-sdk-s3", "~> 1.190"
 
 group :development, :test do
   gem "rake"
