@@ -110,7 +110,7 @@ module FeatureHelpers
     next_form_creation_step 'Provide a link to privacy information for this form'
 
     expect(page.find("h1")).to have_content 'Provide a link to privacy information for this form'
-    fill_in "Enter a link to privacy information for this form", with: "https://www.gov.uk/help/privacy-notice"
+    fill_in 'Enter a link to privacy information for this form', with: 'https://www.gov.uk/forms-made-up-example-privacy-notice'
     click_button "Save and continue"
 
     next_form_creation_step 'Provide contact details for support'
