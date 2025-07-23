@@ -15,6 +15,9 @@ Make sure you have `chrome` and a matching version of `chromedriver` installed a
 
 You can follow [these instructions](https://chromedriver.chromium.org/getting-started) or download it directly from [chrome for testing](https://googlechromelabs.github.io/chrome-for-testing/).
 
+> [!TIP]
+> If you're having trouble with flaky tests, try using Cuprite instead of ChromeDriver with `USE_CUPRITE=1`
+
 Install the ruby dependencies:
 
 ```shell
@@ -40,6 +43,20 @@ You can run the tests against localhost using the following command:
 ```shell
 bundle exec rake
 ```
+
+### Choosing the browser automation protocol
+
+By default these tests use Selenium and ChromeDriver to talk to Chrome browser. However, since Chrome 134 users of Capybara with ChromeDriver have been reporting intermittent `Node with given id` and similar errors (see https://github.com/teamcapybara/capybara/issues/2800).
+
+As a potential workaround, you can use the [Cuprite] gem instead, by setting the environment variable `USE_CUPRITE`:
+
+```shell
+USE_CUPRITE=1 bundle exec rake
+```
+
+This is still an experimental change however, and needs more testing. In our automated pipelines we instead have pinned the version of Chrome used to a known good version.
+
+[Cuprite]: https://github.com/rubycdp/cuprite
 
 ### Skipping the product pages
 
