@@ -9,7 +9,7 @@ gem "cuprite", group: :cuprite
 gem "notifications-ruby-client"
 gem "selenium-webdriver"
 gem "webdrivers"
-gem "aws-sdk-s3", "~> 1.196"
+gem "aws-sdk-s3", "~> 1.198"
 
 group :development, :test do
   gem "rake"
