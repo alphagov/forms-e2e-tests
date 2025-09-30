@@ -311,7 +311,7 @@ module FeatureHelpers
       choose "Yes", visible: false
       click_button "Continue"
 
-      expect(page.find(".govuk-notification-banner")).to have_content "Successfully deleted ‘#{form_name}’"
+      expect(page.find(".govuk-notification-banner")).to have_content "The draft form, ‘#{form_name}’, has been deleted"
       if page.has_css?('.govuk-table')
         expect(page.find('.govuk-table')).not_to have_content form_name
       end
