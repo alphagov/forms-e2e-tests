@@ -95,8 +95,6 @@ To run the tests:
   - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
 - in `forms-admin`
   - add your govuk_notify.api_key to settings.local.yml
-  - start the server (without aws)
-- in `forms-api`:
   - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
     - `rake "forms:set_submission_type_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
   - start the server (without aws)
