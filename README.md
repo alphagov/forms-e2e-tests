@@ -96,7 +96,7 @@ To run the tests:
 - in `forms-admin`
   - add your govuk_notify.api_key to settings.local.yml
   - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
-    - `rake "forms:set_submission_type_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
+    - `rake "forms:submission_type:set_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}]"`
   - start the server (without aws)
 - in `forms-e2e-tests`
   - start an aws shell:
