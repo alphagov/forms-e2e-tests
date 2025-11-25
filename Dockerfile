@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apk update
 RUN apk upgrade --available
 
-RUN apk add chromium chromium-chromedriver libc6-compat build-base yaml-dev
+RUN apk add chromium chromium-chromedriver libc6-compat build-base yaml-dev aws-cli
 
 RUN adduser -D ruby
 USER ruby
