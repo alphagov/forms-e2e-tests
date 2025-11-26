@@ -6,13 +6,16 @@ ARG DOCKER_IMAGE_DIGEST=sha256:78223c2421bbd1e133fc6e126cf632c50b31c8728cbdbdae5
 
 FROM ruby:${RUBY_VERSION}-alpine${ALPINE_VERSION}@${DOCKER_IMAGE_DIGEST}
 
-WORKDIR /app
 RUN apk update
 RUN apk upgrade --available
 
 RUN apk add chromium chromium-chromedriver libc6-compat build-base yaml-dev aws-cli
 
 RUN adduser -D ruby
+
+RUN mkdir /app && chown -R ruby:ruby /app
+WORKDIR /app
+
 USER ruby
 
 COPY --chown=ruby:ruby . ./
