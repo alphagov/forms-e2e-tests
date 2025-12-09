@@ -42,14 +42,6 @@ feature "Full lifecycle of a form", type: :feature do
         logger.info
         logger.info "Scenario: Form is completed by a member of the public, and they request a confirmation email"
         form_is_filled_in_by_form_filler(live_form_link, confirmation_email: test_email_address)
-
-
-        unless ENV.fetch('SKIP_S3', false)
-          # Testing s3 submission
-          logger.info
-          logger.info "Scenario: Form is completed by a member of the public, and answers are sent to s3"
-          s3_form_is_filled_in_by_form_filler()
-        end
       end
 
       visit_admin
@@ -88,6 +80,18 @@ feature "Full lifecycle of a form", type: :feature do
         visit_end_to_end_tests_group
         delete_form
       end
+    end
+  end
+
+  unless ENV.fetch('SKIP_S3', false)
+    # Testing s3 submission
+    scenario "Form is completed by a member of the public, and answers are sent to s3" do
+      logger.info
+      logger.info "Scenario: Form is completed by a member of the public, and answers are sent to s3"
+
+      start_tracing
+
+      s3_form_is_filled_in_by_form_filler
     end
   end
 end
