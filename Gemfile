@@ -11,6 +11,6 @@ gem "selenium-webdriver"
 gem "webdrivers"
 gem "aws-sdk-s3", "~> 1.205"
 
-group :development, :test do
+group :development do
   gem "rake"
 end
