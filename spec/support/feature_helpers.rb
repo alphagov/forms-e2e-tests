@@ -54,6 +54,8 @@ module FeatureHelpers
 
     next_form_creation_step 'Add and edit your questions'
 
+    add_a_file_upload_question unless skip_file_upload?
+
     add_a_selection_question
 
     add_a_single_line_of_text_question(question_text)
@@ -77,6 +79,8 @@ module FeatureHelpers
     next_form_creation_step 'Add and edit your questions'
 
     add_a_file_upload_question
+
+    click_link("Back to your questions", match: :first)
 
     finish_form_creation
 
@@ -226,7 +230,6 @@ module FeatureHelpers
     choose "Mandatory", visible: false
 
     click_button "Save question"
-    click_link("Back to your questions", match: :first)
   end
 
   def add_a_route(question_to_add_a_route_from, if_the_answer_selected_is:, skip_the_person_to:)
@@ -335,6 +338,14 @@ module FeatureHelpers
     logger.info "When I fill out the new form"
     visit live_form_link
 
+    unless skip_file_upload?
+      logger.info "And I can upload a file"
+      expect(page).to have_content "Upload a file"
+      logger.info "Then I can upload a file"
+      upload_a_file
+    end
+
+    logger.info "When there is a branch question"
     if yes_branch
       logger.info "And I choose the 'yes' branch"
       answer_selection_question("Yes")
@@ -555,6 +566,10 @@ module FeatureHelpers
 
   def skip_product_pages?
     ENV.fetch('SKIP_PRODUCT_PAGES', false)
+  end
+
+  def skip_file_upload?
+    ENV.fetch('SKIP_FILE_UPLOAD', false)
   end
 
   def visit_product_page

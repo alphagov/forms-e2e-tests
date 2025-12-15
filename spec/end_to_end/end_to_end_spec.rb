@@ -1,11 +1,14 @@
 feature "Full lifecycle of a form", type: :feature do
   let(:test_email_address) { "govuk-forms-automation-tests@digital.cabinet-office.gov.uk" }
   let(:form_name) { "capybara test form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
+
+  let(:file_question_text) { "Upload a file" }
+  let(:test_file) { file_fixture("hello.txt") }
   let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
+  let(:answer_text) { "test name" }
   let(:alternate_question_text) { "What is your favourite colour?" }
 
-  let(:answer_text) { "test name" }
   let(:start_url) do
     if skip_product_pages?
       forms_admin_url
@@ -53,9 +56,6 @@ feature "Full lifecycle of a form", type: :feature do
   unless ENV.fetch('SKIP_FILE_UPLOAD', false)
     context "when the form has a file upload question" do
       let(:form_name) { "capybara test file upload form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
-
-      let(:file_question_text) { "Upload a file" }
-      let(:test_file) { file_fixture("hello.txt") }
 
       let (:status_api_response) {}
       let (:submission_reference) {}
