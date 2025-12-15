@@ -3,6 +3,8 @@
 require_relative "./notify_helpers"
 require_relative "./aws_helpers"
 
+SECONDS_PER_MINUTE = 60
+
 module FeatureHelpers
   include NotifyHelpers
   include AwsHelpers
@@ -402,10 +404,7 @@ module FeatureHelpers
     logger.info "And I can upload a file"
     expect(page).to have_content "Upload a file"
     logger.info "When I upload a file"
-    when_i_upload_a_file
-    click_button "Continue"
-    expect(page).to have_content "Your file has been uploaded"
-    click_button "Continue"
+    upload_a_file
 
     expect(page).to have_content "Check your answers before submitting your form"
     choose "No"
@@ -488,8 +487,11 @@ module FeatureHelpers
     click_button "Continue"
   end
 
-  def when_i_upload_a_file
+  def upload_a_file
     attach_file file_question_text, test_file
+    click_button "Continue"
+    expect(page).to have_content "Your file has been uploaded", wait: 1 * SECONDS_PER_MINUTE # file uploads can take a long time
+    click_button "Continue"
   end
 
   def sign_in_to_admin
