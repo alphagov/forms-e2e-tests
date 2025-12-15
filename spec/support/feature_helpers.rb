@@ -302,7 +302,7 @@ module FeatureHelpers
 
   def delete_form
     if page.has_link?(form_name)
-      click_link(form_name, match: :one)
+      click_link(form_name, match: :one, exact: true)
       live_form_url = page.current_url
       delete_path = live_form_url.gsub("live", "delete")
 

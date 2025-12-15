@@ -17,7 +17,7 @@ USER ruby
 
 COPY --chown=ruby:ruby . ./
 
-RUN bundle config set --local without cuprite
+RUN bundle config set --local without development
 RUN bundle install
 
 CMD ["bundle", "exec", "rspec"]
