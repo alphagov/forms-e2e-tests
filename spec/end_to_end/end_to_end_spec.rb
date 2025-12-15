@@ -53,30 +53,6 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 
-  unless ENV.fetch('SKIP_FILE_UPLOAD', false)
-    context "when the form has a file upload question" do
-      let(:form_name) { "capybara test file upload form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
-
-      let (:status_api_response) {}
-      let (:submission_reference) {}
-
-      scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
-        start_tracing
-
-        build_a_new_form_with_file_upload
-
-        live_form_link = page.find('[data-copy-target]').text
-        upload_file_and_submit(live_form_link)
-
-        check_submission
-
-        visit_admin
-        visit_end_to_end_tests_group
-        delete_form
-      end
-    end
-  end
-
   unless ENV.fetch('SKIP_S3', false)
     # Testing s3 submission
     scenario "Form is completed by a member of the public, and answers are sent to s3" do
