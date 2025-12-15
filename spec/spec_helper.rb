@@ -2,6 +2,7 @@ require 'capybara/rspec'
 require 'debug'
 
 require_relative "support/feature_helpers"
+require_relative "support/file_fixtures"
 require_relative "support/logging"
 
 if ENV['USE_CUPRITE']

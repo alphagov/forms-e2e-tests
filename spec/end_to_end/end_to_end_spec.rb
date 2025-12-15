@@ -53,18 +53,12 @@ feature "Full lifecycle of a form", type: :feature do
   unless ENV.fetch('SKIP_FILE_UPLOAD', false)
     context "when the form has a file upload question" do
       let(:form_name) { "capybara test file upload form #{Time.now().strftime("%Y-%m-%d %H:%M.%S")}" }
+
       let(:file_question_text) { "Upload a file" }
-      let(:test_file) { "/tmp/temp-file.txt" }
+      let(:test_file) { file_fixture("hello.txt") }
+
       let (:status_api_response) {}
       let (:submission_reference) {}
-
-      before do
-        File.write(test_file, "Hello file")
-      end
-
-      after do
-        File.delete(test_file) if File.exist?(test_file)
-      end
 
       scenario "Form is created, made live by form admin user and completed by a member of the public with a file upload" do
         start_tracing
