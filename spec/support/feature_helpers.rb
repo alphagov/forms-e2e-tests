@@ -52,11 +52,11 @@ module FeatureHelpers
 
     next_form_creation_step 'Add and edit your questions'
 
-    create_a_selection_question
+    add_a_selection_question
 
-    create_a_single_line_of_text_question(question_text)
+    add_a_single_line_of_text_question(question_text)
 
-    create_a_single_line_of_text_question(alternate_question_text) # Adding a second question to test branching
+    add_a_single_line_of_text_question(alternate_question_text) # Adding a second question to test branching
 
     first(:link, "your questions").click
 
@@ -74,7 +74,7 @@ module FeatureHelpers
 
     next_form_creation_step 'Add and edit your questions'
 
-    create_a_file_upload_question
+    add_a_file_upload_question
 
     finish_form_creation
 
@@ -153,7 +153,15 @@ module FeatureHelpers
     click_button "Save and continue"
   end
 
-  def create_a_selection_question
+  def add_a_question
+    return if page.find("h1").text =~ /What kind of answer do you need to this question?/
+
+    click_on "Add a question", match: :first
+  end
+
+  def add_a_selection_question
+    add_a_question
+
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "Selection from a list of options", visible: false
     click_button "Continue"
@@ -185,10 +193,8 @@ module FeatureHelpers
     click_button "Save question"
   end
 
-  def create_a_single_line_of_text_question(question)
-    within(page.find(".govuk-notification-banner__content")) do
-      click_on "Add a question"
-    end
+  def add_a_single_line_of_text_question(question)
+    add_a_question
 
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "Text", visible: false
@@ -207,7 +213,9 @@ module FeatureHelpers
     click_button "Save question"
   end
 
-  def create_a_file_upload_question
+  def add_a_file_upload_question
+    add_a_question
+
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "File upload", visible: false
     click_button "Continue"
