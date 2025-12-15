@@ -60,9 +60,9 @@ module FeatureHelpers
 
     first(:link, "your questions").click
 
-    add_a_route
+    add_a_route selection_question, if_the_answer_selected_is: "Yes", skip_the_person_to: alternate_question_text
 
-    add_a_secondary_skip
+    add_a_secondary_skip last_question_before_skip: question_text, question_to_skip_to: "Check your answers before submitting"
 
     finish_form_creation
 
@@ -227,29 +227,29 @@ module FeatureHelpers
     click_link("Back to your questions", match: :first)
   end
 
-  def add_a_route
+  def add_a_route(question_to_add_a_route_from, if_the_answer_selected_is:, skip_the_person_to:)
     expect(page.find("h1")).to have_content 'Add and edit your questions'
     click_link "Add a question route"
 
     expect(page.find("h1")).to have_content "Add a route from a question"
-    choose "1. #{selection_question}", visible: false
+    choose question_to_add_a_route_from, visible: false
     click_button "Continue"
 
     expect(page.find("h1")).to have_content "Add route"
 
-    select "Yes", from: "If the answer selected is"
+    select if_the_answer_selected_is, from: "If the answer selected is"
 
-    select "3. #{alternate_question_text}", from: "to"
+    select skip_the_person_to, from: "to"
     click_button "Save and continue"
   end
 
-  def add_a_secondary_skip
+  def add_a_secondary_skip(last_question_before_skip:, question_to_skip_to:)
     click_on "Set questions to skip"
 
     expect(page.find("h1")).to have_content 'Route for any other answer: set questions to skip'
 
-    select "2. #{question_text}", from: "Select the last question you want them to answer before they skip"
-    select "Check your answers before submitting", from: "Select the question to skip them to"
+    select last_question_before_skip, from: "Select the last question you want them to answer before they skip"
+    select question_to_skip_to, from: "Select the question to skip them to"
 
     click_button "Save and continue"
 
