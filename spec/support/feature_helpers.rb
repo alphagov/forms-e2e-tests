@@ -73,20 +73,6 @@ module FeatureHelpers
     make_form_live_and_return_to_form_details
   end
 
-  def build_a_new_form_with_file_upload
-    sign_in_to_admin_and_create_form
-
-    next_form_creation_step 'Add and edit your questions'
-
-    add_a_file_upload_question
-
-    click_link("Back to your questions", match: :first)
-
-    finish_form_creation
-
-    make_form_live_and_return_to_form_details
-  end
-
   def sign_in_to_admin_and_create_form
     sign_in_to_admin
 
