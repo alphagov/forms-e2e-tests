@@ -3,6 +3,8 @@
 require_relative "./notify_helpers"
 require_relative "./aws_helpers"
 
+SECONDS_PER_MINUTE = 60
+
 module FeatureHelpers
   include NotifyHelpers
   include AwsHelpers
@@ -52,17 +54,19 @@ module FeatureHelpers
 
     next_form_creation_step 'Add and edit your questions'
 
-    create_a_selection_question
+    add_a_file_upload_question unless skip_file_upload?
 
-    create_a_single_line_of_text_question(question_text)
+    add_a_selection_question
 
-    create_a_single_line_of_text_question(alternate_question_text) # Adding a second question to test branching
+    add_a_single_line_of_text_question(question_text)
+
+    add_a_single_line_of_text_question(alternate_question_text) # Adding a second question to test branching
 
     first(:link, "your questions").click
 
-    add_a_route
+    add_a_route selection_question, if_the_answer_selected_is: "Yes", skip_the_person_to: alternate_question_text
 
-    add_a_secondary_skip
+    add_a_secondary_skip last_question_before_skip: question_text, question_to_skip_to: "Check your answers before submitting"
 
     finish_form_creation
 
@@ -74,7 +78,9 @@ module FeatureHelpers
 
     next_form_creation_step 'Add and edit your questions'
 
-    create_a_file_upload_question
+    add_a_file_upload_question
+
+    click_link("Back to your questions", match: :first)
 
     finish_form_creation
 
@@ -153,7 +159,15 @@ module FeatureHelpers
     click_button "Save and continue"
   end
 
-  def create_a_selection_question
+  def add_a_question
+    return if page.find("h1").text =~ /What kind of answer do you need to this question?/
+
+    click_on "Add a question", match: :first
+  end
+
+  def add_a_selection_question
+    add_a_question
+
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "Selection from a list of options", visible: false
     click_button "Continue"
@@ -185,10 +199,8 @@ module FeatureHelpers
     click_button "Save question"
   end
 
-  def create_a_single_line_of_text_question(question)
-    within(page.find(".govuk-notification-banner__content")) do
-      click_on "Add a question"
-    end
+  def add_a_single_line_of_text_question(question)
+    add_a_question
 
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "Text", visible: false
@@ -207,7 +219,9 @@ module FeatureHelpers
     click_button "Save question"
   end
 
-  def create_a_file_upload_question
+  def add_a_file_upload_question
+    add_a_question
+
     expect(page.find("h1")).to have_content 'What kind of answer do you need to this question?'
     choose "File upload", visible: false
     click_button "Continue"
@@ -216,32 +230,31 @@ module FeatureHelpers
     choose "Mandatory", visible: false
 
     click_button "Save question"
-    click_link("Back to your questions", match: :first)
   end
 
-  def add_a_route
+  def add_a_route(question_to_add_a_route_from, if_the_answer_selected_is:, skip_the_person_to:)
     expect(page.find("h1")).to have_content 'Add and edit your questions'
     click_link "Add a question route"
 
     expect(page.find("h1")).to have_content "Add a route from a question"
-    choose "1. #{selection_question}", visible: false
+    choose question_to_add_a_route_from, visible: false
     click_button "Continue"
 
     expect(page.find("h1")).to have_content "Add route"
 
-    select "Yes", from: "If the answer selected is"
+    select if_the_answer_selected_is, from: "If the answer selected is"
 
-    select "3. #{alternate_question_text}", from: "to"
+    select skip_the_person_to, from: "to"
     click_button "Save and continue"
   end
 
-  def add_a_secondary_skip
+  def add_a_secondary_skip(last_question_before_skip:, question_to_skip_to:)
     click_on "Set questions to skip"
 
     expect(page.find("h1")).to have_content 'Route for any other answer: set questions to skip'
 
-    select "2. #{question_text}", from: "Select the last question you want them to answer before they skip"
-    select "Check your answers before submitting", from: "Select the question to skip them to"
+    select last_question_before_skip, from: "Select the last question you want them to answer before they skip"
+    select question_to_skip_to, from: "Select the question to skip them to"
 
     click_button "Save and continue"
 
@@ -325,6 +338,14 @@ module FeatureHelpers
     logger.info "When I fill out the new form"
     visit live_form_link
 
+    unless skip_file_upload?
+      logger.info "And I can upload a file"
+      expect(page).to have_content "Upload a file"
+      logger.info "Then I can upload a file"
+      upload_a_file
+    end
+
+    logger.info "When there is a branch question"
     if yes_branch
       logger.info "And I choose the 'yes' branch"
       answer_selection_question("Yes")
@@ -394,10 +415,7 @@ module FeatureHelpers
     logger.info "And I can upload a file"
     expect(page).to have_content "Upload a file"
     logger.info "When I upload a file"
-    when_i_upload_a_file
-    click_button "Continue"
-    expect(page).to have_content "Your file has been uploaded"
-    click_button "Continue"
+    upload_a_file
 
     expect(page).to have_content "Check your answers before submitting your form"
     choose "No"
@@ -480,8 +498,11 @@ module FeatureHelpers
     click_button "Continue"
   end
 
-  def when_i_upload_a_file
+  def upload_a_file
     attach_file file_question_text, test_file
+    click_button "Continue"
+    expect(page).to have_content "Your file has been uploaded", wait: 1 * SECONDS_PER_MINUTE # file uploads can take a long time
+    click_button "Continue"
   end
 
   def sign_in_to_admin
@@ -545,6 +566,10 @@ module FeatureHelpers
 
   def skip_product_pages?
     ENV.fetch('SKIP_PRODUCT_PAGES', false)
+  end
+
+  def skip_file_upload?
+    ENV.fetch('SKIP_FILE_UPLOAD', false)
   end
 
   def visit_product_page
