@@ -11,7 +11,7 @@ module FileFixtures
       path
     else
       msg = "the directory '%s' does not contain a file name '%s'"
-      raise ArgumentError, msg % [file_fixture_path, fixture_name]
+      raise ArgumentError, sprintf(msg, file_fixture_path, fixture_name)
     end
   end
 end
