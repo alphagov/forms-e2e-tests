@@ -339,12 +339,11 @@ module FeatureHelpers
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content "Check your answers before submitting your form"
 
+    expect(page).to have_content selection_question
     if yes_branch
-      expect(page).to have_content selection_question
       expect(page).to have_content "Yes"
       expect(page).to have_content alternate_question_text
     else
-      expect(page).to have_content selection_question
       expect(page).to have_content "No"
       expect(page).to have_content question_text
 
@@ -423,7 +422,7 @@ module FeatureHelpers
       return true if status_api_response.code == "204"
 
       wait_time = try + ((Time.now - start_time)**0.5)
-      logger.debug "failed. Sleeping %0.2fs." % wait_time
+      logger.debug sprintf("failed. Sleeping %0.2fs.", wait_time)
       sleep wait_time
     end
 
@@ -432,7 +431,7 @@ module FeatureHelpers
 
   def s3_form_is_filled_in_by_form_filler
     form_id = ENV.fetch("S3_FORM_ID") { raise "You must set $S3_FORM_ID" }
-    s3_form_live_link = forms_runner_url + "/form/" + form_id
+    s3_form_live_link = "#{forms_runner_url}/form/#{form_id}"
 
     logger.info
     logger.info "As a form filler"
