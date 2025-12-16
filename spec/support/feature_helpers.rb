@@ -73,20 +73,6 @@ module FeatureHelpers
     make_form_live_and_return_to_form_details
   end
 
-  def build_a_new_form_with_file_upload
-    sign_in_to_admin_and_create_form
-
-    next_form_creation_step 'Add and edit your questions'
-
-    add_a_file_upload_question
-
-    click_link("Back to your questions", match: :first)
-
-    finish_form_creation
-
-    make_form_live_and_return_to_form_details
-  end
-
   def sign_in_to_admin_and_create_form
     sign_in_to_admin
 
@@ -276,41 +262,31 @@ module FeatureHelpers
   end
 
   def add_form_submission_email
-    # If the confirmation loop has been rolled out
-    if page.has_content? "Enter the email address confirmation code"
-      next_form_creation_step 'Set the email address completed forms will be sent to'
+    next_form_creation_step 'Set the email address completed forms will be sent to'
 
-      expect(page.find("h1")).to have_content 'Set the email address for completed forms'
+    expect(page.find("h1")).to have_content 'Set the email address for completed forms'
 
-      expected_mail_reference = find_notification_reference("notification-id")
+    expected_mail_reference = find_notification_reference("notification-id")
 
-      fill_in "What email address should completed forms be sent to?", with: test_email_address
-      click_button "Save and continue"
+    fill_in "What email address should completed forms be sent to?", with: test_email_address
+    click_button "Save and continue"
 
-      expect(page.find("h1")).to have_content 'Confirmation code sent'
-      expect(page.find("main")).to have_content test_email_address
+    expect(page.find("h1")).to have_content 'Confirmation code sent'
+    expect(page.find("main")).to have_content test_email_address
 
-      click_link "Enter the email address confirmation code"
+    click_link "Enter the email address confirmation code"
 
-      expect(page.find("h1")).to have_content "Enter the confirmation code"
+    expect(page.find("h1")).to have_content "Enter the confirmation code"
 
-      confirmation_code = wait_for_confirmation_code(expected_mail_reference)
+    confirmation_code = wait_for_confirmation_code(expected_mail_reference)
 
-      fill_in "Enter the confirmation code", with: confirmation_code
+    fill_in "Enter the confirmation code", with: confirmation_code
 
-      click_button "Save and continue"
+    click_button "Save and continue"
 
-      expect(page.find("h1")).to have_content 'Email address confirmed'
+    expect(page.find("h1")).to have_content 'Email address confirmed'
 
-      click_link "Continue creating a form"
-
-    else
-      next_form_creation_step 'Set the email address completed forms will be sent to'
-
-      expect(page.find("h1")).to have_content 'What email address should completed forms be sent to?'
-      fill_in "What email address should completed forms be sent to?", with: test_email_address
-      click_button "Save and continue"
-    end
+    click_link "Continue creating a form"
   end
 
   def delete_form
