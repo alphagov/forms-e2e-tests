@@ -17,7 +17,7 @@ RSpec::Core::RakeTask.new(:end_to_end) do |task|
 
   ENV["SETTINGS__SUBMISSION_STATUS_API__SECRET"] ||= "test_token"
 
-  task.pattern = %[spec/end_to_end]
+  task.pattern = %(spec/end_to_end)
   task.verbose = false
 end
 

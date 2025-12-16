@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-feature 'Runner Smoke Test', type: :feature do
+feature "Runner Smoke Test", type: :feature do
   let(:smoke_test_form_url) do
-    ENV.fetch('SMOKE_TEST_FORM_URL') { raise 'You must set $SMOKE_TEST_FORM_URL' }
+    ENV.fetch("SMOKE_TEST_FORM_URL") { raise "You must set $SMOKE_TEST_FORM_URL" }
   end
 
   before do
     Capybara.app_host = smoke_test_form_url
   end
 
-  scenario 'Complete and submit an existing form' do
+  scenario "Complete and submit an existing form" do
     logger.info "Visiting #{smoke_test_form_url}"
     visit smoke_test_form_url
 
@@ -20,23 +20,23 @@ feature 'Runner Smoke Test', type: :feature do
       current_page = page.current_url
       logger.info "#{current_page} answering question: #{question_number}"
 
-      question_type = page.first('input')[:name]
-      fill_in(class: 'govuk-input', with: answer_for(question_type))
-      click_button 'Continue'
+      question_type = page.first("input")[:name]
+      fill_in(class: "govuk-input", with: answer_for(question_type))
+      click_button "Continue"
 
-      expect(page).to have_no_content('There is a problem')
+      expect(page).to have_no_content("There is a problem")
       expect(page.current_url).not_to eq(current_page), "On the same page after clicking 'Continue'"
 
       question_number += 1
     end
 
-    logger.info 'Confirming answers'
-    expect(page).to have_content('Check your answers before submitting your form')
+    logger.info "Confirming answers"
+    expect(page).to have_content("Check your answers before submitting your form")
 
-    choose 'No', visible: false
-    click_button 'Submit'
-    logger.info 'Submitted answers'
-    expect(page).to have_content('Your form has been submitted')
-    logger.info 'Test complete'
+    choose "No", visible: false
+    click_button "Submit"
+    logger.info "Submitted answers"
+    expect(page).to have_content("Your form has been submitted")
+    logger.info "Test complete"
   end
 end
