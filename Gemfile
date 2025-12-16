@@ -14,4 +14,5 @@ group :development do
   gem "cuprite"
   gem "openssl"
   gem "rake"
+  gem "rubocop-govuk", require: false
 end
