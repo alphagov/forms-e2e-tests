@@ -321,6 +321,7 @@ module FeatureHelpers
       upload_a_file
     end
 
+    # rubocop:todo Style/IdenticalConditionalBranches
     logger.info "When there is a branch question"
     if yes_branch
       logger.info "And I choose the 'yes' branch"
@@ -335,6 +336,7 @@ module FeatureHelpers
       expect(page).to have_content question_text
       answer_single_line(answer_text)
     end
+    # rubocop:enable Style/IdenticalConditionalBranches
 
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content "Check your answers before submitting your form"

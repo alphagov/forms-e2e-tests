@@ -48,7 +48,7 @@ private
   end
 
   def source(file, line)
-    @@source_locations ||= Hash.new do |_hash, key|
+    @@source_locations ||= Hash.new do |_hash, key| # rubocop:todo Style/ClassVars
       File.readlines(key).map(&:strip)
     end
 

@@ -1,3 +1,4 @@
+# rubocop:todo RSpec/NoExpectationExample
 feature "Full lifecycle of a form", type: :feature do
   let(:test_email_address) { "govuk-forms-automation-tests@digital.cabinet-office.gov.uk" }
   let(:form_name) { "capybara test form #{Time.now.strftime('%Y-%m-%d %H:%M.%S')}" }
@@ -65,3 +66,4 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 end
+# rubocop:enable RSpec/NoExpectationExample
