@@ -32,7 +32,8 @@ module AwsHelpers
   end
 
   def get_bucket
-    bucket = Settings.aws.file_upload_s3_bucket_name
+    # TODO: Update this once we're confident no one is setting $AWS_S3_BUCKET
+    bucket = Settings.aws.file_upload_s3_bucket_name || ENV["AWS_S3_BUCKET"]
 
     raise "Settings.aws.file_upload_s3_bucket_name is not set" if bucket.nil? || bucket.empty?
 

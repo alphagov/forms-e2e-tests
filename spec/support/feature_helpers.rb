@@ -31,15 +31,18 @@ module FeatureHelpers
   end
 
   def forms_admin_url
-    Settings.forms_admin.url || ( raise "Settings.forms_admin.url is not set" )
+    # TODO: Update this once we're confident no one is setting $FORMS_ADMIN_URL
+    Settings.forms_admin.url || ENV.fetch("FORMS_ADMIN_URL") { raise "Settings.forms_admin.url is not set" }
   end
 
   def forms_product_page_url
-    Settings.forms_product_page.url || ( raise "Settings.forms_product_page.url is not set" )
+    # TODO: Update this once we're confident no one is setting $PRODUCT_PAGES_URL
+    Settings.forms_product_page.url || ENV.fetch("PRODUCT_PAGES_URL") { raise "Settings.forms_product_page.url is not set" }
   end
 
   def forms_runner_url
-    Settings.forms_runner.url || ( raise "Settings.forms_runner.url is not set" )
+    # TODO: Update this once we're confident no one is setting $FORMS_RUNNER_URL
+    Settings.forms_runner.url || ENV.fetch("FORMS_RUNNER_URL") { raise "Settings.forms_runner.url is not set" }
   end
 
   def submission_status_url
@@ -457,7 +460,8 @@ module FeatureHelpers
   end
 
   def s3_form_is_filled_in_by_form_filler
-    form_id = Settings.form_ids.s3 || (raise "Settings.form_ids.s3 is not set")
+    # TODO: Update this once we're confident no one is using $S3_FORM_ID
+    form_id = Settings.form_ids.s3 || ENV.fetch("S3_FORM_ID") { raise "Settings.form_ids.s3 is not set" }
 
     s3_form_live_link = "#{forms_runner_url}/form/#{form_id}"
 
@@ -531,11 +535,13 @@ module FeatureHelpers
   end
 
   def auth0_email_address
-    Settings.forms_admin.auth.username || (raise "Settings.forms_admin.auth.username is not set")
+    # TODO: Update this once we're confident no one is setting $AUTH0_EMAIL_USERNAME
+    Settings.forms_admin.auth.username || ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "Settings.forms_admin.auth.username is not set" }
   end
 
   def auth0_password
-    Settings.forms_admin.auth.password || (raise "Settings.forms_admin.auth.password is not set")
+    # TODO: Remove this once we're confident no one is setting $AUTH0_USER_PASSWORD
+    Settings.forms_admin.auth.password || ENV.fetch("AUTH0_USER_PASSWORD") { raise "Settings.forms_admin.auth.password is not set" }
   end
 
   def sign_in_to_auth0
