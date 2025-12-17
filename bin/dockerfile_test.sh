@@ -55,6 +55,8 @@ docker run --env-file ./env.list --rm \
   -e SMOKE_TEST_FORM_URL \
   -e FORMS_RUNNER_URL \
   -e S3_FORM_ID \
+  -e LOG_LEVEL=debug \
+  -e TRACE=1 \
   "$IMAGE_TO_TEST"
 
 rm -f ./env.list
