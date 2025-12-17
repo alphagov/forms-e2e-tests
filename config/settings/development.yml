@@ -1,0 +1,18 @@
+features:
+  describe_none_of_the_above_enabled: true
+
+form_ids:
+  smoke_test: 1
+  s3: 2
+
+forms_admin:
+  url: http://localhost:3000
+
+forms_runner:
+  url: http://localhost:3001
+
+forms_product_page:
+  url: http://localhost:3002
+
+submission_status_api:
+  secret: test_token

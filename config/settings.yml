@@ -1,0 +1,30 @@
+features: {}
+
+end_to_end_tests:
+  group_name: End to end tests
+
+form_ids:
+  smoke_test:
+  s3:
+
+forms_admin:
+  auth:
+    username:
+    password:
+  url:
+
+forms_product_page:
+  url:
+
+forms_runner:
+  url:
+
+aws:
+  file_upload_s3_bucket_name:
+  s3_submission_iam_role_arn:
+
+govuk_notify:
+  api_key:
+
+submission_status_api:
+  secret:

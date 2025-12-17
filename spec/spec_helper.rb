@@ -1,5 +1,10 @@
-require "capybara/rspec"
 require "debug"
+
+ENV["SETTINGS__FORMS_ENV"] ||= "development"
+
+require_relative "../config/environment"
+
+require "capybara/rspec"
 
 require_relative "support/feature_helpers"
 require_relative "support/file_fixtures"
