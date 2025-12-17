@@ -1,5 +1,8 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
+
+# Get the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 function help() {
   echo "Optionally builds the docker image and runs the tests against the development enviroment.
@@ -24,7 +27,7 @@ IMAGE_TO_TEST="$1"
 if [[ -z "$IMAGE_TO_TEST" ]]; then
   echo 'Building image'
   IMAGE_TO_TEST="test_e2e_$(date +%Y-%m-%d_%H-%M)"
-  docker build -t "$IMAGE_TO_TEST" ../
+  docker build -t "$IMAGE_TO_TEST" .
 fi
 
 if [ -z "$FORMS_ADMIN_URL" ] || \
@@ -33,7 +36,7 @@ if [ -z "$FORMS_ADMIN_URL" ] || \
    [ -z "$AUTH0_USER_PASSWORD" ] || \
    [ -z "$SETTINGS__GOVUK_NOTIFY__API_KEY" ]; then
   echo "Loading env vars from parameter store"
-  source load_env_vars.sh
+  source $SCRIPT_DIR/load_env_vars.sh
   set_e2e_env_vars 'dev'
   set_smoke_test_env_vars 'dev'
 fi
