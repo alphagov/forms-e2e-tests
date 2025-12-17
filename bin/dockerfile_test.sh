@@ -26,7 +26,7 @@ IMAGE_TO_TEST="$1"
 
 if [[ -z "$IMAGE_TO_TEST" ]]; then
   echo 'Building image'
-  IMAGE_TO_TEST="test_e2e_$(date +%Y-%m-%d_%H-%M)"
+  IMAGE_TO_TEST="forms-e2e-tests:test_$(date +%Y%m%dT%H%M)"
   docker build -t "$IMAGE_TO_TEST" .
 fi
 
