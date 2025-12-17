@@ -36,7 +36,7 @@ Ensure both the forms-admin and forms-runner services are also configured to use
 
 ### Running the tests locally
 
-The tests expect an active group to exist called "End to end tests", which the test user belongs as a group admin. This name can be overridden by setting the environment variable `GROUP_NAME`.
+The tests expect an active group to exist called "End to end tests", which the test user belongs as a group admin. This name can be overridden by setting the environment variable `SETTINGS__END_TO_END_TESTS__GROUP_NAME`.
 
 You can run the tests against localhost using the following command:
 
@@ -104,16 +104,12 @@ To run the tests:
   - run the end to end tests tests:
 
 ```shell
+SETTINGS__AWS__FILE_UPLOAD_S3_BUCKET_NAME=${ the name of the s3 bucket }\
+SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN=${ the iam role arn } \
+SETTINGS__GOVUK_NOTIFY__API_KEY=${ your notify api key here } \
 SKIP_AUTH=1 \
-FORMS_ADMIN_URL='http://localhost:3000/' \
-PRODUCT_PAGES_URL='http://localhost:3002/' \
 SKIP_PRODUCT_PAGES=1 \
 LOG_LEVEL=info \
-SETTINGS__GOVUK_NOTIFY__API_KEY= ${ your notify api key here } \
-FORMS_RUNNER_URL='http://localhost:3001/' \
-SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN= ${ the iam role arn } \
-AWS_S3_BUCKET=${ the name of the s3 bucket } \
-S3_FORM_ID='2' \
 bundle exec rspec spec/end_to_end
 ```
 
