@@ -126,9 +126,11 @@ function set_e2e_env_vars() {
   export AWS_S3_BUCKET="$(aws_s3_bucket $environment)"
   export SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN="$(aws_s3_role_arn $environment)"
   export SETTINGS__SUBMISSION_STATUS_API__SECRET="$(get_param /${environment}/automated-tests/e2e/runner/submission_status_api_shared_secret)"
+  export SETTINGS__FORMS_ENV="$environment"
 }
 
 function set_smoke_test_env_vars() {
   local environment="$1"
   export SMOKE_TEST_FORM_URL="$(form_url "$environment")"
+  export SETTINGS__FORMS_ENV="$environment"
 }
