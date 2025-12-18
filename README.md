@@ -187,13 +187,3 @@ The tests expect an editor user exist with an Auth0 database connection configur
 The user should belong to an active group, called "End to end tests", as a group admin to allow publishing a form.
 
 The login details should be stored in AWS parameter store. See bin/load_env_vars.sh for configuring the enviroment varibles required.
-
-### Changing Auth0 connection
-
-When Auth0 is the enabled auth provider for an environment you can switch between using a database or passwordless connection. The database connection uses a typical username and password flow set up exclusively for use by the end-to-end tests.
-
-The database connection is used by default, but the passwordless flow can be enabled by setting the USE_AUTH0_PASSWORDLESS_CONNECTION variable, e.g.:
-
-```shell
-gds aws forms-deploy-readonly -- env USE_AUTH0_PASSWORDLESS_CONNECTION=1 bin/end_to_end.sh dev
-```
