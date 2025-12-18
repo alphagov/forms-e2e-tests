@@ -4,7 +4,7 @@ feature "Full lifecycle of a form", type: :feature do
   let(:form_name) { "capybara test form #{Time.now.strftime('%Y-%m-%d %H:%M.%S')}" }
 
   let(:file_question_text) { "Upload a file" }
-  let(:test_file) { file_fixture("hello.txt") }
+  let(:test_file) { file_fixture("file_upload_test_image.jpg") }
   let(:selection_question) { "Do you want to remain anonymous?" }
   let(:question_text) { "What is your name?" }
   let(:answer_text) { "test name" }
