@@ -327,7 +327,7 @@ CHECKSUMS
   xpath (3.2.0) sha256=6dfda79d91bb3b949b947ecc5919f042ef2f399b904013eb3ef6d20dd3a4082e
 
 RUBY VERSION
-   ruby 3.4.4p34
+   ruby 3.4.8p72
 
 BUNDLED WITH
    2.7.1
