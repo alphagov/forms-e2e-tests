@@ -23,15 +23,43 @@ feature "Full lifecycle of a form", type: :feature do
   end
 
   scenario "Form is created, made live by form admin user and completed by a member of the public" do
-    logger.info
-    logger.info "Scenario: Form is created, made live by form admin user"
-
     unless bypass_end_to_end_tests("forms-admin", "/")
+      logger.info
+      logger.info "Scenario: Form is created, made live by form admin user"
+
       start_tracing
 
-      build_a_new_form
+      logger.info
+      logger.info "As an editor user"
 
-      logger.info("Then I can share the live form")
+      sign_in_to_admin
+      visit_end_to_end_tests_group
+
+      logger.info "When I create a new form"
+      delete_form(form_name)
+      create_form_with_name(form_name)
+
+      next_form_creation_step "Add and edit your questions"
+
+      # Add question to test file upload
+      add_a_file_upload_question unless skip_file_upload?
+
+      # Add questions to test routes
+      add_a_selection_question(selection_question, options: %w[Yes No])
+      add_a_single_line_of_text_question(question_text)
+      add_a_single_line_of_text_question(alternate_question_text)
+
+      first(:link, "your questions").click
+
+      add_a_route selection_question, if_the_answer_selected_is: "Yes", skip_the_person_to: alternate_question_text
+      add_a_secondary_skip last_question_before_skip: question_text, question_to_skip_to: "Check your answers before submitting"
+
+      finish_form_creation
+
+      logger.info "And make it live"
+      make_form_live_and_return_to_form_details
+
+      logger.info "Then I can share the live form"
       live_form_link = page.find("[data-copy-target]").text
 
       unless bypass_end_to_end_tests("forms-runner", live_form_link)

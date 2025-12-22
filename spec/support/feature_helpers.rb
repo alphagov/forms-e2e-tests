@@ -46,44 +46,6 @@ module FeatureHelpers
     "#{forms_runner_url}/submission"
   end
 
-  def build_a_new_form
-    logger.info
-    logger.info "As an editor user"
-
-    sign_in_to_admin_and_create_form
-
-    next_form_creation_step "Add and edit your questions"
-
-    add_a_file_upload_question unless skip_file_upload?
-
-    add_a_selection_question(selection_question, options: %w[Yes No])
-
-    add_a_single_line_of_text_question(question_text)
-
-    add_a_single_line_of_text_question(alternate_question_text) # Adding a second question to test branching
-
-    first(:link, "your questions").click
-
-    add_a_route selection_question, if_the_answer_selected_is: "Yes", skip_the_person_to: alternate_question_text
-
-    add_a_secondary_skip last_question_before_skip: question_text, question_to_skip_to: "Check your answers before submitting"
-
-    finish_form_creation
-
-    make_form_live_and_return_to_form_details
-  end
-
-  def sign_in_to_admin_and_create_form
-    sign_in_to_admin
-
-    visit_end_to_end_tests_group
-
-    delete_form(delete_form)
-
-    logger.info "When I create a new form"
-    create_form_with_name(form_name)
-  end
-
   def finish_form_creation
     mark_pages_task_complete
 
@@ -120,7 +82,6 @@ module FeatureHelpers
   end
 
   def make_form_live_and_return_to_form_details
-    logger.info "And make it live"
     next_form_creation_step "Make your form live"
 
     expect(page.find("h1")).to have_content "Make your form live"
