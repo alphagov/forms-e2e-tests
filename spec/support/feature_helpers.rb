@@ -78,7 +78,7 @@ module FeatureHelpers
 
     visit_end_to_end_tests_group
 
-    delete_form
+    delete_form(delete_form)
 
     logger.info "When I create a new form"
     create_form_with_name(form_name)
@@ -290,7 +290,7 @@ module FeatureHelpers
     click_link "Continue creating a form"
   end
 
-  def delete_form
+  def delete_form(form_name)
     if page.has_link?(form_name)
       click_link(form_name, match: :one, exact: true)
       live_form_url = page.current_url
