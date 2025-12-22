@@ -56,7 +56,7 @@ module FeatureHelpers
 
     add_a_file_upload_question unless skip_file_upload?
 
-    add_a_selection_question
+    add_a_selection_question(selection_question, options: %w[Yes No])
 
     add_a_single_line_of_text_question(question_text)
 
@@ -151,7 +151,7 @@ module FeatureHelpers
     click_on "Add a question", match: :first
   end
 
-  def add_a_selection_question
+  def add_a_selection_question(question_text, options:)
     add_a_question
 
     expect(page.find("h1")).to have_content "What kind of answer do you need to this question?"
@@ -159,7 +159,7 @@ module FeatureHelpers
     click_button "Continue"
 
     expect(page.find("h1")).to have_content "What’s your question?"
-    fill_in "What’s your question?", with: selection_question
+    fill_in "What’s your question?", with: question_text
     click_button "Continue"
 
     expect(page.find("h1")).to have_content "How many options should people be able to select?"
@@ -167,8 +167,9 @@ module FeatureHelpers
     click_button "Continue"
 
     expect(page.find("h1")).to have_content "Create a list of options"
-    fill_in "Option 1", with: "Yes"
-    fill_in "Option 2", with: "No"
+    options.each.with_index(1) do |option_text, number|
+      fill_in "Option #{number}", with: option_text
+    end
 
     within(page.find("fieldset", text: "Should the list include an option for ‘None of the above’?")) do
       choose "No", visible: false
