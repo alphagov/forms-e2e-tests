@@ -147,6 +147,46 @@ module FeatureHelpers
     click_button "Save question"
   end
 
+  def add_a_selection_question_with_different_answer_for_none_of_the_above(question_text, options:, none_of_the_above_label_text:)
+    add_a_question
+
+    expect(page.find("h1")).to have_content "What kind of answer do you need to this question?"
+    choose "Selection from a list of options", visible: false
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content "What’s your question?"
+    fill_in "What’s your question?", with: question_text
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content "How many options should people be able to select?"
+    choose "One option only", visible: false
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content "Create a list of options"
+    options.each.with_index(1) do |option_text, number|
+      fill_in "Option #{number}", with: option_text
+    end
+
+    within(page.find("fieldset", text: "Should the list include an option for ‘None of the above’?")) do
+      choose "Yes, and let people provide a different answer", visible: false
+    end
+
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content "Ask for an answer if someone selects ‘None of the above’"
+    fill_in "Enter a question or label for the text box", with: none_of_the_above_label_text
+    choose "Mandatory"
+    click_button "Continue"
+
+    expect(page.find("h1")).to have_content "Edit question"
+
+    if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
+      choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
+    end
+
+    click_button "Save question"
+  end
+
   def add_a_single_line_of_text_question(question)
     add_a_question
 
@@ -283,8 +323,26 @@ module FeatureHelpers
       upload_a_file
     end
 
+    unless skip_describe_none_of_the_above?
+      logger.info "When there is a selection question with an option for none of the above"
+      expect(page.find("h1")).to have_content "What is your favourite colour?"
+      within_fieldset("What is your favourite colour?") do
+        expect(page).to have_field "None of the above", visible: :all
+
+        choose "None of the above", visible: false
+
+        logger.info "And I can provide a different answer"
+        expect(page).to have_field "Enter your favourite colour"
+
+        logger.info "Then I can answer the question with an option not on the list"
+        fill_in "Enter your favourite colour", with: "Yellow"
+      end
+      click_button "Continue"
+    end
+
     # rubocop:todo Style/IdenticalConditionalBranches
     logger.info "When there is a branch question"
+    expect(page.find("h1")).to have_content selection_question
     if yes_branch
       logger.info "And I choose the 'yes' branch"
       answer_selection_question("Yes")
@@ -302,6 +360,11 @@ module FeatureHelpers
 
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content "Check your answers before submitting your form"
+
+    unless skip_describe_none_of_the_above?
+      expect(page).to have_content "What is your favourite colour?"
+      expect(page).to have_content "Yellow"
+    end
 
     expect(page).to have_content selection_question
     if yes_branch
@@ -509,6 +572,14 @@ module FeatureHelpers
 
   def skip_file_upload?
     ENV.fetch("SKIP_FILE_UPLOAD", false)
+  end
+
+  def describe_none_of_the_above_enabled?
+    YAML.load(ENV.fetch("SETTINGS__FEATURES__DESCRIBE_NONE_OF_THE_ABOVE_ENABLED", "false"))
+  end
+
+  def skip_describe_none_of_the_above?
+    !describe_none_of_the_above_enabled?
   end
 
   def visit_product_page

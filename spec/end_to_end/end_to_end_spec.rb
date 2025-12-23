@@ -44,6 +44,15 @@ feature "Full lifecycle of a form", type: :feature do
       # Add question to test file upload
       add_a_file_upload_question unless skip_file_upload?
 
+      # Add question to test describing none of the above
+      unless skip_describe_none_of_the_above?
+        add_a_selection_question_with_different_answer_for_none_of_the_above(
+          "What is your favourite colour?",
+          options: %w[Red Green],
+          none_of_the_above_label_text: "Enter your favourite colour",
+        )
+      end
+
       # Add questions to test routes
       add_a_selection_question(selection_question, options: %w[Yes No])
       add_a_single_line_of_text_question(question_text)
