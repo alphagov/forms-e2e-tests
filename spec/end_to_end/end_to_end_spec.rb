@@ -14,7 +14,7 @@ feature "Full lifecycle of a form", type: :feature do
     if skip_product_pages?
       forms_admin_url
     else
-      product_pages_url
+      forms_product_page_url
     end
   end
 

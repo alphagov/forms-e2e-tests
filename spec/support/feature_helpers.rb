@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "yaml"
-
 require_relative "./notify_helpers"
 require_relative "./aws_helpers"
 
@@ -33,15 +31,15 @@ module FeatureHelpers
   end
 
   def forms_admin_url
-    ENV.fetch("FORMS_ADMIN_URL") { raise "You must set $FORMS_ADMIN_URL" }
+    Settings.forms_admin.url || ( raise "Settings.forms_admin.url is not set" )
   end
 
-  def product_pages_url
-    ENV.fetch("PRODUCT_PAGES_URL") { raise "You must set $PRODUCT_PAGES_URL" }
+  def forms_product_page_url
+    Settings.forms_product_page.url || ( raise "Settings.forms_product_page.url is not set" )
   end
 
   def forms_runner_url
-    ENV.fetch("FORMS_RUNNER_URL") { raise "You must set $FORMS_RUNNER_URL" }
+    Settings.forms_runner.url || ( raise "Settings.forms_runner.url is not set" )
   end
 
   def submission_status_url
@@ -435,7 +433,7 @@ module FeatureHelpers
     uri.query = URI.encode_www_form(reference: submission_reference)
 
     request = Net::HTTP::Get.new(uri)
-    request["Authorization"] = "Bearer #{ENV['SETTINGS__SUBMISSION_STATUS_API__SECRET']}"
+    request["Authorization"] = "Bearer #{Settings.submission_status_api.secret}"
 
     start_time = Time.now
     try = 0
@@ -459,7 +457,8 @@ module FeatureHelpers
   end
 
   def s3_form_is_filled_in_by_form_filler
-    form_id = ENV.fetch("S3_FORM_ID") { raise "You must set $S3_FORM_ID" }
+    form_id = Settings.form_ids.s3 || (raise "Settings.form_ids.s3 is not set")
+
     s3_form_live_link = "#{forms_runner_url}/form/#{form_id}"
 
     logger.info
@@ -514,7 +513,7 @@ module FeatureHelpers
       logger.info "Visiting admin at #{forms_admin_url}"
       visit admin_url_with_e2e_auth(forms_admin_url)
     else
-      logger.info "Visiting product pages at #{product_pages_url}"
+      logger.info "Visiting product pages at #{forms_product_page_url}"
       visit_product_page
       expect(page.find("h1")).to have_content "Create online forms for GOV.UK"
 
@@ -531,18 +530,22 @@ module FeatureHelpers
     logger.debug "Sign in successful"
   end
 
+  def auth0_email_address
+    Settings.forms_admin.auth.username || (raise "Settings.forms_admin.auth.username is not set")
+  end
+
+  def auth0_password
+    Settings.forms_admin.auth.password || (raise "Settings.forms_admin.auth.password is not set")
+  end
+
   def sign_in_to_auth0
     # Username is the value entered into the Auth0 email input - it might be a google group
-    auth0_email_username = ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "You must set AUTH0_EMAIL_USERNAME to use Auth0" }
-
-    fill_in "Email address", with: auth0_email_username
+    fill_in "Email address", with: auth0_email_address
     click_button "Continue"
 
     logger.debug "Logging in using Auth0 database connection"
 
-    auth0_user_password = ENV.fetch("AUTH0_USER_PASSWORD") { raise "You must set AUTH0_USER_PASSWORD to use Auth0" }
-
-    fill_in "Password", with: auth0_user_password
+    fill_in "Password", with: auth0_password
     click_button "Continue"
   end
 
@@ -576,17 +579,13 @@ module FeatureHelpers
     ENV.fetch("SKIP_FILE_UPLOAD", false)
   end
 
-  def describe_none_of_the_above_enabled?
-    YAML.load(ENV.fetch("SETTINGS__FEATURES__DESCRIBE_NONE_OF_THE_ABOVE_ENABLED", "false"))
-  end
-
   def skip_describe_none_of_the_above?
-    !describe_none_of_the_above_enabled?
+    !Settings.features.describe_none_of_the_above_enabled
   end
 
   def visit_product_page
-    logger.info "Visiting product pages at #{product_pages_url}"
-    visit product_pages_url
+    logger.info "Visiting product pages at #{forms_product_page_url}"
+    visit forms_product_page_url
   end
 
   def admin_url_with_e2e_auth(admin_url)
@@ -605,7 +604,7 @@ module FeatureHelpers
   end
 
   def visit_end_to_end_tests_group
-    visit_group ENV.fetch("GROUP_NAME", "End to end tests")
+    visit_group Settings.end_to_end_tests.group_name
     expect(page).to have_content "Active group"
   end
 

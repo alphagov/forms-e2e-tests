@@ -2,7 +2,7 @@
 
 feature "Runner Smoke Test", type: :feature do
   let(:smoke_test_form_url) do
-    ENV.fetch("SMOKE_TEST_FORM_URL") { raise "You must set $SMOKE_TEST_FORM_URL" }
+    "#{Settings.forms_runner.url}/form/#{Settings.form_ids.smoke_test}"
   end
 
   before do
