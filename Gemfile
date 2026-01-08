@@ -4,6 +4,7 @@ ruby file: ".ruby-version"
 
 gem "aws-sdk-s3", "~> 1.205"
 gem "capybara"
+gem "config"
 gem "debug"
 gem "notifications-ruby-client"
 gem "rspec"

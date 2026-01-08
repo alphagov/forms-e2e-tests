@@ -2,12 +2,12 @@ require "notifications/client"
 
 class NotifyService
   def initialize
-    @notify_api_key = ENV["SETTINGS__GOVUK_NOTIFY__API_KEY"]
+    @notify_api_key = Settings.govuk_notify.api_key
   end
 
   def get_email(notification_id)
     if @notify_api_key.nil? || @notify_api_key.empty?
-      raise "You must set SETTINGS__GOVUK_NOTIFY__API_KEY"
+      raise "Settings.govuk_notify.api_key is not set"
     end
 
     client = Notifications::Client.new(@notify_api_key)

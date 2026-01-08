@@ -19,9 +19,9 @@ module AwsHelpers
   end
 
   def assume_role
-    @role_arn = ENV["SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN"]
+    @role_arn = Settings.aws.s3_submission_iam_role_arn
 
-    raise "You must set SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN" if @role_arn.nil? || @role_arn.empty?
+    raise "Settings.aws.s3_submission_iam_role_arn is not set" if @role_arn.nil? || @role_arn.empty?
 
     role_session_name = "forms-e2e"
     Aws::AssumeRoleCredentials.new(
@@ -32,9 +32,10 @@ module AwsHelpers
   end
 
   def get_bucket
-    bucket = ENV["AWS_S3_BUCKET"]
+    # TODO: Update this once we're confident no one is setting $AWS_S3_BUCKET
+    bucket = Settings.aws.file_upload_s3_bucket_name || ENV["AWS_S3_BUCKET"]
 
-    raise "You must set AWS_S3_BUCKET" if bucket.nil? || bucket.empty?
+    raise "Settings.aws.file_upload_s3_bucket_name is not set" if bucket.nil? || bucket.empty?
 
     bucket
   end

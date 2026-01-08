@@ -2,7 +2,12 @@
 
 feature "Runner Smoke Test", type: :feature do
   let(:smoke_test_form_url) do
-    ENV.fetch("SMOKE_TEST_FORM_URL") { raise "You must set $SMOKE_TEST_FORM_URL" }
+    # TODO: Update this once we're confident no one is setting $SMOKE_TEST_FORM_URL
+    if Settings.form_ids.smoke_test
+      "#{Settings.forms_runner.url}/form/#{Settings.form_ids.smoke_test}"
+    else
+      ENV["SMOKE_TEST_FORM_URL"] { raise "Settings.form_ids.smoke_test is not set" }
+    end
   end
 
   before do

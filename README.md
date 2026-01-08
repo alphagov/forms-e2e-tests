@@ -36,7 +36,7 @@ Ensure both the forms-admin and forms-runner services are also configured to use
 
 ### Running the tests locally
 
-The tests expect an active group to exist called "End to end tests", which the test user belongs as a group admin. This name can be overridden by setting the environment variable `GROUP_NAME`.
+The tests expect an active group to exist called "End to end tests", which the test user belongs as a group admin. This name can be overridden by setting the environment variable `SETTINGS__END_TO_END_TESTS__GROUP_NAME`.
 
 You can run the tests against localhost using the following command:
 
@@ -104,16 +104,12 @@ To run the tests:
   - run the end to end tests tests:
 
 ```shell
+SETTINGS__AWS__FILE_UPLOAD_S3_BUCKET_NAME=${ the name of the s3 bucket }\
+SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN=${ the iam role arn } \
+SETTINGS__GOVUK_NOTIFY__API_KEY=${ your notify api key here } \
 SKIP_AUTH=1 \
-FORMS_ADMIN_URL='http://localhost:3000/' \
-PRODUCT_PAGES_URL='http://localhost:3002/' \
 SKIP_PRODUCT_PAGES=1 \
 LOG_LEVEL=info \
-SETTINGS__GOVUK_NOTIFY__API_KEY= ${ your notify api key here } \
-FORMS_RUNNER_URL='http://localhost:3001/' \
-SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN= ${ the iam role arn } \
-AWS_S3_BUCKET=${ the name of the s3 bucket } \
-S3_FORM_ID='2' \
 bundle exec rspec spec/end_to_end
 ```
 
@@ -187,13 +183,3 @@ The tests expect an editor user exist with an Auth0 database connection configur
 The user should belong to an active group, called "End to end tests", as a group admin to allow publishing a form.
 
 The login details should be stored in AWS parameter store. See bin/load_env_vars.sh for configuring the enviroment varibles required.
-
-### Changing Auth0 connection
-
-When Auth0 is the enabled auth provider for an environment you can switch between using a database or passwordless connection. The database connection uses a typical username and password flow set up exclusively for use by the end-to-end tests.
-
-The database connection is used by default, but the passwordless flow can be enabled by setting the USE_AUTH0_PASSWORDLESS_CONNECTION variable, e.g.:
-
-```shell
-gds aws forms-deploy-readonly -- env USE_AUTH0_PASSWORDLESS_CONNECTION=1 bin/end_to_end.sh dev
-```

@@ -30,10 +30,17 @@ if [[ -z "$IMAGE_TO_TEST" ]]; then
   docker build -t "$IMAGE_TO_TEST" .
 fi
 
-if [ -z "$FORMS_ADMIN_URL" ] || \
-   [ -z "$PRODUCT_PAGES_URL" ] || \
-   [ -z "$AUTH0_EMAIL_USERNAME" ] || \
-   [ -z "$AUTH0_USER_PASSWORD" ] || \
+# Map legacy environment variables to settings
+export SETTINGS__FORMS_ADMIN__URL="${SETTINGS__FORMS_ADMIN__URL:-$FORMS_ADMIN_URL}"
+export SETTINGS__FORMS_ADMIN__AUTH__USERNAME="${SETTINGS__FORMS_ADMIN__AUTH__USERNAME:-$AUTH0_EMAIL_USERNAME}"
+export SETTINGS__FORMS_ADMIN__AUTH__PASSWORD="${SETTINGS__FORMS_ADMIN__AUTH__PASSWORD:-$AUTH0_USER_PASSWORD}"
+export SETTINGS__FORMS_PRODUCT_PAGE__URL="${SETTINGS__FORMS_PRODUCT_PAGE__URL:-$PRODUCT_PAGES_URL}"
+export SETTINGS__FORMS_RUNNER__URL="${SETTINGS__FORMS_RUNNER__URL:-$FORMS_RUNNER_URL}"
+
+if [ -z "$SETTINGS__FORMS_ADMIN__URL" ] || \
+   [ -z "$SETTINGS__FORMS_ADMIN__AUTH__USERNAME" ] || \
+   [ -z "$SETTINGS__FORMS_ADMIN__AUTH__PASSWORD" ] || \
+   [ -z "$SETTINGS__FORMS_PRODUCT_PAGE__URL" ] || \
    [ -z "$SETTINGS__GOVUK_NOTIFY__API_KEY" ]; then
   echo "Loading env vars from parameter store"
   source $SCRIPT_DIR/load_env_vars.sh
@@ -43,18 +50,10 @@ fi
 
 echo 'Running the tests against dev environment'
 
-env | grep AWS_ > ./env.list
+env | grep -e AWS_ -e SETTINGS__ > ./env.list
 
 docker run --env-file ./env.list --rm \
-  -e FORMS_ADMIN_URL \
-  -e PRODUCT_PAGES_URL \
-  -e AUTH0_EMAIL_USERNAME \
-  -e AUTH0_USER_PASSWORD \
-  -e SETTINGS__GOVUK_NOTIFY__API_KEY \
-  -e SETTINGS__SUBMISSION_STATUS_API__SECRET \
   -e SMOKE_TEST_FORM_URL \
-  -e FORMS_RUNNER_URL \
-  -e S3_FORM_ID \
   -e LOG_LEVEL=debug \
   -e TRACE=1 \
   "$IMAGE_TO_TEST"
