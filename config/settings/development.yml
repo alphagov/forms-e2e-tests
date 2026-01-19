@@ -1,5 +1,4 @@
-features:
-  describe_none_of_the_above_enabled: true
+features: {}
 
 form_ids:
   smoke_test: 1

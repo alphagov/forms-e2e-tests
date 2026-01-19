@@ -326,22 +326,20 @@ module FeatureHelpers
       upload_a_file
     end
 
-    unless skip_describe_none_of_the_above?
-      logger.info "When there is a selection question with an option for none of the above"
-      expect(page.find("h1")).to have_content "What is your favourite colour?"
-      within_fieldset("What is your favourite colour?") do
-        expect(page).to have_field "None of the above", visible: :all
+    logger.info "When there is a selection question with an option for none of the above"
+    expect(page.find("h1")).to have_content "What is your favourite colour?"
+    within_fieldset("What is your favourite colour?") do
+      expect(page).to have_field "None of the above", visible: :all
 
-        choose "None of the above", visible: false
+      choose "None of the above", visible: false
 
-        logger.info "And I can provide a different answer"
-        expect(page).to have_field "Enter your favourite colour"
+      logger.info "And I can provide a different answer"
+      expect(page).to have_field "Enter your favourite colour"
 
-        logger.info "Then I can answer the question with an option not on the list"
-        fill_in "Enter your favourite colour", with: "Yellow"
-      end
-      click_button "Continue"
+      logger.info "Then I can answer the question with an option not on the list"
+      fill_in "Enter your favourite colour", with: "Yellow"
     end
+    click_button "Continue"
 
     # rubocop:todo Style/IdenticalConditionalBranches
     logger.info "When there is a branch question"
@@ -363,11 +361,8 @@ module FeatureHelpers
 
     logger.info "Then I can check my answers before I submit them"
     expect(page).to have_content "Check your answers before submitting your form"
-
-    unless skip_describe_none_of_the_above?
-      expect(page).to have_content "What is your favourite colour?"
-      expect(page).to have_content "Yellow"
-    end
+    expect(page).to have_content "What is your favourite colour?"
+    expect(page).to have_content "Yellow"
 
     expect(page).to have_content selection_question
     if yes_branch
@@ -583,10 +578,6 @@ module FeatureHelpers
 
   def skip_file_upload?
     ENV.fetch("SKIP_FILE_UPLOAD", false)
-  end
-
-  def skip_describe_none_of_the_above?
-    !Settings.features.describe_none_of_the_above_enabled
   end
 
   def visit_product_page
