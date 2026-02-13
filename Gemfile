@@ -9,7 +9,6 @@ gem "debug"
 gem "notifications-ruby-client"
 gem "rspec"
 gem "selenium-webdriver"
-gem "webdrivers"
 
 group :development do
   gem "cuprite"
