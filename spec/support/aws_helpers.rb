@@ -3,6 +3,8 @@
 require "aws-sdk-s3"
 
 module AwsHelpers
+  S3_SUBMISSION_LOOKUP_TIMEOUT_SECONDS = 60
+
   def get_file_from_s3(reference_number, form_id)
     credentials = assume_role
     client = Aws::S3::Client.new(
@@ -11,11 +13,24 @@ module AwsHelpers
     )
 
     bucket = get_bucket
-    key = find_key(client, reference_number, bucket, form_id)
+    started_at = Time.now
 
-    csv = client.get_object(bucket: bucket, key: key)
-    delete_file_from_s3(client, bucket, key)
-    csv.body.read
+    loop do
+      key = find_key(client, reference_number, bucket, form_id)
+
+      if key
+        csv = client.get_object(bucket: bucket, key: key)
+        delete_file_from_s3(client, bucket, key)
+        return csv.body.read
+      end
+
+      elapsed_seconds = Time.now - started_at
+      if elapsed_seconds >= S3_SUBMISSION_LOOKUP_TIMEOUT_SECONDS
+        raise "Could not find S3 submission file for reference #{reference_number} after #{attempts} attempts in #{S3_SUBMISSION_LOOKUP_TIMEOUT_SECONDS}s"
+      end
+
+      sleep 1
+    end
   end
 
   def assume_role
