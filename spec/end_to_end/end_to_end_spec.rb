@@ -56,7 +56,7 @@ feature "Full lifecycle of a form", type: :feature do
       add_a_single_line_of_text_question(question_text)
       add_a_single_line_of_text_question(alternate_question_text)
 
-      first(:link, "your questions").click
+      click_link "your questions", match: :first
 
       add_a_route selection_question, if_the_answer_selected_is: "Yes", skip_the_person_to: alternate_question_text
       add_a_secondary_skip last_question_before_skip: question_text, question_to_skip_to: "Check your answers before submitting"
