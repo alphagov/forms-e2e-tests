@@ -6,7 +6,7 @@ jobs:
   trello-poster:
     runs-on: ubuntu-latest
     steps:
-      - uses: lfdebrux/trello-poster-action@736f8f21f0cacf6f4142d5c9e09ebd4439e83318 # v1.2.0
+      - uses: lfdebrux/trello-poster-action@8667c700f73347f39c781ebdde8237be67cfdab8 # v1.3.0
         with:
           comment-body: ${{ github.event.pull_request.body }}
           github-url: ${{ github.event.pull_request.html_url }}
