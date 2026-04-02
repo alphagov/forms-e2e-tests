@@ -359,7 +359,7 @@ module FeatureHelpers
     end
     # rubocop:enable Style/IdenticalConditionalBranches
 
-    if filler_answer_email_enabled?
+    if page.find("h1").has_content?("Do you want to get an email with a copy of your answers?")
       logger.info "And I am asked if I want a copy of my answers"
       expect(page.find("h1")).to have_content "Do you want to get an email with a copy of your answers?"
       choose "No", visible: false
@@ -585,10 +585,6 @@ module FeatureHelpers
 
   def skip_file_upload?
     ENV.fetch("SKIP_FILE_UPLOAD", false)
-  end
-
-  def filler_answer_email_enabled?
-    Settings.features.filler_answer_email_enabled
   end
 
   def visit_product_page
