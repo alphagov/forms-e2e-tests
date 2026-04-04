@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby file: ".ruby-version"
 
-gem "aws-sdk-s3", "~> 1.216"
+gem "aws-sdk-s3", "~> 1.217"
 gem "capybara"
 gem "config"
 gem "debug"
