@@ -77,16 +77,16 @@ Forms-runner needs to be started with the AWS credentials for the dev account fo
 
 - `gds aws forms-dev-readonly --shell`
 - `ASSUME_DEV_IAM_ROLE=true SETTINGS__GOVUK_NOTIFY__API_KEY='<notify-api-key>' ./bin/rails server`
-- see the [README for forms-runner](https://github.com/alphagov/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
+- see the [README for forms-runner](https://github.com/govuk-forms/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
 
 ### Running the s3 submission test
 
 You will need:
 
 - an aws iam role.
-  - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
+  - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/govuk-forms/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
 - an s3 bucket.
-  - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/alphagov/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
+  - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/govuk-forms/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
 
 To run the tests:
 
