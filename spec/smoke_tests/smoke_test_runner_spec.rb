@@ -3,6 +3,7 @@
 feature "Runner Smoke Test", type: :feature do
   let(:smoke_test_form_url) do
     # TODO: Update this once we're confident no one is setting $SMOKE_TEST_FORM_URL
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     if Settings.form_ids.smoke_test
       "#{Settings.forms_runner.url}/form/#{Settings.form_ids.smoke_test}"
     else
