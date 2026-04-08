@@ -32,16 +32,19 @@ module FeatureHelpers
 
   def forms_admin_url
     # TODO: Update this once we're confident no one is setting $FORMS_ADMIN_URL
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     Settings.forms_admin.url || ENV.fetch("FORMS_ADMIN_URL") { raise "Settings.forms_admin.url is not set" }
   end
 
   def forms_product_page_url
     # TODO: Update this once we're confident no one is setting $PRODUCT_PAGES_URL
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     Settings.forms_product_page.url || ENV.fetch("PRODUCT_PAGES_URL") { raise "Settings.forms_product_page.url is not set" }
   end
 
   def forms_runner_url
     # TODO: Update this once we're confident no one is setting $FORMS_RUNNER_URL
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     Settings.forms_runner.url || ENV.fetch("FORMS_RUNNER_URL") { raise "Settings.forms_runner.url is not set" }
   end
 
@@ -463,6 +466,7 @@ module FeatureHelpers
 
   def s3_form_is_filled_in_by_form_filler
     # TODO: Update this once we're confident no one is using $S3_FORM_ID
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     form_id = Settings.form_ids.s3 || ENV.fetch("S3_FORM_ID") { raise "Settings.form_ids.s3 is not set" }
 
     s3_form_live_link = "#{forms_runner_url}/form/#{form_id}"
@@ -538,11 +542,13 @@ module FeatureHelpers
 
   def auth0_email_address
     # TODO: Update this once we're confident no one is setting $AUTH0_EMAIL_USERNAME
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     Settings.forms_admin.auth.username || ENV.fetch("AUTH0_EMAIL_USERNAME") { raise "Settings.forms_admin.auth.username is not set" }
   end
 
   def auth0_password
     # TODO: Remove this once we're confident no one is setting $AUTH0_USER_PASSWORD
+    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
     Settings.forms_admin.auth.password || ENV.fetch("AUTH0_USER_PASSWORD") { raise "Settings.forms_admin.auth.password is not set" }
   end
 
