@@ -512,7 +512,7 @@ module FeatureHelpers
   end
 
   def upload_a_file
-    attach_file file_question_text, test_file
+    attach_file test_file, make_visible: true
     click_button "Continue"
     expect(page).to have_content "Your file has been uploaded", wait: 1 * SECONDS_PER_MINUTE # file uploads can take a long time
     click_button "Continue"
