@@ -248,13 +248,7 @@ module FeatureHelpers
     expect(page.find("h1")).to have_content "Route for any other answer: set questions to skip"
 
     select last_question_before_skip, from: "Select the last question you want them to answer before they skip"
-
-    begin
-      select question_to_skip_to, from: "Select the question to skip them to"
-    rescue Capybara::ElementNotFound
-      # temporary fallback while we're deploying a change to this content
-      select "Check your answers before submitting", from: "Select the question to skip them to"
-    end
+    select question_to_skip_to, from: "Select the question to skip them to"
 
     click_button "Save and continue"
 
