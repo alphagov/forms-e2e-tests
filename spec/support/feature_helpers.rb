@@ -95,7 +95,7 @@ module FeatureHelpers
     click_button "Save and continue"
     expect(page.find("h1")).to have_content "Your form is live"
 
-    click_link "Continue to form details"
+    click_link "Continue to the live form’s details"
 
     expect(page.find("h1")).to have_content form_name
   end
