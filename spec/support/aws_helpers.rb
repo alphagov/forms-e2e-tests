@@ -65,6 +65,8 @@ module AwsHelpers
     objects.contents.each do |object|
       return object.key if object.key.include? reference_number
     end
+
+    nil
   end
 
   def delete_file_from_s3(client, bucket, key)
