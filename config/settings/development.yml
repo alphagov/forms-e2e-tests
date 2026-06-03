@@ -15,3 +15,6 @@ forms_product_page:
 
 submission_status_api:
   secret: test_token
+
+govuk_one_login:
+  user_email: copy-of-answers-emails-tests@dev.forms.service.gov.uk

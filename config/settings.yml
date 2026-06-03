@@ -22,9 +22,15 @@ forms_runner:
 aws:
   file_upload_s3_bucket_name:
   s3_submission_iam_role_arn:
+  email_receiver_s3_bucket_name:
 
 govuk_notify:
   api_key:
+
+govuk_one_login:
+  user_email:
+  user_password:
+  user_otp_secret_key:
 
 submission_status_api:
   secret:

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "rotp"
 require_relative "./notify_helpers"
 require_relative "./aws_helpers"
 
@@ -79,6 +80,8 @@ module FeatureHelpers
     check "Email", visible: false
     fill_in "Enter the email address", with: test_email_address
     click_button "Save and continue"
+
+    enable_copy_of_answers
 
     next_form_creation_step "Share a preview of your draft form"
 
@@ -297,6 +300,15 @@ module FeatureHelpers
     click_link "Continue creating a form"
   end
 
+  def enable_copy_of_answers
+    next_form_creation_step "Give people the option to ask for a copy of their answers"
+
+    expect(page.find("h1")).to have_content "Give people the option to get a copy of their answers by email"
+
+    check "Give people the option to get a copy of their answers by email - I’m ok with the risk", visible: false
+    click_button "Save and continue"
+  end
+
   def delete_form(form_name)
     if page.has_link?(form_name)
       click_link(form_name, match: :one, exact: true)
@@ -315,7 +327,7 @@ module FeatureHelpers
     end
   end
 
-  def form_is_filled_in_by_form_filler(live_form_link, yes_branch: false, confirmation_email: nil)
+  def form_is_filled_in_by_form_filler(live_form_link, yes_branch: false, confirmation_email: nil, copy_of_answers: false)
     logger.info
     logger.info "As a form filler"
 
@@ -362,9 +374,31 @@ module FeatureHelpers
     end
     # rubocop:enable Style/IdenticalConditionalBranches
 
-    if page.find("h1").has_content?("Do you want to get an email with a copy of your answers?")
-      logger.info "And I am asked if I want a copy of my answers"
-      expect(page.find("h1")).to have_content "Do you want to get an email with a copy of your answers?"
+    logger.info "And I am asked if I want a copy of my answers"
+    expect(page.find("h1")).to have_content "Do you want to get an email with a copy of your answers?"
+
+    if copy_of_answers
+      logger.info "And I choose 'Yes'"
+      choose "Yes", visible: false
+      click_button "Continue"
+
+      expect(page.find("h1")).to have_content "Use GOV.UK One Login to keep your information secure"
+      click_button "Continue to GOV.UK One Login"
+
+      logger.info "Then I log in using GOV.UK One Login"
+      expect(page.current_url).to start_with("https://signin.integration.account.gov.uk/")
+      click_button "Sign in"
+
+      find('input[type="email"]', visible: true).set(Settings.govuk_one_login.user_email)
+      find('button[type="submit"]').click
+
+      find('input[type="password"]', visible: true).set(Settings.govuk_one_login.user_password)
+      find('button[type="submit"]').click
+
+      find('input[autocomplete="one-time-code"]', visible: true).set(generate_one_login_otp)
+      find('button[type="submit"]').click
+    else
+      logger.info "And I choose 'No'"
       choose "No", visible: false
       click_button "Continue"
     end
@@ -646,6 +680,11 @@ module FeatureHelpers
   def click_group(group_name)
     click_link group_name
     expect(page.find("h1")).to have_content group_name
+  end
+
+  def generate_one_login_otp
+    totp = ROTP::TOTP.new(Settings.govuk_one_login.user_otp_secret_key)
+    totp.now
   end
 end
 
