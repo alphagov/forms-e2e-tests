@@ -593,6 +593,10 @@ module FeatureHelpers
     ENV.fetch("SKIP_FILE_UPLOAD", false)
   end
 
+  def skip_copy_of_answers?
+    ENV.fetch("SKIP_COPY_OF_ANSWERS", false)
+  end
+
   def visit_product_page
     logger.info "Visiting product pages at #{forms_product_page_url}"
     visit forms_product_page_url
