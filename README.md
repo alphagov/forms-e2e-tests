@@ -71,6 +71,10 @@ The end to end tests can be run without testing a form with the `submission_type
 
 The end to end tests can be run without testing a form with a file upload question by setting the `SKIP_FILE_UPLOAD` environment variable to `1`.
 
+### Skipping receiving a copy of answers using GOV.UK One Login
+
+The end to end tests can be run without testing receiving a copy of answers using GOV.UK One Login by setting the `SKIP_COPY_OF_ANSWERS` environment variable to `1`.
+
 ### Running the file upload test
 
 Forms-runner needs to be started with the AWS credentials for the dev account for the file upload test to pass, as follows:
