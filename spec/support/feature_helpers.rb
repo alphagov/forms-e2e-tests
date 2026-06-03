@@ -534,7 +534,7 @@ module FeatureHelpers
   end
 
   def sign_in
-    return if ENV.fetch("SKIP_AUTH", false)
+    return if skip_auth?
 
     sign_in_to_auth0
     logger.debug "Sign in successful"
@@ -586,15 +586,31 @@ module FeatureHelpers
   end
 
   def skip_product_pages?
-    ENV.fetch("SKIP_PRODUCT_PAGES", false)
+    evaluate_boolean_env_var("SKIP_PRODUCT_PAGES")
   end
 
   def skip_file_upload?
-    ENV.fetch("SKIP_FILE_UPLOAD", false)
+    evaluate_boolean_env_var("SKIP_FILE_UPLOAD")
   end
 
   def skip_copy_of_answers?
-    ENV.fetch("SKIP_COPY_OF_ANSWERS", false)
+    evaluate_boolean_env_var("SKIP_COPY_OF_ANSWERS")
+  end
+
+  def skip_s3?
+    evaluate_boolean_env_var("SKIP_S3")
+  end
+
+  def skip_auth?
+    evaluate_boolean_env_var("SKIP_AUTH")
+  end
+
+  def evaluate_boolean_env_var(var_name, default: false)
+    value = ENV.fetch(var_name, default)
+    return false if value.nil?
+    return true if %w[1 true t yes y].include? value.to_s.strip.downcase
+
+    false
   end
 
   def visit_product_page

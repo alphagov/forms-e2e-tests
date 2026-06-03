@@ -89,7 +89,7 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 
-  unless ENV.fetch("SKIP_S3", false)
+  unless %w[1 true t yes y].include? ENV.fetch("SKIP_S3", false).to_s.strip.downcase
     # Testing s3 submission
     scenario "Form is completed by a member of the public, and answers are sent to s3" do
       logger.info
