@@ -19,3 +19,6 @@ submission_status_api:
 aws:
   s3_submission_bucket_name: govuk-forms-submissions-to-s3-test
   s3_submission_iam_role_arn: arn:aws:iam::498160065950:role/govuk-s3-end-to-end-test-dev
+
+govuk_one_login:
+  user_email: copy-of-answers-emails-tests@dev.forms.service.gov.uk
