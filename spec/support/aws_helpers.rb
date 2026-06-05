@@ -66,13 +66,11 @@ private
   end
 
   def find_submission_key(submission_reference, bucket, form_id)
-    objects = s3_client.list_objects({
-      bucket: bucket,
-      prefix: "form_submissions/#{form_id}/",
-    })
-
-    objects.contents.each do |object|
-      return object.key if object.key.include? reference_number
+    # list_objects_v2 returns a maximum of 1000 keys per request, use the enumerator to handle pagination
+    s3_client.list_objects_v2(bucket: bucket, prefix: "form_submissions/#{form_id}/").each do |response|
+      response.contents.each do |object|
+        return object.key if object.key.include? submission_reference
+      end
     end
 
     nil
