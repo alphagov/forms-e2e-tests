@@ -441,7 +441,9 @@ module FeatureHelpers
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my email inbox"
 
-    check_submission
+    submission_reference = page.find("#submission-reference").text
+
+    check_submission(submission_reference)
 
     if confirmation_email_reference
       logger.info
@@ -450,6 +452,10 @@ module FeatureHelpers
       logger.info "Then I can see the confirmation in my email inbox"
 
       wait_for_notification(confirmation_email_reference)
+    end
+
+    if copy_of_answers
+      wait_for_copy_of_answers_email(submission_reference)
     end
   end
 
@@ -468,9 +474,7 @@ module FeatureHelpers
     expect(page).to have_content "Your form has been submitted"
   end
 
-  def check_submission
-    submission_reference = page.find("#submission-reference").text
-
+  def check_submission(submission_reference)
     uri = URI(submission_status_url)
     uri.query = URI.encode_www_form(reference: submission_reference)
 
