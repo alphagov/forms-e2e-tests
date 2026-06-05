@@ -20,7 +20,7 @@ forms_runner:
   url:
 
 aws:
-  file_upload_s3_bucket_name:
+  file_upload_s3_bucket_name: # This name is wrong, this should be the bucket for submissions so S3
   s3_submission_iam_role_arn:
   email_receiver_s3_bucket_name:
 
