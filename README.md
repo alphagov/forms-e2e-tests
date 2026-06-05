@@ -100,9 +100,26 @@ gds aws forms-dev-readonly --shell
 SKIP_S3=0 bundle exec rake
 ```
 
+### Running the test to get a copy of answers using GOV.UK One Login
+
+forms-runner needs to be started with the One Login client details. See the [README for forms-runner](https://github.com/govuk-forms/forms-runner#configuring-govuk-one-login) to configure these.
+
+We need to run tests with the One Login sign in details for the test user by setting the `SETTINGS__GOVUK_ONE_LOGIN__USER_PASSWORD` and `SETTINGS__GOVUK_ONE_LOGIN__USER_OTP_SECRET_KEY` environment variables. Obtain the values for these from the [AWS parameter store](https://github.com/govuk-forms/forms-deploy/blob/c586c1368dd9acbe79a819aa4c32a5ef3229d686/infra/modules/automated-test-parameters/parameters.tf#L49) on the dev environment. 
+
+The tests need to assume an IAM role to check the email with a copy of the answers is delivered to an S3 bucket. Run the e2e tests in an AWS shell so we can assume this role:
+
+```shell
+gds aws forms-dev-readonly --shell
+
+SKIP_COPY_OF_ANSWERS=0 \
+SETTINGS__GOVUK_ONE_LOGIN__USER_PASSWORD=<password> \
+SETTINGS__GOVUK_ONE_LOGIN__USER_OTP_SECRET_KEY=<secret key> \
+bundle exec rake
+```
+
 ### Running the tests against remote environments
 
-To run the tests against one of the standard environemnts you can use the end_to_end.sh script.
+To run the tests against one of the standard environments you can use the end_to_end.sh script.
 
 Run it in an authenticated shell with permission to access SSM params in forms-deploy using the gds-cli or aws-vault
 
