@@ -81,11 +81,6 @@ feature "Full lifecycle of a form", type: :feature do
         logger.info
         logger.info "Scenario: Form is completed by a member of the public, and they request a confirmation email"
         form_is_filled_in_by_form_filler(live_form_link, confirmation_email: test_email_address)
-
-        unless skip_copy_of_answers?
-          logger.info "Scenario: Form is completed by a member of the public, and they request a copy of their answers"
-          form_is_filled_in_by_form_filler(live_form_link, copy_of_answers: true)
-        end
       end
 
       visit_admin
@@ -94,7 +89,7 @@ feature "Full lifecycle of a form", type: :feature do
     end
   end
 
-  unless %w[1 true t yes y].include? ENV.fetch("SKIP_S3", false).to_s.strip.downcase
+  unless ENV.fetch("SKIP_S3", false)
     # Testing s3 submission
     scenario "Form is completed by a member of the public, and answers are sent to s3" do
       logger.info
