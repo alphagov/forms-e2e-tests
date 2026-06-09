@@ -24,24 +24,37 @@ Install the ruby dependencies:
 bundle install
 ```
 
-#### GOV.UK Notify API keys
-
-Set in your environment:
-
-```shell
-export SETTINGS__GOVUK_NOTIFY__API_KEY=<your api key>
-```
-
-Ensure both the forms-admin and forms-runner services are also configured to use the Notify API - see their respective READMEs for details.
-
 ### Running the tests locally
 
 The tests expect an active group to exist called "End to end tests", which the test user belongs as a group admin. This name can be overridden by setting the environment variable `SETTINGS__END_TO_END_TESTS__GROUP_NAME`.
 
+#### Starting forms-runner
+
+Forms-runner needs to be started with:
+- The Notify API key in order to send confirmation emails
+- AWS credentials for the dev account in order to send submissions
+
+```shell
+gds aws forms-dev-readonly --shell
+
+ASSUME_DEV_IAM_ROLE=true SETTINGS__GOVUK_NOTIFY__API_KEY=<notify-api-key> ./bin/rails server
+```
+
+see the [README for forms-runner](https://github.com/govuk-forms/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
+
+#### Starting forms-admin
+
+Forms-admin needs to be started with the Notify API key to send the submission email verification code:
+```
+SETTINGS__GOVUK_NOTIFY__API_KEY=<notify-api-key> ./bin/rails server
+```
+
+#### Running the tests
+
 You can run the tests against localhost using the following command:
 
 ```shell
-bundle exec rake
+SETTINGS__GOVUK_NOTIFY__API_KEY=<your api key> bundle exec rake
 ```
 
 ### Choosing the browser automation protocol
@@ -71,51 +84,42 @@ The end to end tests can be run without testing a form with the `submission_type
 
 The end to end tests can be run without testing a form with a file upload question by setting the `SKIP_FILE_UPLOAD` environment variable to `1`.
 
-### Running the file upload test
+### Skipping receiving a copy of answers using GOV.UK One Login
 
-Forms-runner needs to be started with the AWS credentials for the dev account for the file upload test to pass, as follows:
-
-- `gds aws forms-dev-readonly --shell`
-- `ASSUME_DEV_IAM_ROLE=true SETTINGS__GOVUK_NOTIFY__API_KEY='<notify-api-key>' ./bin/rails server`
-- see the [README for forms-runner](https://github.com/govuk-forms/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
+The end to end tests can be run without testing receiving a copy of answers using GOV.UK One Login by setting the `SKIP_COPY_OF_ANSWERS` environment variable to `1`.
 
 ### Running the s3 submission test
 
-You will need:
+The S3 submission tests use a form created by the forms-admin seed data locally. On remote environments, it uses forms configured manually by us, with the form ID passed in using the `SETTINGS__FORM_IDS__S3` environment variable.
 
-- an aws iam role.
-  - This is the role with permissions to upload to and delete from an s3 bucket, and that you have permission to assume. When running the tests locally, this will be the [s3 end to end test role](https://github.com/govuk-forms/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/modules/forms-runner/s3-end-to-end-test-role.tf#L2) in the dev environment,
-- an s3 bucket.
-  - This bucket should be set up so that the above role can access it. When running the tests locally, this will be [the submissions test bucket](https://github.com/govuk-forms/forms-deploy/blob/2a8720380219ac854d3c1d008e6b82af67e4a7b2/infra/deployments/deploy/tools/submissions-to-s3-test-bucket.tf#L4) created in the deploy account.
-
-To run the tests:
-
-- in `forms-runner`:
-  - add your govuk_notify.api_key and aws.s3_submission_iam_role to settings.local.yml
-  - start the server using an iam role that can assume the above role (eg: `gds aws forms-dev-readonly -- bundle exec rails s`)
-- in `forms-admin`
-  - add your govuk_notify.api_key to settings.local.yml
-  - ensure the seeded s3 submission test form is set up correctly, and run the following rake task:
-    - `rake "forms:submission_type:set_to_s3[2, ${the name of the submission bucket}, ${the aws account id where the bucket lives}, ${the region}, csv]"`
-  - start the server (without aws)
-- in `forms-e2e-tests`
-  - start an aws shell:
-    - `gds aws forms-dev-readonly --shell`
-  - run the end to end tests tests:
+The S3 tests need to assume an IAM role to access the submissions S3 bucket. Run the e2e tests in an AWS shell so we can assume this role:
 
 ```shell
-SETTINGS__AWS__FILE_UPLOAD_S3_BUCKET_NAME=${ the name of the s3 bucket }\
-SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN=${ the iam role arn } \
-SETTINGS__GOVUK_NOTIFY__API_KEY=${ your notify api key here } \
-SKIP_AUTH=1 \
-SKIP_PRODUCT_PAGES=1 \
-LOG_LEVEL=info \
-bundle exec rspec spec/end_to_end
+gds aws forms-dev-readonly --shell
+
+SKIP_S3=0 bundle exec rake
+```
+
+### Running the test to get a copy of answers using GOV.UK One Login
+
+forms-runner needs to be started with the One Login client details. See the [README for forms-runner](https://github.com/govuk-forms/forms-runner#configuring-govuk-one-login) to configure these.
+
+We need to run tests with the One Login sign in details for the test user by setting the `SETTINGS__GOVUK_ONE_LOGIN__USER_PASSWORD` and `SETTINGS__GOVUK_ONE_LOGIN__USER_OTP_SECRET_KEY` environment variables. Obtain the values for these from the [AWS parameter store](https://github.com/govuk-forms/forms-deploy/blob/c586c1368dd9acbe79a819aa4c32a5ef3229d686/infra/modules/automated-test-parameters/parameters.tf#L49) on the dev environment. 
+
+The tests need to assume an IAM role to check the email with a copy of the answers is delivered to an S3 bucket. Run the e2e tests in an AWS shell so we can assume this role:
+
+```shell
+gds aws forms-dev-readonly --shell
+
+SKIP_COPY_OF_ANSWERS=0 \
+SETTINGS__GOVUK_ONE_LOGIN__USER_PASSWORD=<password> \
+SETTINGS__GOVUK_ONE_LOGIN__USER_OTP_SECRET_KEY=<secret key> \
+bundle exec rake
 ```
 
 ### Running the tests against remote environments
 
-To run the tests against one of the standard environemnts you can use the end_to_end.sh script.
+To run the tests against one of the standard environments you can use the end_to_end.sh script.
 
 Run it in an authenticated shell with permission to access SSM params in forms-deploy using the gds-cli or aws-vault
 

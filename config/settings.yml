@@ -20,11 +20,17 @@ forms_runner:
   url:
 
 aws:
-  file_upload_s3_bucket_name:
+  file_upload_s3_bucket_name: # This name is wrong, this should be the bucket for submissions so S3
   s3_submission_iam_role_arn:
+  email_receiver_s3_bucket_name:
 
 govuk_notify:
   api_key:
+
+govuk_one_login:
+  user_email:
+  user_password:
+  user_otp_secret_key:
 
 submission_status_api:
   secret:

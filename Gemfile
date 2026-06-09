@@ -7,6 +7,7 @@ gem "capybara"
 gem "config"
 gem "debug"
 gem "notifications-ruby-client"
+gem "rotp"
 gem "rspec"
 gem "selenium-webdriver"
 
