@@ -3,33 +3,42 @@
 require "aws-sdk-s3"
 
 module AwsHelpers
-  S3_SUBMISSION_LOOKUP_TIMEOUT_SECONDS = 60
+  LOOKUP_TIMEOUT_SECONDS = 60
 
-  def get_file_from_s3(reference_number, form_id)
-    credentials = assume_role
-    client = Aws::S3::Client.new(
-      region: "eu-west-2",
-      credentials: credentials,
-    )
-
+  def get_submission_from_s3(submission_reference, form_id)
     bucket = get_submissions_bucket
     started_at = Time.now
+    attempts = 0
 
     loop do
-      key = find_key(client, reference_number, bucket, form_id)
+      key = find_submission_key(submission_reference, bucket, form_id)
 
       if key
-        csv = client.get_object(bucket: bucket, key: key)
-        delete_file_from_s3(client, bucket, key)
+        csv = s3_client.get_object(bucket: bucket, key: key)
+        delete_from_s3(client, bucket, key)
         return csv.body.read
       end
 
       elapsed_seconds = Time.now - started_at
-      if elapsed_seconds >= S3_SUBMISSION_LOOKUP_TIMEOUT_SECONDS
-        raise "Could not find S3 submission file for reference #{reference_number} after #{attempts} attempts in #{S3_SUBMISSION_LOOKUP_TIMEOUT_SECONDS}s"
+      attempts += 1
+      if elapsed_seconds >= LOOKUP_TIMEOUT_SECONDS
+        raise "Could not find S3 submission file for reference #{submission_reference} after #{attempts} attempts in #{LOOKUP_TIMEOUT_SECONDS}s"
       end
 
       sleep 1
+    end
+  end
+
+private
+
+  def s3_client
+    @s3_client ||= begin
+      credentials = assume_role
+
+      Aws::S3::Client.new(
+        region: "eu-west-2",
+        credentials: credentials,
+      )
     end
   end
 
@@ -56,8 +65,8 @@ module AwsHelpers
     bucket
   end
 
-  def find_key(client, reference_number, bucket, form_id)
-    objects = client.list_objects({
+  def find_submission_key(submission_reference, bucket, form_id)
+    objects = s3_client.list_objects({
       bucket: bucket,
       prefix: "form_submissions/#{form_id}/",
     })
@@ -69,8 +78,8 @@ module AwsHelpers
     nil
   end
 
-  def delete_file_from_s3(client, bucket, key)
-    client.delete_object({
+  def delete_from_s3(bucket, key)
+    s3_client.delete_object({
       bucket: bucket,
       key: key,
     })
