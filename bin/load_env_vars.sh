@@ -122,7 +122,7 @@ function set_e2e_env_vars() {
   export SETTINGS__FORMS_ADMIN__AUTH__PASSWORD="$(get_param /${environment}/automated-tests/e2e/auth0/auth0-user-password)"
   export SETTINGS__FORMS_PRODUCT_PAGE__URL="$(product_pages_url $environment)"
   export SETTINGS__FORMS_RUNNER__URL="$(runner_url $environment)"
-  export SETTINGS__AWS__FILE_UPLOAD_S3_BUCKET_NAME="$(aws_s3_bucket $environment)"
+  export SETTINGS__AWS__S3_SUBMISSION_BUCKET_NAME="$(aws_s3_bucket $environment)"
   export SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN="$(aws_s3_role_arn $environment)"
   export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/automated-tests/e2e/notify/api-key)"
   export SETTINGS__SUBMISSION_STATUS_API__SECRET="$(get_param /${environment}/automated-tests/e2e/runner/submission_status_api_shared_secret)"

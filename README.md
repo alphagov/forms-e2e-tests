@@ -104,7 +104,7 @@ To run the tests:
   - run the end to end tests tests:
 
 ```shell
-SETTINGS__AWS__FILE_UPLOAD_S3_BUCKET_NAME=${ the name of the s3 bucket }\
+SETTINGS__AWS__S3_SUBMISSION_BUCKET_NAME=${ the name of the s3 bucket } \
 SETTINGS__AWS__S3_SUBMISSION_IAM_ROLE_ARN=${ the iam role arn } \
 SETTINGS__GOVUK_NOTIFY__API_KEY=${ your notify api key here } \
 SKIP_AUTH=1 \

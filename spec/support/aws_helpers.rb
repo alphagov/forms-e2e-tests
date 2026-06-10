@@ -12,7 +12,7 @@ module AwsHelpers
       credentials: credentials,
     )
 
-    bucket = get_bucket
+    bucket = get_submissions_bucket
     started_at = Time.now
 
     loop do
@@ -46,12 +46,12 @@ module AwsHelpers
     )
   end
 
-  def get_bucket
+  def get_submissions_bucket
     # TODO: Update this once we're confident no one is setting $AWS_S3_BUCKET
     # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
-    bucket = Settings.aws.file_upload_s3_bucket_name || ENV["AWS_S3_BUCKET"]
+    bucket = Settings.aws.s3_submission_bucket_name || Settings.aws.file_upload_s3_bucket_name || ENV["AWS_S3_BUCKET"]
 
-    raise "Settings.aws.file_upload_s3_bucket_name is not set" if bucket.nil? || bucket.empty?
+    raise "Settings.aws.s3_submission_bucket_name is not set" if bucket.nil? || bucket.empty?
 
     bucket
   end

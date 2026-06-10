@@ -20,7 +20,7 @@ forms_runner:
   url:
 
 aws:
-  file_upload_s3_bucket_name:
+  s3_submission_bucket_name:
   s3_submission_iam_role_arn:
 
 govuk_notify:
