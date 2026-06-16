@@ -15,3 +15,7 @@ forms_product_page:
 
 submission_status_api:
   secret: test_token
+
+aws:
+  s3_submission_bucket_name: govuk-forms-submissions-to-s3-test
+  s3_submission_iam_role_arn: arn:aws:iam::498160065950:role/govuk-s3-end-to-end-test-dev
