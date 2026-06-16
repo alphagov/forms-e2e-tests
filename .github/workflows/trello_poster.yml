@@ -4,11 +4,7 @@ on:
     types: [opened, edited]
 jobs:
   trello-poster:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: lfdebrux/trello-poster-action@8667c700f73347f39c781ebdde8237be67cfdab8 # v1.3.0
-        with:
-          comment-body: ${{ github.event.pull_request.body }}
-          github-url: ${{ github.event.pull_request.html_url }}
-          trello-api-token: ${{ secrets.TRELLO_API_TOKEN }}
-          trello-api-key: ${{ secrets.TRELLO_API_KEY }}
+    uses: govuk-forms/forms-deploy/.github/workflows/trello-poster.yml@main
+    secrets:
+      TRELLO_API_TOKEN: ${{ secrets.TRELLO_API_TOKEN }}
+      TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}

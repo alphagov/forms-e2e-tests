@@ -8,9 +8,4 @@ on:
 jobs:
   check-actions-sha:
     name: Check actions are pinned to SHAs
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.0.0
-      - name: Ensure SHA pinned actions
-        uses: zgosalvez/github-actions-ensure-sha-pinned-actions@ca46236c6ce584ae24bc6283ba8dcf4b3ec8a066 # v5.0.4
+    uses: govuk-forms/forms-deploy/.github/workflows/require-pinned-github-actions.yml@main
