@@ -15,7 +15,7 @@ module AwsHelpers
 
       if key
         csv = s3_client.get_object(bucket: bucket, key: key)
-        delete_from_s3(client, bucket, key)
+        delete_from_s3(bucket, key)
         return csv.body.read
       end
 
