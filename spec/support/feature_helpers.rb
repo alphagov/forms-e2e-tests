@@ -495,7 +495,7 @@ module FeatureHelpers
     logger.info "When a form filler has submitted their answers"
     logger.info "Then I can see their submission in my s3 bucket"
 
-    file_in_s3 = get_file_from_s3(reference_number, form_id)
+    file_in_s3 = get_submission_from_s3(reference_number, form_id)
 
     expect(file_in_s3).to have_content reference_number
     expect(file_in_s3).to have_content "test name"
