@@ -11,12 +11,12 @@ if [[ -z "$environment" ]] || [[ "$1" == "help" ]] || [[ -z "$AWS_ACCESS_KEY_ID"
   echo "Runs the Capybara end-to-end tests for the given environment.
 
 Run in an authenticated shell with permission to access ssm params in
-forms-deploy using the gds-cli or aws-vault
+the desired environment
 
 Usage: $0 dev|staging|production
 
 Example:
-gds aws forms-deploy-readonly -- $0 dev
+gds aws forms-dev-readonly -- $0 dev
 "
   exit 0
 fi
