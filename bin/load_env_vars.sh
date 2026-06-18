@@ -71,6 +71,18 @@ function aws_s3_bucket() {
   esac
 }
 
+function email_receiver_s3_bucket() {
+  local environment="$1"
+
+  case $environment in
+    "dev"|"staging"|"production") echo "govuk-forms-${environment}-test-emails" ;;
+    *)
+      echo "unknown environment: ${environment}"
+      exit 1
+      ;;
+  esac
+}
+
 function smoke_test_form_id() {
   local environment="$1"
 
@@ -127,6 +139,10 @@ function set_e2e_env_vars() {
   export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/automated-tests/e2e/notify/api-key)"
   export SETTINGS__SUBMISSION_STATUS_API__SECRET="$(get_param /${environment}/automated-tests/e2e/runner/submission_status_api_shared_secret)"
   export SETTINGS__FORMS_ENV="$environment"
+  export SETTINGS__GOVUK_ONE_LOGIN__USER_EMAIL="$(get_param /${environment}/automated-tests/e2e/one-login/user-email)"
+  export SETTINGS__GOVUK_ONE_LOGIN__USER_PASSWORD="$(get_param /${environment}/automated-tests/e2e/one-login/user-password)"
+  export SETTINGS__GOVUK_ONE_LOGIN__USER_OTP_SECRET_KEY="$(get_param /${environment}/automated-tests/e2e/one-login/user-otp-secret-key)"
+  export SETTINGS__AWS__EMAIL_RECEIVER_S3_BUCKET_NAME="$(email_receiver_s3_bucket $environment)"
 }
 
 function set_smoke_test_env_vars() {
