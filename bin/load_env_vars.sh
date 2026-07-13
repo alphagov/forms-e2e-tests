@@ -128,6 +128,11 @@ function set_e2e_env_vars() {
     exit 1
   fi
 
+  if ! aws sts get-caller-identity > /dev/null 2>&1; then
+    echo "Could not access AWS resources; make sure you've assumed a role in the AWS account you're targeting." >&2
+    exit 1
+  fi
+
   export SETTINGS__FORM_IDS__S3="$(s3_form_id $environment)"
   export SETTINGS__FORMS_ADMIN__URL="$(admin_url $environment)"
   export SETTINGS__FORMS_ADMIN__AUTH__USERNAME="$(get_param /${environment}/automated-tests/e2e/auth0/email-username)"
