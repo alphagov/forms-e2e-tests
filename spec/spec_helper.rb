@@ -1,6 +1,6 @@
 require "debug"
 
-ENV["SETTINGS__FORMS_ENV"] ||= "development"
+ENV["SETTINGS__FORMS_ENV"] ||= "local"
 
 require_relative "../config/environment"
 
