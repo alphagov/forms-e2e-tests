@@ -30,15 +30,12 @@ if [[ -z "$IMAGE_TO_TEST" ]]; then
   docker build -t "$IMAGE_TO_TEST" .
 fi
 
-if [ -z "$SETTINGS__FORMS_ADMIN__URL" ] || \
-   [ -z "$SETTINGS__FORMS_ADMIN__AUTH__USERNAME" ] || \
+if [ -z "$SETTINGS__FORMS_ADMIN__AUTH__USERNAME" ] || \
    [ -z "$SETTINGS__FORMS_ADMIN__AUTH__PASSWORD" ] || \
-   [ -z "$SETTINGS__FORMS_PRODUCT_PAGE__URL" ] || \
    [ -z "$SETTINGS__GOVUK_NOTIFY__API_KEY" ]; then
-  echo "Loading env vars from parameter store"
-  source $SCRIPT_DIR/load_env_vars.sh
-  set_e2e_env_vars 'dev'
-  set_smoke_test_env_vars 'dev'
+  echo "Loading secrets from parameter store"
+  source $SCRIPT_DIR/secrets.sh
+  export_secrets 'dev'
 fi
 
 echo 'Running the tests against dev environment'

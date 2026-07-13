@@ -187,4 +187,4 @@ The tests expect an editor user exist with an Auth0 database connection configur
 
 The user should belong to an active group, called "End to end tests", as a group admin to allow publishing a form.
 
-The login details should be stored in AWS parameter store. See bin/load_env_vars.sh for configuring the enviroment varibles required.
+The login details should be stored in AWS parameter store. See bin/secrets.sh for configuring the enviroment varibles required.

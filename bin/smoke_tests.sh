@@ -13,9 +13,6 @@ Usage: $0 <dev|staging|production>
   exit 0
 fi
 
-source ./load_env_vars.sh
-set_smoke_test_env_vars "$1"
-
 cd ..
 bundle install
 
