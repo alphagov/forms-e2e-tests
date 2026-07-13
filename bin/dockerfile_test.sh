@@ -50,7 +50,7 @@ fi
 
 echo 'Running the tests against dev environment'
 
-env | grep -e AWS_ -e SETTINGS__ > ./env.list
+env | grep -e AWS_ -e SETTINGS__ | cut -d = -f 1 > ./env.list
 
 docker run --env-file ./env.list --rm \
   -e SMOKE_TEST_FORM_URL \
