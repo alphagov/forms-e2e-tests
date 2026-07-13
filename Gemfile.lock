@@ -230,6 +230,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  activesupport
   aws-sdk-s3 (~> 1.229)
   capybara
   config
