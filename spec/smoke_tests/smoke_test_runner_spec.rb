@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
+require "active_support"
+require "active_support/core_ext/object/blank"
+
 feature "Runner Smoke Test", type: :feature do
   let(:smoke_test_form_url) do
-    # TODO: Update this once we're confident no one is setting $SMOKE_TEST_FORM_URL
-    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
-    if Settings.form_ids.smoke_test
-      "#{Settings.forms_runner.url}/form/#{Settings.form_ids.smoke_test}"
-    else
-      ENV["SMOKE_TEST_FORM_URL"] { raise "Settings.form_ids.smoke_test is not set" }
-    end
+    raise "Settings.form_runner.url is not set" unless Settings.forms_runner.url.present?
+    raise "Settings.form_ids.smoke_test is not set" unless Settings.form_ids.smoke_test.present?
+
+    "#{Settings.forms_runner.url}/form/#{Settings.form_ids.smoke_test}"
   end
 
   before do
