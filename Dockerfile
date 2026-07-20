@@ -1,9 +1,9 @@
 # TODO: restore to latest version of Alpine once we can use the latest Chromium again (see https://github.com/teamcapybara/capybara/issues/2800)
 # https://trello.com/c/bFuui8d7/3458-unpin-alpine-version-in-forms-e2e-tests-once-chromedriver-issue-is-fixed
-ARG ALPINE_VERSION=3.20
-ARG RUBY_VERSION=3.4.4
+ARG ALPINE_VERSION=3.24
+ARG RUBY_VERSION=3.4.9
 
-ARG DOCKER_IMAGE_DIGEST=sha256:78223c2421bbd1e133fc6e126cf632c50b31c8728cbdbdae5742881c13c73350
+ARG DOCKER_IMAGE_DIGEST=sha256:d48f27097c1e2f3bf01d62d55bc063a292cf18d9a39ee6f0cb27cf37fc39f53c
 
 FROM ruby:${RUBY_VERSION}-alpine${ALPINE_VERSION}@${DOCKER_IMAGE_DIGEST}
 
