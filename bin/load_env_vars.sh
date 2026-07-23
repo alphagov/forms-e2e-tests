@@ -148,6 +148,7 @@ function set_e2e_env_vars() {
 
 function set_smoke_test_env_vars() {
   local environment="$1"
+  export SETTINGS__FORMS_RUNNER__URL="$(runner_url $environment)"
   export SETTINGS__FORM_IDS__SMOKE_TEST="$(smoke_test_form_id "$environment")"
   export SETTINGS__FORMS_ENV="$environment"
 }
