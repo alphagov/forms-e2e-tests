@@ -386,7 +386,7 @@ module FeatureHelpers
       click_button "Continue to GOV.UK One Login"
 
       logger.info "Then I log in using GOV.UK One Login"
-      expect(page.current_url).to match(%r{\Ahttps://signin(?:\.integration)?\.account\.gov\.uk})
+      expect(page).to have_current_path %r{\Ahttps://signin(?:\.integration)?\.account\.gov\.uk}
       click_button "Sign in"
 
       find('input[type="email"]', visible: true).set(Settings.govuk_one_login.user_email)
