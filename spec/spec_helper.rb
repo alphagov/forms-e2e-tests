@@ -28,6 +28,7 @@ if ENV["USE_CUPRITE"]
   end
 else
   require "selenium/webdriver"
+  require_relative "support/selenium_error_patch"
 
   options = Selenium::WebDriver::Chrome::Options.new
   options.add_preference(:download, prompt_for_download: false,
