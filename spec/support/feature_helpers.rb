@@ -62,7 +62,7 @@ module FeatureHelpers
 
     next_form_creation_step "Add information about what happens next"
 
-    expect(page.find("h1")).to have_content "Add information about what happens next"
+    expect(page).to have_css "h1", text: "Add information about what happens next"
     fill_in "Enter some information to tell people what will happen next", with: "We'll send you an email to let you know the outcome. You'll usually get a response within 10 working days."
     click_button "Save and continue"
 
@@ -70,13 +70,13 @@ module FeatureHelpers
 
     next_form_creation_step "Provide a link to privacy information for this form"
 
-    expect(page.find("h1")).to have_content "Provide a link to privacy information for this form"
+    expect(page).to have_css "h1", text: "Provide a link to privacy information for this form"
     fill_in "Enter a link to privacy information for this form", with: "https://www.gov.uk/forms-made-up-example-privacy-notice"
     click_button "Save and continue"
 
     next_form_creation_step "Provide contact details for support"
 
-    expect(page.find("h1")).to have_content "Provide contact details for support"
+    expect(page).to have_css "h1", text: "Provide contact details for support"
     check "Email", visible: false
     fill_in "Enter the email address", with: test_email_address
     click_button "Save and continue"
@@ -85,7 +85,7 @@ module FeatureHelpers
 
     next_form_creation_step "Share a preview of your draft form"
 
-    expect(page.find("h1")).to have_content "Share a preview of your draft form"
+    expect(page).to have_css "h1", text: "Share a preview of your draft form"
     choose "Yes", visible: false
     click_button "Save and continue"
   end
@@ -93,24 +93,24 @@ module FeatureHelpers
   def make_form_live_and_return_to_form_details
     next_form_creation_step "Make your form live"
 
-    expect(page.find("h1")).to have_content "Make your form live"
+    expect(page).to have_css "h1", text: "Make your form live"
     choose "Yes", visible: false
     click_button "Save and continue"
-    expect(page.find("h1")).to have_content "Your form is live"
+    expect(page).to have_css "h1", text: "Your form is live"
 
     click_link "Continue to the live form’s details"
 
-    expect(page.find("h1")).to have_content form_name
+    expect(page).to have_css "h1", text: form_name
   end
 
   def next_form_creation_step(task)
-    expect(page.find("h1")).to have_content "Create a form"
+    expect(page).to have_css "h1", text: "Create a form"
     click_link task
   end
 
   def create_form_with_name(form_name)
     click_link "Create a form"
-    expect(page.find("h1")).to have_content "What’s the name of your form?"
+    expect(page).to have_css "h1", text: "What’s the name of your form?"
     fill_in "What’s the name of your form?", with: form_name
     click_button "Save and continue"
   end
@@ -124,19 +124,19 @@ module FeatureHelpers
   def add_a_selection_question(question_text, options:)
     add_a_question
 
-    expect(page.find("h1")).to have_content "What kind of answer do you need to this question?"
+    expect(page).to have_css "h1", text: "What kind of answer do you need to this question?"
     choose "Selection from a list of options", visible: false
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "What’s your question?"
+    expect(page).to have_css "h1", text: "What’s your question?"
     fill_in "What’s your question?", with: question_text
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "How many options should people be able to select?"
+    expect(page).to have_css "h1", text: "How many options should people be able to select?"
     choose "One option only", visible: false
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "Create a list of options"
+    expect(page).to have_css "h1", text: "Create a list of options"
     options.each.with_index(1) do |option_text, number|
       fill_in "Option #{number}", with: option_text
     end
@@ -147,7 +147,7 @@ module FeatureHelpers
 
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "Edit question"
+    expect(page).to have_css "h1", text: "Edit question"
 
     if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
       choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
@@ -159,19 +159,19 @@ module FeatureHelpers
   def add_a_selection_question_with_different_answer_for_none_of_the_above(question_text, options:, none_of_the_above_label_text:)
     add_a_question
 
-    expect(page.find("h1")).to have_content "What kind of answer do you need to this question?"
+    expect(page).to have_css "h1", text: "What kind of answer do you need to this question?"
     choose "Selection from a list of options", visible: false
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "What’s your question?"
+    expect(page).to have_css "h1", text: "What’s your question?"
     fill_in "What’s your question?", with: question_text
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "How many options should people be able to select?"
+    expect(page).to have_css "h1", text: "How many options should people be able to select?"
     choose "One option only", visible: false
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "Create a list of options"
+    expect(page).to have_css "h1", text: "Create a list of options"
     options.each.with_index(1) do |option_text, number|
       fill_in "Option #{number}", with: option_text
     end
@@ -182,12 +182,12 @@ module FeatureHelpers
 
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "Ask for an answer if someone selects ‘None of the above’"
+    expect(page).to have_css "h1", text: "Ask for an answer if someone selects ‘None of the above’"
     fill_in "Enter a question or label for the text box", with: none_of_the_above_label_text
     choose "Mandatory"
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "Edit question"
+    expect(page).to have_css "h1", text: "Edit question"
 
     if page.has_field?("pages_question_input[is_repeatable]", type: :radio, visible: :all)
       choose("No", name: "pages_question_input[is_repeatable]", visible: :all)
@@ -199,13 +199,13 @@ module FeatureHelpers
   def add_a_single_line_of_text_question(question)
     add_a_question
 
-    expect(page.find("h1")).to have_content "What kind of answer do you need to this question?"
+    expect(page).to have_css "h1", text: "What kind of answer do you need to this question?"
     choose "Text", visible: false
     click_button "Continue"
-    expect(page.find("h1")).to have_content "How much text will people need to provide?"
+    expect(page).to have_css "h1", text: "How much text will people need to provide?"
     choose "Single line of text", visible: false
     click_button "Continue"
-    expect(page.find("h1")).to have_content "Edit question"
+    expect(page).to have_css "h1", text: "Edit question"
     fill_in "Question text", with: question
     choose "Mandatory", visible: false
 
@@ -219,10 +219,10 @@ module FeatureHelpers
   def add_a_file_upload_question
     add_a_question
 
-    expect(page.find("h1")).to have_content "What kind of answer do you need to this question?"
+    expect(page).to have_css "h1", text: "What kind of answer do you need to this question?"
     choose "File upload", visible: false
     click_button "Continue"
-    expect(page.find("h1")).to have_content "Edit question"
+    expect(page).to have_css "h1", text: "Edit question"
     fill_in "Ask for a file", with: "Upload a file"
     choose "Mandatory", visible: false
 
@@ -230,14 +230,14 @@ module FeatureHelpers
   end
 
   def add_a_route(question_to_add_a_route_from, if_the_answer_selected_is:, skip_the_person_to:)
-    expect(page.find("h1")).to have_content "Add and edit your questions"
+    expect(page).to have_css "h1", text: "Add and edit your questions"
     click_link "Add a question route"
 
-    expect(page.find("h1")).to have_content "Add a route from a question"
+    expect(page).to have_css "h1", text: "Add a route from a question"
     choose question_to_add_a_route_from, visible: false
     click_button "Continue"
 
-    expect(page.find("h1")).to have_content "Add route"
+    expect(page).to have_css "h1", text: "Add route"
 
     select if_the_answer_selected_is, from: "If the answer selected is"
 
@@ -248,7 +248,7 @@ module FeatureHelpers
   def add_a_secondary_skip(last_question_before_skip:, question_to_skip_to:)
     click_on "Set questions to skip"
 
-    expect(page.find("h1")).to have_content "Route for any other answer: set questions to skip"
+    expect(page).to have_css "h1", text: "Route for any other answer: set questions to skip"
 
     select last_question_before_skip, from: "Select the last question you want them to answer before they skip"
     select question_to_skip_to, from: "Select the question to skip them to"
@@ -261,13 +261,13 @@ module FeatureHelpers
   end
 
   def mark_pages_task_complete
-    expect(page.find("h1")).to have_content "Add and edit your questions"
+    expect(page).to have_css "h1", text: "Add and edit your questions"
     choose "Yes", visible: false
     click_button "Save and continue"
   end
 
   def mark_declaration_task_complete
-    expect(page.find("h1")).to have_content "Add a declaration"
+    expect(page).to have_css "h1", text: "Add a declaration"
     choose "Yes", visible: false
     click_button "Save and continue"
   end
@@ -275,19 +275,19 @@ module FeatureHelpers
   def add_form_submission_email
     next_form_creation_step "Set the email address completed forms will be sent to"
 
-    expect(page.find("h1")).to have_content "Set the email address for completed forms"
+    expect(page).to have_css "h1", text: "Set the email address for completed forms"
 
     expected_mail_reference = find_notification_reference("notification-id")
 
     fill_in "What email address should completed forms be sent to?", with: test_email_address
     click_button "Save and continue"
 
-    expect(page.find("h1")).to have_content "Confirmation code sent"
+    expect(page).to have_css "h1", text: "Confirmation code sent"
     expect(page.find("main")).to have_content test_email_address
 
     click_link "Enter the email address confirmation code"
 
-    expect(page.find("h1")).to have_content "Enter the confirmation code"
+    expect(page).to have_css "h1", text: "Enter the confirmation code"
 
     confirmation_code = wait_for_confirmation_code(expected_mail_reference)
 
@@ -295,7 +295,7 @@ module FeatureHelpers
 
     click_button "Save and continue"
 
-    expect(page.find("h1")).to have_content "Email address confirmed"
+    expect(page).to have_css "h1", text: "Email address confirmed"
 
     click_link "Continue creating a form"
   end
@@ -303,7 +303,7 @@ module FeatureHelpers
   def enable_copy_of_answers
     next_form_creation_step "Give people the option to ask for a copy of their answers"
 
-    expect(page.find("h1")).to have_content "Give people the option to get a copy of their answers by email"
+    expect(page).to have_css "h1", text: "Give people the option to get a copy of their answers by email"
 
     check "Give people the option to get a copy of their answers by email - I’m ok with the risk", visible: false
     click_button "Save and continue"
@@ -316,7 +316,7 @@ module FeatureHelpers
       delete_path = live_form_url.gsub("live", "delete")
 
       visit delete_path
-      expect(page.find("h1")).to have_content "Are you sure you want to delete this draft?"
+      expect(page).to have_css "h1", text: "Are you sure you want to delete this draft?"
       choose "Yes", visible: false
       click_button "Continue"
 
@@ -342,7 +342,7 @@ module FeatureHelpers
     end
 
     logger.info "When there is a selection question with an option for none of the above"
-    expect(page.find("h1")).to have_content "What is your favourite colour?"
+    expect(page).to have_css "h1", text: "What is your favourite colour?"
     within_fieldset("What is your favourite colour?") do
       expect(page).to have_field "None of the above", visible: :all
 
@@ -358,7 +358,7 @@ module FeatureHelpers
 
     # rubocop:todo Style/IdenticalConditionalBranches
     logger.info "When there is a branch question"
-    expect(page.find("h1")).to have_content selection_question
+    expect(page).to have_css "h1", text: selection_question
     if yes_branch
       logger.info "And I choose the 'yes' branch"
       answer_selection_question("Yes")
@@ -375,14 +375,14 @@ module FeatureHelpers
     # rubocop:enable Style/IdenticalConditionalBranches
 
     logger.info "And I am asked if I want a copy of my answers"
-    expect(page.find("h1")).to have_content "Do you want to get an email with a copy of your answers?"
+    expect(page).to have_css "h1", text: "Do you want to get an email with a copy of your answers?"
 
     if copy_of_answers
       logger.info "And I choose 'Yes'"
       choose "Yes", visible: false
       click_button "Continue"
 
-      expect(page.find("h1")).to have_content "Use GOV.UK One Login to keep your information secure"
+      expect(page).to have_css "h1", text: "Use GOV.UK One Login to keep your information secure"
       click_button "Continue to GOV.UK One Login"
 
       logger.info "Then I log in using GOV.UK One Login"
@@ -563,7 +563,7 @@ module FeatureHelpers
     else
       logger.info "Visiting product pages at #{forms_product_page_url}"
       visit_product_page
-      expect(page.find("h1")).to have_content "Create online forms for GOV.UK"
+      expect(page).to have_css "h1", text: "Create online forms for GOV.UK"
 
       visit_link_to_forms_admin
     end
@@ -683,7 +683,7 @@ module FeatureHelpers
 
   def click_group(group_name)
     click_link group_name
-    expect(page.find("h1")).to have_content group_name
+    expect(page).to have_css "h1", text: group_name
   end
 
   def generate_one_login_otp
