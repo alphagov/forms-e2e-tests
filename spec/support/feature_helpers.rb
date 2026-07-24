@@ -259,7 +259,7 @@ module FeatureHelpers
 
     click_button "Save and continue"
 
-    if page.find("h1").has_content?(/Question \d+’s routes/)
+    if page.has_css?("h1", text: /Question \d+’s routes/)
       click_link("Back to your questions", match: :first)
     end
   end
@@ -572,7 +572,8 @@ module FeatureHelpers
       visit_link_to_forms_admin
     end
 
-    sign_in if page.find("h1").has_content? "Sign in"
+    expect(page).to have_css "h1"
+    sign_in if page.has_css?("h1", text: "Sign in", wait: 0)
   end
 
   def sign_in
