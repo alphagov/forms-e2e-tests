@@ -116,7 +116,11 @@ module FeatureHelpers
   end
 
   def add_a_question
-    return if page.find("h1").text =~ /What kind of answer do you need to this question?/
+    # We might already be on the question type page if the form has no
+    # questions yet. Wait until one of the two expected pages has loaded
+    # before deciding whether we need to click "Add a question".
+    expect(page).to have_css "h1", text: /What kind of answer do you need to this question\?|Add and edit your questions/
+    return if page.has_css?("h1", text: "What kind of answer do you need to this question?", wait: 0)
 
     click_on "Add a question", match: :first
   end
