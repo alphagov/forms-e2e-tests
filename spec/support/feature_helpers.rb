@@ -397,6 +397,10 @@ module FeatureHelpers
 
       find('input[autocomplete="one-time-code"]', visible: true).set(generate_one_login_otp)
       find('button[type="submit"]').click
+
+      if page.has_text? "Set up a passkey"
+        click_button "Skip for now"
+      end
     else
       logger.info "And I choose 'No'"
       choose "No", visible: false
