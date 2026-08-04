@@ -23,3 +23,5 @@ aws:
 
 govuk_one_login:
   user_email: copy-of-answers-emails-tests@dev.forms.service.gov.uk
+
+confirmation_email: confirmation-email-tests@dev.forms.service.gov.uk
