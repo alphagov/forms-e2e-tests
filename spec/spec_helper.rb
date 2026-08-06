@@ -36,6 +36,8 @@ else
 
   options.add_preference(:browser, set_download_behavior: { behavior: "allow" })
 
+  options.add_argument("--disable-features=DeferRendererTasksAfterInput")
+
   Capybara.register_driver :chrome do |app|
     Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
   end
