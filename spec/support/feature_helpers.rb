@@ -455,12 +455,7 @@ module FeatureHelpers
       logger.info "When I have filled out a form and requested a confirmation email"
       logger.info "Then I can see the confirmation in my email inbox"
 
-      # TODO: remove this once forms-runner is sending confirmation emails with SES.
-      begin
-        wait_for_notification(confirmation_email_reference)
-      rescue NotifyException
-        wait_for_confirmation_email(submission_reference)
-      end
+      wait_for_confirmation_email(submission_reference)
     end
 
     if copy_of_answers
