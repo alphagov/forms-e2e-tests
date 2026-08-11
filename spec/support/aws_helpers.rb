@@ -29,6 +29,12 @@ module AwsHelpers
     end
   end
 
+  def wait_for_confirmation_email(submission_reference)
+    prefix = "confirmation-emails/"
+    email_match_string = "Your form reference number is #{submission_reference}"
+    wait_for_ses_email_delivered_to_s3(prefix, email_match_string, submission_reference)
+  end
+
   def wait_for_copy_of_answers_email(submission_reference)
     prefix = "copy-of-answers-emails/"
     email_match_string = "Your form reference number is #{submission_reference}"

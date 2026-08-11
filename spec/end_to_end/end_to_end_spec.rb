@@ -1,6 +1,7 @@
 # rubocop:todo RSpec/NoExpectationExample
 feature "Full lifecycle of a form", type: :feature do
   let(:test_email_address) { "govuk-forms-automation-tests@digital.cabinet-office.gov.uk" }
+  let(:confirmation_email) { Settings.confirmation_email }
   let(:form_name) { "capybara test form #{Time.now.strftime('%Y-%m-%d %H:%M.%S')}" }
 
   let(:file_question_text) { "Upload a file" }
@@ -80,7 +81,7 @@ feature "Full lifecycle of a form", type: :feature do
         # Testing confirmation email
         logger.info
         logger.info "Scenario: Form is completed by a member of the public, and they request a confirmation email"
-        form_is_filled_in_by_form_filler(live_form_link, confirmation_email: test_email_address)
+        form_is_filled_in_by_form_filler(live_form_link, confirmation_email: confirmation_email)
 
         unless skip_copy_of_answers?
           logger.info "Scenario: Form is completed by a member of the public, and they request a copy of their answers"

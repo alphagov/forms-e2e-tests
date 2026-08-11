@@ -30,14 +30,12 @@ The tests expect an active group to exist called "End to end tests", which the t
 
 #### Starting forms-runner
 
-Forms-runner needs to be started with:
-- The Notify API key in order to send confirmation emails
-- AWS credentials for the dev account in order to send submissions
+Forms-runner needs to be started with AWS credentials for the dev account in order to send submissions.
 
 ```shell
 gds aws forms-dev-readonly --shell
 
-ASSUME_DEV_IAM_ROLE=true SETTINGS__GOVUK_NOTIFY__API_KEY=<notify-api-key> ./bin/rails server
+ASSUME_DEV_IAM_ROLE=true ./bin/rails server
 ```
 
 see the [README for forms-runner](https://github.com/govuk-forms/forms-runner?tab=readme-ov-file#getting-aws-credentials) for more details
@@ -51,9 +49,12 @@ SETTINGS__GOVUK_NOTIFY__API_KEY=<notify-api-key> ./bin/rails server
 
 #### Running the tests
 
+The tests then need to be run with AWS credentials for the dev account in order to check for the confirmation email.
 You can run the tests against localhost using the following command:
 
 ```shell
+gds aws forms-dev-readonly --shell
+
 SETTINGS__GOVUK_NOTIFY__API_KEY=<your api key> bundle exec rake
 ```
 

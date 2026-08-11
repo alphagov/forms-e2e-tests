@@ -34,3 +34,5 @@ govuk_one_login:
 
 submission_status_api:
   secret:
+
+confirmation_email:

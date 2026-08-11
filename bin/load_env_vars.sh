@@ -139,6 +139,7 @@ function set_e2e_env_vars() {
   export SETTINGS__GOVUK_NOTIFY__API_KEY="$(get_param /${environment}/automated-tests/e2e/notify/api-key)"
   export SETTINGS__SUBMISSION_STATUS_API__SECRET="$(get_param /${environment}/automated-tests/e2e/runner/submission_status_api_shared_secret)"
   export SETTINGS__FORMS_ENV="$environment"
+  export SETTINGS__CONFIRMATION_EMAIL="$(confirmation_email $environment)"
   export SETTINGS__GOVUK_ONE_LOGIN__USER_EMAIL="$(get_param /${environment}/automated-tests/e2e/one-login/user-email)"
   export SETTINGS__GOVUK_ONE_LOGIN__USER_PASSWORD="$(get_param /${environment}/automated-tests/e2e/one-login/user-password)"
   export SETTINGS__GOVUK_ONE_LOGIN__USER_OTP_SECRET_KEY="$(get_param /${environment}/automated-tests/e2e/one-login/user-otp-secret-key)"
