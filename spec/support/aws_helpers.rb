@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "active_support"
+require "active_support/core_ext/object/blank"
 require "aws-sdk-s3"
 
 module AwsHelpers
@@ -92,9 +94,7 @@ private
   end
 
   def assume_role
-    @role_arn = Settings.aws.s3_submission_iam_role_arn
-
-    raise "Settings.aws.s3_submission_iam_role_arn is not set" if @role_arn.nil? || @role_arn.empty?
+    @role_arn = Settings.aws.s3_submission_iam_role_arn.presence or raise "Settings.aws.s3_submission_iam_role_arn is not set"
 
     role_session_name = "forms-e2e"
     Aws::AssumeRoleCredentials.new(
@@ -105,13 +105,7 @@ private
   end
 
   def get_submissions_bucket
-    # TODO: Update this once we're confident no one is setting $AWS_S3_BUCKET
-    # https://trello.com/c/tIYmMZ3e/3457-remove-backwards-compatibility-for-legacy-e2e-test-env-vars
-    bucket = Settings.aws.s3_submission_bucket_name || Settings.aws.file_upload_s3_bucket_name || ENV["AWS_S3_BUCKET"]
-
-    raise "Settings.aws.s3_submission_bucket_name is not set" if bucket.nil? || bucket.empty?
-
-    bucket
+    Settings.aws.s3_submission_bucket_name.presence or raise "Settings.aws.s3_submission_bucket_name is not set"
   end
 
   def find_submission_key(submission_reference, bucket, form_id)

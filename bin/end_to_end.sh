@@ -21,8 +21,8 @@ gds aws forms-dev-readonly -- $0 dev
   exit 0
 fi
 
-source ./load_env_vars.sh
-set_e2e_env_vars "$environment"
+source ./secrets.sh
+export_secrets "$environment"
 
 cd ..
 bundle install

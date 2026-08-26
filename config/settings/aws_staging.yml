@@ -1,0 +1,19 @@
+form_ids:
+  smoke_test: 12148
+  s3: 13657
+
+forms_admin:
+  url: https://admin.staging.forms.service.gov.uk
+
+forms_product_page:
+  url: https://www.staging.forms.service.gov.uk
+
+forms_runner_url:
+  url: https://submit.staging.forms.service.gov.uk
+
+aws:
+  s3_submission_bucket_name: govuk-forms-submissions-to-s3-test
+  s3_submission_iam_role_arn: arn:aws:iam::972536609845:role/govuk-s3-end-to-end-test-staging
+  email_receiver_s3_bucket_name: govuk-forms-staging-test-emails
+
+confirmation_email: confirmation-email-tests@staging.forms.service.gov.uk

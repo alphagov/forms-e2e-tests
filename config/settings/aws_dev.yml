@@ -1,0 +1,19 @@
+form_ids:
+  smoke_test: 11120
+  s3: 12457
+
+forms_admin:
+  url: https://admin.dev.forms.service.gov.uk
+
+forms_product_page:
+  url: https://www.dev.forms.service.gov.uk
+
+forms_runner_url:
+  url: https://submit.dev.forms.service.gov.uk
+
+aws:
+  s3_submission_bucket_name: govuk-forms-submissions-to-s3-test
+  s3_submission_iam_role_arn: arn:aws:iam::498160065950:role/govuk-s3-end-to-end-test-dev
+  email_receiver_s3_bucket_name: govuk-forms-dev-test-emails
+
+confirmation_email: confirmation-email-tests@dev.forms.service.gov.uk
